@@ -1,0 +1,9 @@
+env: docker
+gateway_server:
+  port: 1101
+Product_config:
+  port: 8081
+  host: products
+cart_config:
+  port: 8082
+  host: carts

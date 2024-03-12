@@ -1,0 +1,44 @@
+// generate a protofile for product service?
+syntax = "proto3";
+
+package product;
+
+option  go_package="github.com/Sri2103/services/pkg/rpc/product";
+
+// Message defining a product.
+message Product {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  float price = 4;
+}
+
+// Request message for getting a product by ID.
+message GetProductRequest {
+  int32 id = 1;
+}
+
+// Response message for getting a product by ID.
+message GetProductResponse {
+  Product product = 1;
+}
+
+// Request message for listing products.
+message ListProductsRequest {
+  int32 page_number = 2;
+  int32 results_per_page = 3;
+}
+
+// Response message for listing products.
+message ListProductsResponse {
+  repeated Product products = 1;
+}
+
+// Service defining the product-related RPCs.
+service ProductService {
+  // Gets a product by ID.
+  rpc GetProduct (GetProductRequest) returns (GetProductResponse);
+  
+  // Lists products.
+  rpc ListProducts (ListProductsRequest) returns (ListProductsResponse);
+}

@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "pkg"
+    },
+    {
+      "path": "internal/api-gateway"
+    },
+    {
+      "path": "internal/cart"
+    },
+    {
+      "path": "internal/products"
+    }
+  ],
+  "settings": {}
+}

@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package cart;
+
+option  go_package="github.com/Sri2103/services/pkg/rpc/cart";
+
+service CartService {
+  // Add an item to the cart
+  rpc AddItem (AddItemRequest) returns (AddItemResponse);
+  // Remove an item from the cart
+  rpc RemoveItem (RemoveItemRequest) returns (RemoveItemResponse);
+  // Get the current state of the cart
+  rpc GetCart (GetCartRequest) returns (GetCartResponse);
+}
+
+// Request message for AddItem RPC
+message AddItemRequest {
+  string user_id = 1;
+  string item_id = 2;
+  int32 quantity = 3;
+}
+
+// Response message for AddItem RPC
+message AddItemResponse {
+  string message = 1;
+}
+
+// Request message for RemoveItem RPC
+message RemoveItemRequest {
+  string user_id = 1;
+  string item_id = 2;
+}
+
+// Response message for RemoveItem RPC
+message RemoveItemResponse {
+  string message = 1;
+}
+
+// Request message for GetCart RPC
+message GetCartRequest {
+  string user_id = 1;
+}
+
+// Response message for GetCart RPC
+message GetCartResponse {
+  repeated Item items = 1;
+}
+
+// Message representing a cart item
+message Item {
+  string item_id = 1;
+  string name = 2;
+  string description = 3;
+  int32 price = 4;
+  int32 quantity = 5;
+}

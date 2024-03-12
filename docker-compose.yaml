@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SERVICE=api-gateway
+        - PORT=1101
+    environment:
+      - PORT=1101
+    volumes:
+      - "./config/docker.config.yaml:/app/config/config.yaml"
+    ports:
+      - "1101:1101"
+    depends_on:
+      - products
+  
+  products:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SERVICE=products
+        - PORT=8081
+    environment:
+      - PORT=8081
+    ports:
+      - "8081:8081"
