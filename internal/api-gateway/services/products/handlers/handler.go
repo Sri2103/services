@@ -23,9 +23,8 @@ func New(dep *dependency.Dependency) *handlers {
 
 func (h *handlers) GetProduct(c echo.Context) error {
 	productID := c.Param("id")
-	pid, _ := strconv.Atoi(productID) // convert string to int
 	req := &product.GetProductRequest{
-		Id: int32(pid),
+		Id: productID,
 	}
 	res, err := h.ProductClient.GetProduct(c.Request().Context(), req)
 	if err != nil {
