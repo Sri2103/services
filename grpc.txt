@@ -3,4 +3,7 @@
 
  
 //go:generate protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative  pkg/rpc/product/product.proto
-// go:generate protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative  pkg/rpc/cart/product.proto
+// go:generate protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative  pkg/rpc/cart/cart.proto
+
+
+// go:generate protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative  pkg/rpc/order/order.proto
