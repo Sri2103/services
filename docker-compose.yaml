@@ -27,3 +27,15 @@ services:
       - PORT=8081
     ports:
       - "8081:8081"
+  
+  cart:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SERVICE=cart
+        - PORT=8082
+    environment:
+      - PORT=8082
+    ports:
+      - "8082:8082"

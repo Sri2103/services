@@ -7,7 +7,7 @@ option  go_package="github.com/Sri2103/services/pkg/rpc/product";
 
 // Message defining a product.
 message Product {
-  int32 id = 1;
+  string id = 1;
   string name = 2;
   string description = 3;
   float price = 4;
@@ -15,7 +15,7 @@ message Product {
 
 // Request message for getting a product by ID.
 message GetProductRequest {
-  int32 id = 1;
+  string id = 1;
 }
 
 // Response message for getting a product by ID.
