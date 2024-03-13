@@ -9,6 +9,7 @@ import (
 type AppConfig struct {
 	Server        *ServerConfig  `mapstructure:"gateway_server"`
 	ProductConfig *ProductConfig `mapstructure:"product_config"`
+	CartConfig    *CartConfig    `mapstructure:"cart"`
 }
 
 type ServerConfig struct {
@@ -16,6 +17,10 @@ type ServerConfig struct {
 }
 
 type ProductConfig struct {
+	Host string `json:"host" yaml:"host" mapstructure:"host"`
+	Port int    `json:"port" yaml:"port" mapstructure:"port"`
+}
+type CartConfig struct {
 	Host string `json:"host" yaml:"host" mapstructure:"host"`
 	Port int    `json:"port" yaml:"port" mapstructure:"port"`
 }
@@ -46,6 +51,11 @@ func ReadConfig() *AppConfig {
 		panic(err)
 	}
 	conf.ProductConfig = &product
+
+	var cart CartConfig
+
+	err = viper.UnmarshalKey("cart", &cart)
+
 	return conf
 
 }

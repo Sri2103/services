@@ -9,9 +9,7 @@ import (
 
 func StartHttpServer(dep *dependency.Dependency) error {
 	// product handlers
-	productHandler := product_handler.New(dep)
-
-	productHandler.SetProductRoutes()
+	setUpRoutes(dep)
 	port := fmt.Sprintf(":%d", dep.Config.Server.Port)
 	err := dep.Server.Start(port)
 
@@ -20,4 +18,12 @@ func StartHttpServer(dep *dependency.Dependency) error {
 	}
 
 	return nil
+}
+
+func setUpRoutes(dep *dependency.Dependency) {
+	productHandler := product_handler.New(dep)
+
+	productHandler.SetProductRoutes()
+
+	
 }
