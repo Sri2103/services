@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -18,5 +19,9 @@ func main() {
 	server := grpc.NewServer()
 
 	cart_pb.RegisterCartServiceServer(server, service.New())
-	server.Serve(listener) // start serving
+	fmt.Println("Starting grpc server for cart")
+	if err := server.Serve(listener); err != nil {
+		log.Fatalf("Failed to start the grpc server on cart")
+	}
+
 }

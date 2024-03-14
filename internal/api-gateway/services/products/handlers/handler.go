@@ -27,6 +27,7 @@ func (h *handlers) GetProduct(c echo.Context) error {
 		Id: productID,
 	}
 	res, err := h.ProductClient.GetProduct(c.Request().Context(), req)
+	h.dep.Logger.Info(res.String())
 	if err != nil {
 		return echo.NewHTTPError(404, "Product Not found")
 	}
@@ -42,6 +43,7 @@ func (h *handlers) GetAllProducts(c echo.Context) error {
 	}
 	res, err := h.ProductClient.ListProducts(c.Request().Context(), req)
 	if err != nil {
+		h.dep.Logger.Error(err.Error())
 		return echo.NewHTTPError(500, "Failed to fetch products from  server")
 	}
 	return c.JSON(200, res.Products)

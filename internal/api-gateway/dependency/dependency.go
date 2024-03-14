@@ -19,6 +19,7 @@ type Dependency struct {
 	Server      *echo.Echo
 	ProductConn *grpc.ClientConn
 	CartConn    *grpc.ClientConn
+	OrderConn   *grpc.ClientConn
 }
 
 func NewDependency() (*Dependency, error) {
@@ -26,7 +27,7 @@ func NewDependency() (*Dependency, error) {
 	d.setUpLogger()
 	d.setUpConfig()
 	d.Server = echo.New()
-	d.setUpProductClient()
+	d.SetUpProductClient()
 	d.SetUpCartClient()
 	return &d, nil
 }
@@ -44,7 +45,7 @@ func (d *Dependency) setUpConfig() {
 	d.Config = cfg
 }
 
-func (d *Dependency) setUpProductClient() {
+func (d *Dependency) SetUpProductClient() {
 	connStr := fmt.Sprintf("%s:%d", d.Config.ProductConfig.Host, d.Config.ProductConfig.Port)
 	conn, err := grpc.Dial(connStr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -57,10 +58,11 @@ func (d *Dependency) setUpProductClient() {
 
 func (d *Dependency) SetUpCartClient() {
 	connStr := fmt.Sprintf("%s:%d", d.Config.CartConfig.Host, d.Config.CartConfig.Port)
+	fmt.Println(connStr, "Connection string for  cart server")
 	conn, err := grpc.Dial(connStr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		fmt.Println(err.Error())
 		panic(err)
 	}
-	d.ProductConn = conn
+	d.CartConn = conn
 }

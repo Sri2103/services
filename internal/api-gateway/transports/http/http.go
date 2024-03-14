@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Sri2103/services/internal/api-gateway/dependency"
+	cart_handlers "github.com/Sri2103/services/internal/api-gateway/services/cart/handlers"
 	product_handler "github.com/Sri2103/services/internal/api-gateway/services/products/handlers"
 )
 
@@ -25,5 +26,8 @@ func setUpRoutes(dep *dependency.Dependency) {
 
 	productHandler.SetProductRoutes()
 
-	
+	cartHandler := cart_handlers.CartHandler(dep)
+
+	cartHandler.SetCartRoutes()
+
 }

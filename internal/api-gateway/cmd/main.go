@@ -12,10 +12,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = http_transport.StartHttpServer(dep)
 	defer dep.ProductConn.Close()
+	defer dep.CartConn.Close()
+	err = http_transport.StartHttpServer(dep)
 	if err != nil {
 		log.Println("Error starting HTTP server: ", err.Error())
 		dep.Logger.Fatal(err.Error())
 	}
+
 }

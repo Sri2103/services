@@ -9,7 +9,7 @@ import (
 type AppConfig struct {
 	Server        *ServerConfig  `mapstructure:"gateway_server"`
 	ProductConfig *ProductConfig `mapstructure:"product_config"`
-	CartConfig    *CartConfig    `mapstructure:"cart"`
+	CartConfig    *CartConfig    `mapstructure:"cart_config"`
 }
 
 type ServerConfig struct {
@@ -54,7 +54,14 @@ func ReadConfig() *AppConfig {
 
 	var cart CartConfig
 
-	err = viper.UnmarshalKey("cart", &cart)
+	err = viper.UnmarshalKey("cart_config", &cart)
+
+	if err != nil {
+		fmt.Printf("%v config not found! err: %s", "cart", err.Error())
+		panic(err)
+	}
+
+	conf.CartConfig = &cart
 
 	return conf
 

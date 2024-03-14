@@ -22,6 +22,6 @@ func main() {
 
 	log.Println("Starting server on port 8083...")
 	if err = server.Serve(listener); err != nil {
-		log.Fatalf("Failed to serve: %v", err)
+		log.Fatalf("Failed to serve order service: %v", err)
 	}
 }
