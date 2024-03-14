@@ -7,3 +7,6 @@ Product_config:
 cart_config:
   port: 8082
   host: cart
+order_config:
+  port: 8083
+  host: order

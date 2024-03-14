@@ -20,7 +20,7 @@ func main() {
 
 	order_pb.RegisterOrderServiceServer(server, service.New())
 
-	log.Println("Starting server on port 8083...")
+	log.Println("Starting order server  grpc on port 8083...")
 	if err = server.Serve(listener); err != nil {
 		log.Fatalf("Failed to serve order service: %v", err)
 	}

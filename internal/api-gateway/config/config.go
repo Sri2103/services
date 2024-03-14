@@ -10,6 +10,7 @@ type AppConfig struct {
 	Server        *ServerConfig  `mapstructure:"gateway_server"`
 	ProductConfig *ProductConfig `mapstructure:"product_config"`
 	CartConfig    *CartConfig    `mapstructure:"cart_config"`
+	OrderConfig   *OrderConfig   `mapstructure:"order_config"`
 }
 
 type ServerConfig struct {
@@ -20,7 +21,12 @@ type ProductConfig struct {
 	Host string `json:"host" yaml:"host" mapstructure:"host"`
 	Port int    `json:"port" yaml:"port" mapstructure:"port"`
 }
+
 type CartConfig struct {
+	Host string `json:"host" yaml:"host" mapstructure:"host"`
+	Port int    `json:"port" yaml:"port" mapstructure:"port"`
+}
+type OrderConfig struct {
 	Host string `json:"host" yaml:"host" mapstructure:"host"`
 	Port int    `json:"port" yaml:"port" mapstructure:"port"`
 }
@@ -62,6 +68,14 @@ func ReadConfig() *AppConfig {
 	}
 
 	conf.CartConfig = &cart
+
+	var order OrderConfig
+	err = viper.UnmarshalKey("order_config", &order)
+	if err != nil {
+		fmt.Printf("%v config not found! err: %s", "cart", err.Error())
+		panic(err)
+	}
+	conf.OrderConfig = &order
 
 	return conf
 

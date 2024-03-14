@@ -16,6 +16,7 @@ services:
     depends_on:
       - products
       - cart
+      - order
   
   products:
     build:
@@ -40,14 +41,14 @@ services:
       - PORT=8082
     ports:
       - "8082:8082"
-  # order:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #     args:
-  #       - SERVICE=order
-  #       - PORT=8082
-  #   environment:
-  #     - PORT=8083
-  #   ports:
-  #     - "8083:8083"
+  order:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SERVICE=order
+        - PORT=8082
+    environment:
+      - PORT=8083
+    ports:
+      - "8083:8083"

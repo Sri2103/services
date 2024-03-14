@@ -29,6 +29,7 @@ func NewDependency() (*Dependency, error) {
 	d.Server = echo.New()
 	d.SetUpProductClient()
 	d.SetUpCartClient()
+	d.SetUpOrderClient()
 	return &d, nil
 }
 
@@ -65,4 +66,14 @@ func (d *Dependency) SetUpCartClient() {
 		panic(err)
 	}
 	d.CartConn = conn
+}
+func (d *Dependency) SetUpOrderClient() {
+	connStr := fmt.Sprintf("%s:%d", d.Config.OrderConfig.Host, d.Config.OrderConfig.Port)
+	fmt.Println(connStr, "Connection string for  cart server")
+	conn, err := grpc.Dial(connStr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		fmt.Println(err.Error())
+		panic(err)
+	}
+	d.OrderConn = conn
 }
