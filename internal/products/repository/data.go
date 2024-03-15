@@ -34,3 +34,8 @@ func (d *data) GetProduct(ctx context.Context, id uuid.UUID) (*ent.Product, erro
 func (d *data) GetProductList(ctx context.Context) ([]*ent.Product, error) {
 	return d.Products, nil
 }
+
+func (d *data) CreateProduct(ctx context.Context, p *ent.Product) (*ent.Product, error) {
+	panic("not implemented")
+}
+

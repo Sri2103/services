@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/Sri2103/services/internal/api-gateway/dependency"
@@ -47,4 +48,20 @@ func (h *handlers) GetAllProducts(c echo.Context) error {
 		return echo.NewHTTPError(500, "Failed to fetch products from  server")
 	}
 	return c.JSON(200, res.Products)
+}
+
+// create a product
+func (h *handlers) CreateProduct(c echo.Context) error {
+	var pC product.Product
+	if err := c.Bind(&pC); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid data format")
+	}
+
+	var ctx = c.Request().Context()
+	resp, err := h.ProductClient.CreateProduct(ctx, &pC)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to process request")
+	}
+	return c.JSON(http.StatusCreated, resp)
+
 }

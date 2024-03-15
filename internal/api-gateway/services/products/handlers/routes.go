@@ -6,4 +6,6 @@ func (h *handlers) SetProductRoutes() {
 	product.GET("/all", h.GetAllProducts)
 	// Get one product
 	product.GET("/:id", h.GetProduct)
+
+	product.POST("/",h.CreateProduct)
 }

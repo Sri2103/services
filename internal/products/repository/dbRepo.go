@@ -46,3 +46,7 @@ func (d *dbImpl) GetProductList(ctx context.Context) ([]*ent.Product, error) {
 	}
 	return products, nil
 }
+
+func (d *dbImpl) CreateProduct(ctx context.Context, p *ent.Product) (*ent.Product, error) {
+	panic("not implemented")
+}

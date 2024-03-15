@@ -10,4 +10,5 @@ import (
 type Repo interface {
 	GetProduct(ctx context.Context, id uuid.UUID) (*ent.Product, error)
 	GetProductList(ctx context.Context) ([]*ent.Product, error)
+	CreateProduct(ctx context.Context, p *ent.Product) (*ent.Product, error)
 }

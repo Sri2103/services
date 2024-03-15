@@ -41,4 +41,7 @@ service ProductService {
   
   // Lists products.
   rpc ListProducts (ListProductsRequest) returns (ListProductsResponse);
+
+  // Create product
+  rpc  CreateProduct(Product) returns (Product);
 }
