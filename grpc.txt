@@ -7,3 +7,16 @@
 
 
 // go:generate protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative  pkg/rpc/order/order.proto
+
+
+
+
+//migration generator
+atlas migrate diff migration_name \
+  --dir "file://ent/migrate/migrations" \
+  --to "ent://ent/schema" \
+  --dev-url "docker://mysql/8/ent"
+
+// migration apply
+
+atlas migrate apply --dir file://ent/migrate/migrations --url postgres://postgres:harsha@localhost:5432/services?sslmode=disable

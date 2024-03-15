@@ -17,7 +17,7 @@ services:
       - products
       - cart
       - order
-  
+
   products:
     build:
       context: .
@@ -29,7 +29,9 @@ services:
       - PORT=8081
     ports:
       - "8081:8081"
-  
+    depends_on:
+      - postgres
+
   cart:
     build:
       context: .
@@ -52,3 +54,20 @@ services:
       - PORT=8083
     ports:
       - "8083:8083"
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: harsha
+      POSTGRES_DB: services
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+
+volumes:
+  postgres_data:
