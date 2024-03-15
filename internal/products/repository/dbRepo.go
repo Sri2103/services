@@ -48,5 +48,10 @@ func (d *dbImpl) GetProductList(ctx context.Context) ([]*ent.Product, error) {
 }
 
 func (d *dbImpl) CreateProduct(ctx context.Context, p *ent.Product) (*ent.Product, error) {
-	panic("not implemented")
+	created, err := d.client.Create().SetName(p.Name).SetPrice(p.Price).SetDescription(p.Description).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return created, nil
 }
+
