@@ -22,7 +22,7 @@ func setUpEnt(db *database.DB) *ent.ProductClient {
 	return client
 }
 
-func New(db *database.DB) Repo {
+func NewDB(db *database.DB) Repo {
 	return &dbImpl{
 		DB:     db,
 		client: setUpEnt(db),
@@ -50,6 +50,7 @@ func (d *dbImpl) GetProductList(ctx context.Context) ([]*ent.Product, error) {
 func (d *dbImpl) CreateProduct(ctx context.Context, p *ent.Product) (*ent.Product, error) {
 	created, err := d.client.Create().SetName(p.Name).SetPrice(p.Price).SetDescription(p.Description).Save(ctx)
 	if err != nil {
+		
 		return nil, err
 	}
 	return created, nil

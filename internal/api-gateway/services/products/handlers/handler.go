@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/Sri2103/services/internal/api-gateway/dependency"
 	"github.com/Sri2103/services/pkg/rpc/product"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -54,14 +56,19 @@ func (h *handlers) GetAllProducts(c echo.Context) error {
 func (h *handlers) CreateProduct(c echo.Context) error {
 	var pC product.Product
 	if err := c.Bind(&pC); err != nil {
+		fmt.Println(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid data format")
 	}
+	pC.Id = uuid.New().String()
 
 	var ctx = c.Request().Context()
-	resp, err := h.ProductClient.CreateProduct(ctx, &pC)
+	resp, err := h.ProductClient.CreateProduct(ctx, &product.CreateProductRequest{
+		Product: &pC,
+	})
 	if err != nil {
+		fmt.Println(err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to process request")
 	}
-	return c.JSON(http.StatusCreated, resp)
+	return c.JSON(http.StatusCreated, resp.Product)
 
 }

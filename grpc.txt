@@ -20,3 +20,12 @@ atlas migrate diff migration_name \
 // migration apply
 
 atlas migrate apply --dir file://ent/migrate/migrations --url postgres://postgres:harsha@localhost:5432/services?sslmode=disable
+
+
+
+// remove stopped docker containers
+docker ps --all | awk 'NR > 1  {print $1}' | awk '{ print }' | xargs docker rm
+
+
+// remove docker images using regex
+docker images | grep services|awk '{print $3}'|xargs docker rmi

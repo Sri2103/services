@@ -27,6 +27,6 @@ ARG PORT
 WORKDIR /app
 # copy from builder the binary
 COPY --from=builder /${SERVICE} ./myapp
-RUN ls
+
 EXPOSE ${PORT}
 CMD ["./myapp"]

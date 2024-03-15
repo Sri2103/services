@@ -7,5 +7,5 @@ func (h *handlers) SetProductRoutes() {
 	// Get one product
 	product.GET("/:id", h.GetProduct)
 
-	product.POST("/",h.CreateProduct)
+	product.POST("",h.CreateProduct)
 }

@@ -29,6 +29,14 @@ message ListProductsRequest {
   int32 results_per_page = 3;
 }
 
+message CreateProductRequest {
+    Product product = 1;
+}
+
+message CreateProductResponse {
+    Product product = 1;
+}
+
 // Response message for listing products.
 message ListProductsResponse {
   repeated Product products = 1;
@@ -43,5 +51,5 @@ service ProductService {
   rpc ListProducts (ListProductsRequest) returns (ListProductsResponse);
 
   // Create product
-  rpc  CreateProduct(Product) returns (Product);
+  rpc  CreateProduct(CreateProductRequest) returns (CreateProductResponse);
 }

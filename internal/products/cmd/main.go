@@ -29,7 +29,7 @@ func main() {
 	}
 	server := grpc.NewServer()
 
-	product_pb.RegisterProductServiceServer(server, productImplementation.New(repo.NewData()))
+	product_pb.RegisterProductServiceServer(server, productImplementation.New(repo.NewDB(DB)))
 	fmt.Println("Starting grpc server for products")
 	if err := server.Serve(listen); err != nil {
 		log.Fatalf("Failed to start the grpc server")

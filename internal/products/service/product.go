@@ -4,6 +4,7 @@ import (
 	"context"
 
 	repo "github.com/Sri2103/services/internal/products/repository"
+	"github.com/Sri2103/services/pkg/ent"
 	product_pb "github.com/Sri2103/services/pkg/rpc/product"
 	"github.com/google/uuid"
 )
@@ -56,3 +57,31 @@ func (p *productImpl) ListProducts(ctx context.Context, _ *product_pb.ListProduc
 	return &lr, nil
 }
 
+func (p *productImpl) CreateProduct(ctx context.Context, r *product_pb.CreateProductRequest) (*product_pb.CreateProductResponse, error) {
+	var res product_pb.CreateProductResponse
+
+	id, err := uuid.Parse(r.Product.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	pr := ent.Product{
+		ID:          id,
+		Name:        r.Product.Name,
+		Description: r.Product.Description,
+		Price:       r.Product.Price,
+	}
+	pC, err := p.repo.CreateProduct(ctx, &pr)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Product = &product_pb.Product{
+		Id:          pC.ID.String(),
+		Name:        pC.Name,
+		Description: pC.Description,
+		Price:       pC.Price,
+	}
+
+	return &res, nil
+}
