@@ -59,7 +59,9 @@ func (p *productImpl) ListProducts(ctx context.Context, _ *product_pb.ListProduc
 
 func (p *productImpl) CreateProduct(ctx context.Context, r *product_pb.CreateProductRequest) (*product_pb.CreateProductResponse, error) {
 	var res product_pb.CreateProductResponse
-
+	if r.Product.Id == "" {
+		r.Product.Id = uuid.NewString()
+	}
 	id, err := uuid.Parse(r.Product.Id)
 	if err != nil {
 		return nil, err

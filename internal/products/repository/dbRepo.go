@@ -18,8 +18,8 @@ type dbImpl struct {
 
 func setUpEnt(db *database.DB) *ent.ProductClient {
 	drv := entsql.OpenDB(dialect.Postgres, db.Conn)
-	client := ent.NewClient(ent.Driver(drv)).Product
-	return client
+	client := ent.NewClient(ent.Driver(drv))
+	return client.Debug().Product
 }
 
 func NewDB(db *database.DB) Repo {

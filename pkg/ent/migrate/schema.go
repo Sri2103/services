@@ -18,6 +18,16 @@ var (
 		Columns:    CartsColumns,
 		PrimaryKey: []*schema.Column{CartsColumns[0]},
 	}
+	// OrdersColumns holds the columns for the "orders" table.
+	OrdersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// OrdersTable holds the schema information for the "orders" table.
+	OrdersTable = &schema.Table{
+		Name:       "orders",
+		Columns:    OrdersColumns,
+		PrimaryKey: []*schema.Column{OrdersColumns[0]},
+	}
 	// ProductsColumns holds the columns for the "products" table.
 	ProductsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -51,6 +61,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CartsTable,
+		OrdersTable,
 		ProductsTable,
 		UsersTable,
 	}

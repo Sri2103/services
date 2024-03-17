@@ -59,6 +59,14 @@ func (pc *ProductCreate) SetUpdatedAt(t time.Time) *ProductCreate {
 	return pc
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pc *ProductCreate) SetNillableUpdatedAt(t *time.Time) *ProductCreate {
+	if t != nil {
+		pc.SetUpdatedAt(*t)
+	}
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *ProductCreate) SetID(u uuid.UUID) *ProductCreate {
 	pc.mutation.SetID(u)
@@ -111,6 +119,10 @@ func (pc *ProductCreate) defaults() {
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		v := product.DefaultCreatedAt
 		pc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		v := product.DefaultUpdatedAt
+		pc.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := pc.mutation.ID(); !ok {
 		v := product.DefaultID()

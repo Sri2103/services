@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Sri2103/services/pkg/ent/cart"
+	"github.com/Sri2103/services/pkg/ent/order"
 	"github.com/Sri2103/services/pkg/ent/product"
 	"github.com/Sri2103/services/pkg/ent/user"
 )
@@ -76,6 +77,7 @@ func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			cart.Table:    cart.ValidColumn,
+			order.Table:   order.ValidColumn,
 			product.Table: product.ValidColumn,
 			user.Table:    user.ValidColumn,
 		})

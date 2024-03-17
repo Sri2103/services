@@ -18,7 +18,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not start server: %v\n", err)
 	}
-	dsn := "host=postgres  port=5432 dbname=services user=postgres password=harsha  sslmode=disable"
+	dsn := "host=localhost  port=5432 dbname=services user=postgres password=harsha  sslmode=disable"
 	DB, err := database.ConnectSQL(dsn)
 	if err != nil {
 		log.Fatal(err)

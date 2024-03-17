@@ -21,7 +21,7 @@ func (Product) Fields() []ent.Field {
 		field.String("description").StructTag(`json:"description,omitempty"`),
 		field.Float32("price").StructTag(`json:"price"`),
 		field.Time("created_at").Immutable().Default(time.Now()).StructTag(`json:"createdAt,omitempty"`),
-		field.Time("updated_at").Default(nil),
+		field.Time("updated_at").Default(time.Now()),
 	}
 }
 
