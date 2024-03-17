@@ -17,18 +17,41 @@ import (
 type Product struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
 	// Price holds the value of the "price" field.
-	Price float32 `json:"price"`
+	Price float64 `json:"price,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"createdAt,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt    time.Time `json:"updated_at,omitempty"`
-	selectValues sql.SelectValues
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the ProductQuery when eager-loading is set.
+	Edges              ProductEdges `json:"edges"`
+	cart_item_product  *uuid.UUID
+	order_item_product *uuid.UUID
+	selectValues       sql.SelectValues
+}
+
+// ProductEdges holds the relations/edges for other nodes in the graph.
+type ProductEdges struct {
+	// Category holds the value of the category edge.
+	Category []*Category `json:"category,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// CategoryOrErr returns the Category value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProductEdges) CategoryOrErr() ([]*Category, error) {
+	if e.loadedTypes[0] {
+		return e.Category, nil
+	}
+	return nil, &NotLoadedError{edge: "category"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -44,6 +67,10 @@ func (*Product) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case product.FieldID:
 			values[i] = new(uuid.UUID)
+		case product.ForeignKeys[0]: // cart_item_product
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
+		case product.ForeignKeys[1]: // order_item_product
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -81,7 +108,7 @@ func (pr *Product) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field price", values[i])
 			} else if value.Valid {
-				pr.Price = float32(value.Float64)
+				pr.Price = value.Float64
 			}
 		case product.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -95,6 +122,20 @@ func (pr *Product) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pr.UpdatedAt = value.Time
 			}
+		case product.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field cart_item_product", values[i])
+			} else if value.Valid {
+				pr.cart_item_product = new(uuid.UUID)
+				*pr.cart_item_product = *value.S.(*uuid.UUID)
+			}
+		case product.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field order_item_product", values[i])
+			} else if value.Valid {
+				pr.order_item_product = new(uuid.UUID)
+				*pr.order_item_product = *value.S.(*uuid.UUID)
+			}
 		default:
 			pr.selectValues.Set(columns[i], values[i])
 		}
@@ -106,6 +147,11 @@ func (pr *Product) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (pr *Product) Value(name string) (ent.Value, error) {
 	return pr.selectValues.Get(name)
+}
+
+// QueryCategory queries the "category" edge of the Product entity.
+func (pr *Product) QueryCategory() *CategoryQuery {
+	return NewProductClient(pr.config).QueryCategory(pr)
 }
 
 // Update returns a builder for updating this Product.

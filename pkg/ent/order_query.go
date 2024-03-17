@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -11,7 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/Sri2103/services/pkg/ent/order"
+	"github.com/Sri2103/services/pkg/ent/orderitem"
 	"github.com/Sri2103/services/pkg/ent/predicate"
+	"github.com/Sri2103/services/pkg/ent/user"
+	"github.com/google/uuid"
 )
 
 // OrderQuery is the builder for querying Order entities.
@@ -21,6 +25,9 @@ type OrderQuery struct {
 	order      []order.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Order
+	withUser   *UserQuery
+	withItems  *OrderItemQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +64,50 @@ func (oq *OrderQuery) Order(o ...order.OrderOption) *OrderQuery {
 	return oq
 }
 
+// QueryUser chains the current query on the "user" edge.
+func (oq *OrderQuery) QueryUser() *UserQuery {
+	query := (&UserClient{config: oq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, order.UserTable, order.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryItems chains the current query on the "items" edge.
+func (oq *OrderQuery) QueryItems() *OrderItemQuery {
+	query := (&OrderItemClient{config: oq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(orderitem.Table, orderitem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, order.ItemsTable, order.ItemsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Order entity from the query.
 // Returns a *NotFoundError when no Order was found.
 func (oq *OrderQuery) First(ctx context.Context) (*Order, error) {
@@ -81,8 +132,8 @@ func (oq *OrderQuery) FirstX(ctx context.Context) *Order {
 
 // FirstID returns the first Order ID from the query.
 // Returns a *NotFoundError when no Order ID was found.
-func (oq *OrderQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (oq *OrderQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = oq.Limit(1).IDs(setContextOp(ctx, oq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -94,7 +145,7 @@ func (oq *OrderQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (oq *OrderQuery) FirstIDX(ctx context.Context) int {
+func (oq *OrderQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := oq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -132,8 +183,8 @@ func (oq *OrderQuery) OnlyX(ctx context.Context) *Order {
 // OnlyID is like Only, but returns the only Order ID in the query.
 // Returns a *NotSingularError when more than one Order ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (oq *OrderQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (oq *OrderQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = oq.Limit(2).IDs(setContextOp(ctx, oq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -149,7 +200,7 @@ func (oq *OrderQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (oq *OrderQuery) OnlyIDX(ctx context.Context) int {
+func (oq *OrderQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := oq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,7 +228,7 @@ func (oq *OrderQuery) AllX(ctx context.Context) []*Order {
 }
 
 // IDs executes the query and returns a list of Order IDs.
-func (oq *OrderQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (oq *OrderQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if oq.ctx.Unique == nil && oq.path != nil {
 		oq.Unique(true)
 	}
@@ -189,7 +240,7 @@ func (oq *OrderQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (oq *OrderQuery) IDsX(ctx context.Context) []int {
+func (oq *OrderQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := oq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -249,14 +300,50 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		order:      append([]order.OrderOption{}, oq.order...),
 		inters:     append([]Interceptor{}, oq.inters...),
 		predicates: append([]predicate.Order{}, oq.predicates...),
+		withUser:   oq.withUser.Clone(),
+		withItems:  oq.withItems.Clone(),
 		// clone intermediate query.
 		sql:  oq.sql.Clone(),
 		path: oq.path,
 	}
 }
 
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithUser(opts ...func(*UserQuery)) *OrderQuery {
+	query := (&UserClient{config: oq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withUser = query
+	return oq
+}
+
+// WithItems tells the query-builder to eager-load the nodes that are connected to
+// the "items" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithItems(opts ...func(*OrderItemQuery)) *OrderQuery {
+	query := (&OrderItemClient{config: oq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withItems = query
+	return oq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		TotalAmount float64 `json:"total_amount,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.Order.Query().
+//		GroupBy(order.FieldTotalAmount).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (oq *OrderQuery) GroupBy(field string, fields ...string) *OrderGroupBy {
 	oq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &OrderGroupBy{build: oq}
@@ -268,6 +355,16 @@ func (oq *OrderQuery) GroupBy(field string, fields ...string) *OrderGroupBy {
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		TotalAmount float64 `json:"total_amount,omitempty"`
+//	}
+//
+//	client.Order.Query().
+//		Select(order.FieldTotalAmount).
+//		Scan(ctx, &v)
 func (oq *OrderQuery) Select(fields ...string) *OrderSelect {
 	oq.ctx.Fields = append(oq.ctx.Fields, fields...)
 	sbuild := &OrderSelect{OrderQuery: oq}
@@ -309,15 +406,27 @@ func (oq *OrderQuery) prepareQuery(ctx context.Context) error {
 
 func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order, error) {
 	var (
-		nodes = []*Order{}
-		_spec = oq.querySpec()
+		nodes       = []*Order{}
+		withFKs     = oq.withFKs
+		_spec       = oq.querySpec()
+		loadedTypes = [2]bool{
+			oq.withUser != nil,
+			oq.withItems != nil,
+		}
 	)
+	if oq.withUser != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, order.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Order).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Order{config: oq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -329,7 +438,84 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := oq.withUser; query != nil {
+		if err := oq.loadUser(ctx, query, nodes, nil,
+			func(n *Order, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := oq.withItems; query != nil {
+		if err := oq.loadItems(ctx, query, nodes,
+			func(n *Order) { n.Edges.Items = []*OrderItem{} },
+			func(n *Order, e *OrderItem) { n.Edges.Items = append(n.Edges.Items, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (oq *OrderQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Order, init func(*Order), assign func(*Order, *User)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Order)
+	for i := range nodes {
+		if nodes[i].user_orders == nil {
+			continue
+		}
+		fk := *nodes[i].user_orders
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_orders" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (oq *OrderQuery) loadItems(ctx context.Context, query *OrderItemQuery, nodes []*Order, init func(*Order), assign func(*Order, *OrderItem)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Order)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.OrderItem(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(order.ItemsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.order_items
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "order_items" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "order_items" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (oq *OrderQuery) sqlCount(ctx context.Context) (int, error) {
@@ -342,7 +528,7 @@ func (oq *OrderQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (oq *OrderQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(order.Table, order.Columns, sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(order.Table, order.Columns, sqlgraph.NewFieldSpec(order.FieldID, field.TypeUUID))
 	_spec.From = oq.sql
 	if unique := oq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

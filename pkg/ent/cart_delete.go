@@ -40,7 +40,7 @@ func (cd *CartDelete) ExecX(ctx context.Context) int {
 }
 
 func (cd *CartDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(cart.Table, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(cart.Table, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeUUID))
 	if ps := cd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

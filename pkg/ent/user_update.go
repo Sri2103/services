@@ -11,8 +11,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/Sri2103/services/pkg/ent/address"
+	"github.com/Sri2103/services/pkg/ent/cart"
+	"github.com/Sri2103/services/pkg/ent/order"
 	"github.com/Sri2103/services/pkg/ent/predicate"
 	"github.com/Sri2103/services/pkg/ent/user"
+	"github.com/google/uuid"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -76,9 +80,117 @@ func (uu *UserUpdate) SetNillableUpdatedAt(t *time.Time) *UserUpdate {
 	return uu
 }
 
+// AddCartIDs adds the "carts" edge to the Cart entity by IDs.
+func (uu *UserUpdate) AddCartIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.AddCartIDs(ids...)
+	return uu
+}
+
+// AddCarts adds the "carts" edges to the Cart entity.
+func (uu *UserUpdate) AddCarts(c ...*Cart) *UserUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uu.AddCartIDs(ids...)
+}
+
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (uu *UserUpdate) AddOrderIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.AddOrderIDs(ids...)
+	return uu
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (uu *UserUpdate) AddOrders(o ...*Order) *UserUpdate {
+	ids := make([]uuid.UUID, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return uu.AddOrderIDs(ids...)
+}
+
+// AddAddressIDs adds the "addresses" edge to the Address entity by IDs.
+func (uu *UserUpdate) AddAddressIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.AddAddressIDs(ids...)
+	return uu
+}
+
+// AddAddresses adds the "addresses" edges to the Address entity.
+func (uu *UserUpdate) AddAddresses(a ...*Address) *UserUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uu.AddAddressIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
+}
+
+// ClearCarts clears all "carts" edges to the Cart entity.
+func (uu *UserUpdate) ClearCarts() *UserUpdate {
+	uu.mutation.ClearCarts()
+	return uu
+}
+
+// RemoveCartIDs removes the "carts" edge to Cart entities by IDs.
+func (uu *UserUpdate) RemoveCartIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.RemoveCartIDs(ids...)
+	return uu
+}
+
+// RemoveCarts removes "carts" edges to Cart entities.
+func (uu *UserUpdate) RemoveCarts(c ...*Cart) *UserUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uu.RemoveCartIDs(ids...)
+}
+
+// ClearOrders clears all "orders" edges to the Order entity.
+func (uu *UserUpdate) ClearOrders() *UserUpdate {
+	uu.mutation.ClearOrders()
+	return uu
+}
+
+// RemoveOrderIDs removes the "orders" edge to Order entities by IDs.
+func (uu *UserUpdate) RemoveOrderIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.RemoveOrderIDs(ids...)
+	return uu
+}
+
+// RemoveOrders removes "orders" edges to Order entities.
+func (uu *UserUpdate) RemoveOrders(o ...*Order) *UserUpdate {
+	ids := make([]uuid.UUID, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return uu.RemoveOrderIDs(ids...)
+}
+
+// ClearAddresses clears all "addresses" edges to the Address entity.
+func (uu *UserUpdate) ClearAddresses() *UserUpdate {
+	uu.mutation.ClearAddresses()
+	return uu
+}
+
+// RemoveAddressIDs removes the "addresses" edge to Address entities by IDs.
+func (uu *UserUpdate) RemoveAddressIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.RemoveAddressIDs(ids...)
+	return uu
+}
+
+// RemoveAddresses removes "addresses" edges to Address entities.
+func (uu *UserUpdate) RemoveAddresses(a ...*Address) *UserUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uu.RemoveAddressIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -128,6 +240,141 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if uu.mutation.CartsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CartsTable,
+			Columns: []string{user.CartsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cart.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedCartsIDs(); len(nodes) > 0 && !uu.mutation.CartsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CartsTable,
+			Columns: []string{user.CartsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cart.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.CartsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CartsTable,
+			Columns: []string{user.CartsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cart.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.OrdersTable,
+			Columns: []string{user.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedOrdersIDs(); len(nodes) > 0 && !uu.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.OrdersTable,
+			Columns: []string{user.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.OrdersTable,
+			Columns: []string{user.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.AddressesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AddressesTable,
+			Columns: []string{user.AddressesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(address.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedAddressesIDs(); len(nodes) > 0 && !uu.mutation.AddressesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AddressesTable,
+			Columns: []string{user.AddressesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(address.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.AddressesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AddressesTable,
+			Columns: []string{user.AddressesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(address.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -197,9 +444,117 @@ func (uuo *UserUpdateOne) SetNillableUpdatedAt(t *time.Time) *UserUpdateOne {
 	return uuo
 }
 
+// AddCartIDs adds the "carts" edge to the Cart entity by IDs.
+func (uuo *UserUpdateOne) AddCartIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.AddCartIDs(ids...)
+	return uuo
+}
+
+// AddCarts adds the "carts" edges to the Cart entity.
+func (uuo *UserUpdateOne) AddCarts(c ...*Cart) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uuo.AddCartIDs(ids...)
+}
+
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (uuo *UserUpdateOne) AddOrderIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.AddOrderIDs(ids...)
+	return uuo
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (uuo *UserUpdateOne) AddOrders(o ...*Order) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return uuo.AddOrderIDs(ids...)
+}
+
+// AddAddressIDs adds the "addresses" edge to the Address entity by IDs.
+func (uuo *UserUpdateOne) AddAddressIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.AddAddressIDs(ids...)
+	return uuo
+}
+
+// AddAddresses adds the "addresses" edges to the Address entity.
+func (uuo *UserUpdateOne) AddAddresses(a ...*Address) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uuo.AddAddressIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
+}
+
+// ClearCarts clears all "carts" edges to the Cart entity.
+func (uuo *UserUpdateOne) ClearCarts() *UserUpdateOne {
+	uuo.mutation.ClearCarts()
+	return uuo
+}
+
+// RemoveCartIDs removes the "carts" edge to Cart entities by IDs.
+func (uuo *UserUpdateOne) RemoveCartIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.RemoveCartIDs(ids...)
+	return uuo
+}
+
+// RemoveCarts removes "carts" edges to Cart entities.
+func (uuo *UserUpdateOne) RemoveCarts(c ...*Cart) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uuo.RemoveCartIDs(ids...)
+}
+
+// ClearOrders clears all "orders" edges to the Order entity.
+func (uuo *UserUpdateOne) ClearOrders() *UserUpdateOne {
+	uuo.mutation.ClearOrders()
+	return uuo
+}
+
+// RemoveOrderIDs removes the "orders" edge to Order entities by IDs.
+func (uuo *UserUpdateOne) RemoveOrderIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.RemoveOrderIDs(ids...)
+	return uuo
+}
+
+// RemoveOrders removes "orders" edges to Order entities.
+func (uuo *UserUpdateOne) RemoveOrders(o ...*Order) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return uuo.RemoveOrderIDs(ids...)
+}
+
+// ClearAddresses clears all "addresses" edges to the Address entity.
+func (uuo *UserUpdateOne) ClearAddresses() *UserUpdateOne {
+	uuo.mutation.ClearAddresses()
+	return uuo
+}
+
+// RemoveAddressIDs removes the "addresses" edge to Address entities by IDs.
+func (uuo *UserUpdateOne) RemoveAddressIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.RemoveAddressIDs(ids...)
+	return uuo
+}
+
+// RemoveAddresses removes "addresses" edges to Address entities.
+func (uuo *UserUpdateOne) RemoveAddresses(a ...*Address) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uuo.RemoveAddressIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -279,6 +634,141 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if uuo.mutation.CartsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CartsTable,
+			Columns: []string{user.CartsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cart.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedCartsIDs(); len(nodes) > 0 && !uuo.mutation.CartsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CartsTable,
+			Columns: []string{user.CartsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cart.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.CartsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CartsTable,
+			Columns: []string{user.CartsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cart.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.OrdersTable,
+			Columns: []string{user.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedOrdersIDs(); len(nodes) > 0 && !uuo.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.OrdersTable,
+			Columns: []string{user.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.OrdersTable,
+			Columns: []string{user.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.AddressesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AddressesTable,
+			Columns: []string{user.AddressesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(address.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedAddressesIDs(); len(nodes) > 0 && !uuo.mutation.AddressesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AddressesTable,
+			Columns: []string{user.AddressesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(address.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.AddressesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AddressesTable,
+			Columns: []string{user.AddressesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(address.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues

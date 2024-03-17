@@ -11,8 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/Sri2103/services/pkg/ent/category"
 	"github.com/Sri2103/services/pkg/ent/predicate"
 	"github.com/Sri2103/services/pkg/ent/product"
+	"github.com/google/uuid"
 )
 
 // ProductUpdate is the builder for updating Product entities.
@@ -57,14 +59,14 @@ func (pu *ProductUpdate) SetNillableDescription(s *string) *ProductUpdate {
 }
 
 // SetPrice sets the "price" field.
-func (pu *ProductUpdate) SetPrice(f float32) *ProductUpdate {
+func (pu *ProductUpdate) SetPrice(f float64) *ProductUpdate {
 	pu.mutation.ResetPrice()
 	pu.mutation.SetPrice(f)
 	return pu
 }
 
 // SetNillablePrice sets the "price" field if the given value is not nil.
-func (pu *ProductUpdate) SetNillablePrice(f *float32) *ProductUpdate {
+func (pu *ProductUpdate) SetNillablePrice(f *float64) *ProductUpdate {
 	if f != nil {
 		pu.SetPrice(*f)
 	}
@@ -72,8 +74,22 @@ func (pu *ProductUpdate) SetNillablePrice(f *float32) *ProductUpdate {
 }
 
 // AddPrice adds f to the "price" field.
-func (pu *ProductUpdate) AddPrice(f float32) *ProductUpdate {
+func (pu *ProductUpdate) AddPrice(f float64) *ProductUpdate {
 	pu.mutation.AddPrice(f)
+	return pu
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (pu *ProductUpdate) SetCreatedAt(t time.Time) *ProductUpdate {
+	pu.mutation.SetCreatedAt(t)
+	return pu
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pu *ProductUpdate) SetNillableCreatedAt(t *time.Time) *ProductUpdate {
+	if t != nil {
+		pu.SetCreatedAt(*t)
+	}
 	return pu
 }
 
@@ -83,12 +99,19 @@ func (pu *ProductUpdate) SetUpdatedAt(t time.Time) *ProductUpdate {
 	return pu
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (pu *ProductUpdate) SetNillableUpdatedAt(t *time.Time) *ProductUpdate {
-	if t != nil {
-		pu.SetUpdatedAt(*t)
-	}
+// AddCategoryIDs adds the "category" edge to the Category entity by IDs.
+func (pu *ProductUpdate) AddCategoryIDs(ids ...uuid.UUID) *ProductUpdate {
+	pu.mutation.AddCategoryIDs(ids...)
 	return pu
+}
+
+// AddCategory adds the "category" edges to the Category entity.
+func (pu *ProductUpdate) AddCategory(c ...*Category) *ProductUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pu.AddCategoryIDs(ids...)
 }
 
 // Mutation returns the ProductMutation object of the builder.
@@ -96,8 +119,30 @@ func (pu *ProductUpdate) Mutation() *ProductMutation {
 	return pu.mutation
 }
 
+// ClearCategory clears all "category" edges to the Category entity.
+func (pu *ProductUpdate) ClearCategory() *ProductUpdate {
+	pu.mutation.ClearCategory()
+	return pu
+}
+
+// RemoveCategoryIDs removes the "category" edge to Category entities by IDs.
+func (pu *ProductUpdate) RemoveCategoryIDs(ids ...uuid.UUID) *ProductUpdate {
+	pu.mutation.RemoveCategoryIDs(ids...)
+	return pu
+}
+
+// RemoveCategory removes "category" edges to Category entities.
+func (pu *ProductUpdate) RemoveCategory(c ...*Category) *ProductUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pu.RemoveCategoryIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pu *ProductUpdate) Save(ctx context.Context) (int, error) {
+	pu.defaults()
 	return withHooks(ctx, pu.sqlSave, pu.mutation, pu.hooks)
 }
 
@@ -123,6 +168,14 @@ func (pu *ProductUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pu *ProductUpdate) defaults() {
+	if _, ok := pu.mutation.UpdatedAt(); !ok {
+		v := product.UpdateDefaultUpdatedAt()
+		pu.mutation.SetUpdatedAt(v)
+	}
+}
+
 func (pu *ProductUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(product.Table, product.Columns, sqlgraph.NewFieldSpec(product.FieldID, field.TypeUUID))
 	if ps := pu.mutation.predicates; len(ps) > 0 {
@@ -139,13 +192,61 @@ func (pu *ProductUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(product.FieldDescription, field.TypeString, value)
 	}
 	if value, ok := pu.mutation.Price(); ok {
-		_spec.SetField(product.FieldPrice, field.TypeFloat32, value)
+		_spec.SetField(product.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := pu.mutation.AddedPrice(); ok {
-		_spec.AddField(product.FieldPrice, field.TypeFloat32, value)
+		_spec.AddField(product.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := pu.mutation.CreatedAt(); ok {
+		_spec.SetField(product.FieldCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := pu.mutation.UpdatedAt(); ok {
 		_spec.SetField(product.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if pu.mutation.CategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   product.CategoryTable,
+			Columns: product.CategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedCategoryIDs(); len(nodes) > 0 && !pu.mutation.CategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   product.CategoryTable,
+			Columns: product.CategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.CategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   product.CategoryTable,
+			Columns: product.CategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -196,14 +297,14 @@ func (puo *ProductUpdateOne) SetNillableDescription(s *string) *ProductUpdateOne
 }
 
 // SetPrice sets the "price" field.
-func (puo *ProductUpdateOne) SetPrice(f float32) *ProductUpdateOne {
+func (puo *ProductUpdateOne) SetPrice(f float64) *ProductUpdateOne {
 	puo.mutation.ResetPrice()
 	puo.mutation.SetPrice(f)
 	return puo
 }
 
 // SetNillablePrice sets the "price" field if the given value is not nil.
-func (puo *ProductUpdateOne) SetNillablePrice(f *float32) *ProductUpdateOne {
+func (puo *ProductUpdateOne) SetNillablePrice(f *float64) *ProductUpdateOne {
 	if f != nil {
 		puo.SetPrice(*f)
 	}
@@ -211,8 +312,22 @@ func (puo *ProductUpdateOne) SetNillablePrice(f *float32) *ProductUpdateOne {
 }
 
 // AddPrice adds f to the "price" field.
-func (puo *ProductUpdateOne) AddPrice(f float32) *ProductUpdateOne {
+func (puo *ProductUpdateOne) AddPrice(f float64) *ProductUpdateOne {
 	puo.mutation.AddPrice(f)
+	return puo
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (puo *ProductUpdateOne) SetCreatedAt(t time.Time) *ProductUpdateOne {
+	puo.mutation.SetCreatedAt(t)
+	return puo
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (puo *ProductUpdateOne) SetNillableCreatedAt(t *time.Time) *ProductUpdateOne {
+	if t != nil {
+		puo.SetCreatedAt(*t)
+	}
 	return puo
 }
 
@@ -222,17 +337,45 @@ func (puo *ProductUpdateOne) SetUpdatedAt(t time.Time) *ProductUpdateOne {
 	return puo
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (puo *ProductUpdateOne) SetNillableUpdatedAt(t *time.Time) *ProductUpdateOne {
-	if t != nil {
-		puo.SetUpdatedAt(*t)
-	}
+// AddCategoryIDs adds the "category" edge to the Category entity by IDs.
+func (puo *ProductUpdateOne) AddCategoryIDs(ids ...uuid.UUID) *ProductUpdateOne {
+	puo.mutation.AddCategoryIDs(ids...)
 	return puo
+}
+
+// AddCategory adds the "category" edges to the Category entity.
+func (puo *ProductUpdateOne) AddCategory(c ...*Category) *ProductUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return puo.AddCategoryIDs(ids...)
 }
 
 // Mutation returns the ProductMutation object of the builder.
 func (puo *ProductUpdateOne) Mutation() *ProductMutation {
 	return puo.mutation
+}
+
+// ClearCategory clears all "category" edges to the Category entity.
+func (puo *ProductUpdateOne) ClearCategory() *ProductUpdateOne {
+	puo.mutation.ClearCategory()
+	return puo
+}
+
+// RemoveCategoryIDs removes the "category" edge to Category entities by IDs.
+func (puo *ProductUpdateOne) RemoveCategoryIDs(ids ...uuid.UUID) *ProductUpdateOne {
+	puo.mutation.RemoveCategoryIDs(ids...)
+	return puo
+}
+
+// RemoveCategory removes "category" edges to Category entities.
+func (puo *ProductUpdateOne) RemoveCategory(c ...*Category) *ProductUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return puo.RemoveCategoryIDs(ids...)
 }
 
 // Where appends a list predicates to the ProductUpdate builder.
@@ -250,6 +393,7 @@ func (puo *ProductUpdateOne) Select(field string, fields ...string) *ProductUpda
 
 // Save executes the query and returns the updated Product entity.
 func (puo *ProductUpdateOne) Save(ctx context.Context) (*Product, error) {
+	puo.defaults()
 	return withHooks(ctx, puo.sqlSave, puo.mutation, puo.hooks)
 }
 
@@ -272,6 +416,14 @@ func (puo *ProductUpdateOne) Exec(ctx context.Context) error {
 func (puo *ProductUpdateOne) ExecX(ctx context.Context) {
 	if err := puo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (puo *ProductUpdateOne) defaults() {
+	if _, ok := puo.mutation.UpdatedAt(); !ok {
+		v := product.UpdateDefaultUpdatedAt()
+		puo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -308,13 +460,61 @@ func (puo *ProductUpdateOne) sqlSave(ctx context.Context) (_node *Product, err e
 		_spec.SetField(product.FieldDescription, field.TypeString, value)
 	}
 	if value, ok := puo.mutation.Price(); ok {
-		_spec.SetField(product.FieldPrice, field.TypeFloat32, value)
+		_spec.SetField(product.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := puo.mutation.AddedPrice(); ok {
-		_spec.AddField(product.FieldPrice, field.TypeFloat32, value)
+		_spec.AddField(product.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := puo.mutation.CreatedAt(); ok {
+		_spec.SetField(product.FieldCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := puo.mutation.UpdatedAt(); ok {
 		_spec.SetField(product.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if puo.mutation.CategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   product.CategoryTable,
+			Columns: product.CategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedCategoryIDs(); len(nodes) > 0 && !puo.mutation.CategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   product.CategoryTable,
+			Columns: product.CategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.CategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   product.CategoryTable,
+			Columns: product.CategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Product{config: puo.config}
 	_spec.Assign = _node.assignValues

@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/Sri2103/services/pkg/ent/category"
 	"github.com/Sri2103/services/pkg/ent/product"
 	"github.com/google/uuid"
 )
@@ -34,7 +35,7 @@ func (pc *ProductCreate) SetDescription(s string) *ProductCreate {
 }
 
 // SetPrice sets the "price" field.
-func (pc *ProductCreate) SetPrice(f float32) *ProductCreate {
+func (pc *ProductCreate) SetPrice(f float64) *ProductCreate {
 	pc.mutation.SetPrice(f)
 	return pc
 }
@@ -81,6 +82,21 @@ func (pc *ProductCreate) SetNillableID(u *uuid.UUID) *ProductCreate {
 	return pc
 }
 
+// AddCategoryIDs adds the "category" edge to the Category entity by IDs.
+func (pc *ProductCreate) AddCategoryIDs(ids ...uuid.UUID) *ProductCreate {
+	pc.mutation.AddCategoryIDs(ids...)
+	return pc
+}
+
+// AddCategory adds the "category" edges to the Category entity.
+func (pc *ProductCreate) AddCategory(c ...*Category) *ProductCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pc.AddCategoryIDs(ids...)
+}
+
 // Mutation returns the ProductMutation object of the builder.
 func (pc *ProductCreate) Mutation() *ProductMutation {
 	return pc.mutation
@@ -117,11 +133,11 @@ func (pc *ProductCreate) ExecX(ctx context.Context) {
 // defaults sets the default values of the builder before save.
 func (pc *ProductCreate) defaults() {
 	if _, ok := pc.mutation.CreatedAt(); !ok {
-		v := product.DefaultCreatedAt
+		v := product.DefaultCreatedAt()
 		pc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
-		v := product.DefaultUpdatedAt
+		v := product.DefaultUpdatedAt()
 		pc.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := pc.mutation.ID(); !ok {
@@ -191,7 +207,7 @@ func (pc *ProductCreate) createSpec() (*Product, *sqlgraph.CreateSpec) {
 		_node.Description = value
 	}
 	if value, ok := pc.mutation.Price(); ok {
-		_spec.SetField(product.FieldPrice, field.TypeFloat32, value)
+		_spec.SetField(product.FieldPrice, field.TypeFloat64, value)
 		_node.Price = value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
@@ -201,6 +217,22 @@ func (pc *ProductCreate) createSpec() (*Product, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.UpdatedAt(); ok {
 		_spec.SetField(product.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if nodes := pc.mutation.CategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   product.CategoryTable,
+			Columns: product.CategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

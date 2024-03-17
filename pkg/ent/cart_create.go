@@ -4,11 +4,16 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/Sri2103/services/pkg/ent/cart"
+	"github.com/Sri2103/services/pkg/ent/cartitem"
+	"github.com/Sri2103/services/pkg/ent/user"
+	"github.com/google/uuid"
 )
 
 // CartCreate is the builder for creating a Cart entity.
@@ -18,6 +23,82 @@ type CartCreate struct {
 	hooks    []Hook
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (cc *CartCreate) SetCreatedAt(t time.Time) *CartCreate {
+	cc.mutation.SetCreatedAt(t)
+	return cc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (cc *CartCreate) SetNillableCreatedAt(t *time.Time) *CartCreate {
+	if t != nil {
+		cc.SetCreatedAt(*t)
+	}
+	return cc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (cc *CartCreate) SetUpdatedAt(t time.Time) *CartCreate {
+	cc.mutation.SetUpdatedAt(t)
+	return cc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (cc *CartCreate) SetNillableUpdatedAt(t *time.Time) *CartCreate {
+	if t != nil {
+		cc.SetUpdatedAt(*t)
+	}
+	return cc
+}
+
+// SetID sets the "id" field.
+func (cc *CartCreate) SetID(u uuid.UUID) *CartCreate {
+	cc.mutation.SetID(u)
+	return cc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (cc *CartCreate) SetNillableID(u *uuid.UUID) *CartCreate {
+	if u != nil {
+		cc.SetID(*u)
+	}
+	return cc
+}
+
+// AddItemIDs adds the "items" edge to the CartItem entity by IDs.
+func (cc *CartCreate) AddItemIDs(ids ...uuid.UUID) *CartCreate {
+	cc.mutation.AddItemIDs(ids...)
+	return cc
+}
+
+// AddItems adds the "items" edges to the CartItem entity.
+func (cc *CartCreate) AddItems(c ...*CartItem) *CartCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cc.AddItemIDs(ids...)
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (cc *CartCreate) SetUserID(id uuid.UUID) *CartCreate {
+	cc.mutation.SetUserID(id)
+	return cc
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (cc *CartCreate) SetNillableUserID(id *uuid.UUID) *CartCreate {
+	if id != nil {
+		cc = cc.SetUserID(*id)
+	}
+	return cc
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (cc *CartCreate) SetUser(u *User) *CartCreate {
+	return cc.SetUserID(u.ID)
+}
+
 // Mutation returns the CartMutation object of the builder.
 func (cc *CartCreate) Mutation() *CartMutation {
 	return cc.mutation
@@ -25,6 +106,7 @@ func (cc *CartCreate) Mutation() *CartMutation {
 
 // Save creates the Cart in the database.
 func (cc *CartCreate) Save(ctx context.Context) (*Cart, error) {
+	cc.defaults()
 	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
@@ -50,8 +132,30 @@ func (cc *CartCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (cc *CartCreate) defaults() {
+	if _, ok := cc.mutation.CreatedAt(); !ok {
+		v := cart.DefaultCreatedAt()
+		cc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		v := cart.DefaultUpdatedAt()
+		cc.mutation.SetUpdatedAt(v)
+	}
+	if _, ok := cc.mutation.ID(); !ok {
+		v := cart.DefaultID()
+		cc.mutation.SetID(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (cc *CartCreate) check() error {
+	if _, ok := cc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Cart.created_at"`)}
+	}
+	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Cart.updated_at"`)}
+	}
 	return nil
 }
 
@@ -66,8 +170,13 @@ func (cc *CartCreate) sqlSave(ctx context.Context) (*Cart, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
+	}
 	cc.mutation.id = &_node.ID
 	cc.mutation.done = true
 	return _node, nil
@@ -76,8 +185,53 @@ func (cc *CartCreate) sqlSave(ctx context.Context) (*Cart, error) {
 func (cc *CartCreate) createSpec() (*Cart, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Cart{config: cc.config}
-		_spec = sqlgraph.NewCreateSpec(cart.Table, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(cart.Table, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeUUID))
 	)
+	if id, ok := cc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = &id
+	}
+	if value, ok := cc.mutation.CreatedAt(); ok {
+		_spec.SetField(cart.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := cc.mutation.UpdatedAt(); ok {
+		_spec.SetField(cart.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
+	if nodes := cc.mutation.ItemsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cart.ItemsTable,
+			Columns: []string{cart.ItemsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cartitem.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cart.UserTable,
+			Columns: []string{cart.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_carts = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -99,6 +253,7 @@ func (ccb *CartCreateBulk) Save(ctx context.Context) ([]*Cart, error) {
 	for i := range ccb.builders {
 		func(i int, root context.Context) {
 			builder := ccb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*CartMutation)
 				if !ok {
@@ -125,10 +280,6 @@ func (ccb *CartCreateBulk) Save(ctx context.Context) ([]*Cart, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})
