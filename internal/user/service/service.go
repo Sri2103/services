@@ -27,7 +27,7 @@ func (u *userImpl) CreateUser(ctx context.Context, r *user_pb.CreateUserReq) (*u
 	user := r.User
 	createdUser, err := u.repo.CreateUser(ctx, &ent.User{
 		Name:     user.GetName(),
-		Password: []byte(user.GetPassword()),
+		Password: user.GetPassword(),
 		Username: user.GetUserName(),
 		Email:    user.GetEmail(),
 	})
@@ -43,7 +43,7 @@ func (u *userImpl) CreateUser(ctx context.Context, r *user_pb.CreateUserReq) (*u
 			Name:     createdUser.Name,
 			Email:    createdUser.Email,
 			UserName: createdUser.Username,
-			Password: string(createdUser.Password),
+			Password: createdUser.Password,
 		},
 	}, nil
 }

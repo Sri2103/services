@@ -21,7 +21,7 @@ func (User) Fields() []ent.Field {
 		field.String("name"),
 		field.String("username"),
 		field.String("email").Unique(),
-		field.Bytes("password").Sensitive(),
+		field.String("password").Sensitive(),
 		field.Time("created_at").Immutable().Default(time.Now()),
 		field.Time("updated_at").Default(time.Now),
 	}

@@ -4439,7 +4439,7 @@ type UserMutation struct {
 	name             *string
 	username         *string
 	email            *string
-	password         *[]byte
+	password         *string
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
@@ -4670,12 +4670,12 @@ func (m *UserMutation) ResetEmail() {
 }
 
 // SetPassword sets the "password" field.
-func (m *UserMutation) SetPassword(b []byte) {
-	m.password = &b
+func (m *UserMutation) SetPassword(s string) {
+	m.password = &s
 }
 
 // Password returns the value of the "password" field in the mutation.
-func (m *UserMutation) Password() (r []byte, exists bool) {
+func (m *UserMutation) Password() (r string, exists bool) {
 	v := m.password
 	if v == nil {
 		return
@@ -4686,7 +4686,7 @@ func (m *UserMutation) Password() (r []byte, exists bool) {
 // OldPassword returns the old "password" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldPassword(ctx context.Context) (v []byte, err error) {
+func (m *UserMutation) OldPassword(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
 	}
@@ -5064,7 +5064,7 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetEmail(v)
 		return nil
 	case user.FieldPassword:
-		v, ok := value.([]byte)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
