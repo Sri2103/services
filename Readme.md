@@ -22,37 +22,6 @@ This repository contains a set of microservices built with GoLang using Echo for
    ```bash
    git clone https://github.com/Sri2103/services.git
 
-Certainly! Below is the README content formatted in Markdown:
-
-markdown
-Copy code
-
-# GoLang Microservices with Echo, gRPC, PostgreSQL, Entgo, Redis, and Docker Compose
-
-This repository contains a set of microservices built with GoLang using Echo for API Gateway, gRPC for communication between services, PostgreSQL for the database, Entgo for ORM, Redis for caching, and Docker Compose for easy deployment.
-
-## Services
-
-1. **API Gateway**: Built with Echo Router.
-2. **User Service**: Handles user-related functionalities using gRPC. 
-3. **Cart Service**: Manages user shopping carts using gRPC.
-4. **Order Service**: Deals with order processing using gRPC.
-
-## Prerequisites
-
-- GoLang installed on your machine
-- Docker and Docker Compose installed
-- PostgreSQL and Redis installed or accessible via Docker
-
-## Getting Started
-
-1. Clone this repository to your local machine:
-
-   ```bash
-   git clone https://github.com/your-username/your-repository.git
-
-Navigate to the project directory:
-
 ```bash
 cd services
 ```
