@@ -5,16 +5,15 @@ import (
 	"log"
 	"net"
 
-	repo "github.com/Sri2103/services/internal/products/repository"
-	productImplementation "github.com/Sri2103/services/internal/products/service"
+	"github.com/Sri2103/services/internal/users/repository"
+	"github.com/Sri2103/services/internal/users/service"
 	"github.com/Sri2103/services/pkg/database"
-	product_pb "github.com/Sri2103/services/pkg/rpc/product"
+	user_pb "github.com/Sri2103/services/pkg/rpc/user"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	// create a listener
-	listen, err := net.Listen("tcp", ":8081") // listen on port 8081
+	listen, err := net.Listen("tcp", ":8091") // listen on port 8081
 	if err != nil {
 		log.Fatalf("Could not start server: %v\n", err)
 	}
@@ -29,10 +28,9 @@ func main() {
 	}
 	server := grpc.NewServer()
 
-	product_pb.RegisterProductServiceServer(server, productImplementation.New(repo.NewDB(DB)))
-	fmt.Println("Starting grpc server for products")
+	user_pb.RegisterUserServiceServer(server, service.New(repository.NewDB(DB)))
+	fmt.Println("Starting grpc server for user")
 	if err := server.Serve(listen); err != nil {
 		log.Fatalf("Failed to start the grpc server")
 	}
-
 }

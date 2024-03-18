@@ -11,6 +11,7 @@ type AppConfig struct {
 	ProductConfig *ProductConfig `mapstructure:"product_config"`
 	CartConfig    *CartConfig    `mapstructure:"cart_config"`
 	OrderConfig   *OrderConfig   `mapstructure:"order_config"`
+	UserConfig    *UserConfig    `mapstructure:"user_config"`
 }
 
 type ServerConfig struct {
@@ -27,6 +28,11 @@ type CartConfig struct {
 	Port int    `json:"port" yaml:"port" mapstructure:"port"`
 }
 type OrderConfig struct {
+	Host string `json:"host" yaml:"host" mapstructure:"host"`
+	Port int    `json:"port" yaml:"port" mapstructure:"port"`
+}
+
+type UserConfig struct {
 	Host string `json:"host" yaml:"host" mapstructure:"host"`
 	Port int    `json:"port" yaml:"port" mapstructure:"port"`
 }
@@ -76,6 +82,14 @@ func ReadConfig() *AppConfig {
 		panic(err)
 	}
 	conf.OrderConfig = &order
+
+	var userConf UserConfig
+	err = viper.UnmarshalKey("order_config", &userConf)
+	if err != nil {
+		fmt.Printf("%v config not found! err: %s", "cart", err.Error())
+		panic(err)
+	}
+	conf.UserConfig = &userConf
 
 	return conf
 

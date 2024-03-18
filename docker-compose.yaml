@@ -17,6 +17,7 @@ services:
       - products
       - cart
       - order
+      - user
       - postgres
       - consul
 
@@ -61,6 +62,20 @@ services:
       - PORT=8083
     ports:
       - "8083:8083"
+    depends_on:
+      - consul
+      - postgres
+  user:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SERVICE=user
+        - PORT=8091
+    environment:
+      - PORT=8091
+    ports:
+      - "8091:8091"
     depends_on:
       - consul
       - postgres

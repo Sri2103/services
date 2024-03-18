@@ -20,6 +20,7 @@ type Dependency struct {
 	ProductConn *grpc.ClientConn
 	CartConn    *grpc.ClientConn
 	OrderConn   *grpc.ClientConn
+	UserConn    *grpc.ClientConn
 }
 
 func NewDependency() (*Dependency, error) {
@@ -30,6 +31,7 @@ func NewDependency() (*Dependency, error) {
 	d.SetUpProductClient()
 	d.SetUpCartClient()
 	d.SetUpOrderClient()
+	d.SetUpUserClient()
 	return &d, nil
 }
 
@@ -69,11 +71,21 @@ func (d *Dependency) SetUpCartClient() {
 }
 func (d *Dependency) SetUpOrderClient() {
 	connStr := fmt.Sprintf("%s:%d", d.Config.OrderConfig.Host, d.Config.OrderConfig.Port)
-	fmt.Println(connStr, "Connection string for  cart server")
+	fmt.Println(connStr, "Connection string for  order server")
 	conn, err := grpc.Dial(connStr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		fmt.Println(err.Error())
 		panic(err)
 	}
 	d.OrderConn = conn
+}
+func (d *Dependency) SetUpUserClient() {
+	connStr := fmt.Sprintf("%s:%d", d.Config.UserConfig.Host, d.Config.UserConfig.Port)
+	fmt.Println(connStr, "Connection string for  user server")
+	conn, err := grpc.Dial(connStr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		fmt.Println(err.Error())
+		panic(err)
+	}
+	d.UserConn = conn
 }

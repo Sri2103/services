@@ -19,7 +19,7 @@
       "path": "internal/order"
     },
     {
-      "path": "internal/users"
+      "path": "internal/user"
     }
   ],
   "settings": {}

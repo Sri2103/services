@@ -15,6 +15,7 @@ func main() {
 	defer dep.ProductConn.Close()
 	defer dep.CartConn.Close()
 	defer dep.OrderConn.Close()
+	defer dep.UserConn.Close()
 	err = http_transport.StartHttpServer(dep)
 	if err != nil {
 		log.Println("Error starting HTTP server: ", err.Error())
