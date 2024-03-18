@@ -17,6 +17,9 @@
     },
     {
       "path": "internal/order"
+    },
+    {
+      "path": "internal/users"
     }
   ],
   "settings": {}

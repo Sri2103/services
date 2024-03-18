@@ -34,10 +34,11 @@ func (p *productImpl) GetProduct(ctx context.Context, r *product_pb.GetProductRe
 		Id:          product.ID.String(),
 		Name:        product.Name,
 		Description: product.Description,
-		Price:       product.Price,
+		Price:       float32(product.Price),
 	}
 	return &gr, nil
 }
+
 
 func (p *productImpl) ListProducts(ctx context.Context, _ *product_pb.ListProductsRequest) (*product_pb.ListProductsResponse, error) {
 	var lr product_pb.ListProductsResponse
@@ -50,7 +51,7 @@ func (p *productImpl) ListProducts(ctx context.Context, _ *product_pb.ListProduc
 			Id:          v.ID.String(),
 			Name:        v.Name,
 			Description: v.Description,
-			Price:       v.Price,
+			Price:       float32(v.Price),
 		})
 
 	}
@@ -71,7 +72,7 @@ func (p *productImpl) CreateProduct(ctx context.Context, r *product_pb.CreatePro
 		ID:          id,
 		Name:        r.Product.Name,
 		Description: r.Product.Description,
-		Price:       r.Product.Price,
+		Price:       float64(r.Product.Price),
 	}
 	pC, err := p.repo.CreateProduct(ctx, &pr)
 	if err != nil {
@@ -82,7 +83,7 @@ func (p *productImpl) CreateProduct(ctx context.Context, r *product_pb.CreatePro
 		Id:          pC.ID.String(),
 		Name:        pC.Name,
 		Description: pC.Description,
-		Price:       pC.Price,
+		Price:       float32(pC.Price),
 	}
 
 	return &res, nil

@@ -7,15 +7,13 @@
 
 
 // go:generate protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative  pkg/rpc/order/order.proto
+ protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative  pkg/rpc/user/user.proto
 
 
 
 
 //migration generator
-atlas migrate diff migration_name \
-  --dir "file://ent/migrate/migrations" \
-  --to "ent://ent/schema" \
-  --dev-url "docker://mysql/8/ent"
+atlas migrate diff migration_name   --dir "file://ent/migrate/migrations"   --to "ent://ent/schema"   --dev-url "docker://postgres/15/test?search_path=public"
 
 // migration apply
 

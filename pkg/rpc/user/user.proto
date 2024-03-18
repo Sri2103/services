@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package user;
+
+option go_package= ".user";
+
+message User {
+    string id = 1;
+    string name = 2;
+    string userName = 3;
+    string password = 4;
+}
+
+message  LoginReq {
+    string username = 1;
+    string password = 2;
+    }
+
+message LoginResp{
+    int32 code = 1;
+    string msg = 2;
+    User userInfo = 3;
+}
+
+message CreateUserReq{
+    User user = 1;
+}
+
+message CreateUserResp{
+    int32 code = 1;
+    string msg = 2;
+    User user = 3;
+}
+
+message UpdateUserReq {
+    User  user = 1;
+}
+
+message UpdateUserResp {
+    int32 code  = 1;
+    string msg = 2;
+    User User = 3;
+}
+
+service UserService {
+    rpc Login(LoginReq) returns (LoginResp);
+    rpc GetUserById(CreateUserReq) returns (CreateUserResp);
+    rpc CreateUser(CreateUserReq) returns (CreateUserResp);
+    rpc EditUser(UpdateUserReq) returns (UpdateUserResp);
+}
+
