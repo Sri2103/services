@@ -170,6 +170,7 @@ var (
 		{Name: "_id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "username", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeBytes},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
