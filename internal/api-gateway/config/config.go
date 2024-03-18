@@ -84,7 +84,7 @@ func ReadConfig() *AppConfig {
 	conf.OrderConfig = &order
 
 	var userConf UserConfig
-	err = viper.UnmarshalKey("order_config", &userConf)
+	err = viper.UnmarshalKey("user_config", &userConf)
 	if err != nil {
 		fmt.Printf("%v config not found! err: %s", "cart", err.Error())
 		panic(err)
