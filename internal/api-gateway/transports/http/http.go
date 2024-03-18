@@ -6,6 +6,7 @@ import (
 	"github.com/Sri2103/services/internal/api-gateway/dependency"
 	cart_handlers "github.com/Sri2103/services/internal/api-gateway/services/cart/handlers"
 	product_handler "github.com/Sri2103/services/internal/api-gateway/services/products/handlers"
+	user_handler "github.com/Sri2103/services/internal/api-gateway/services/user/handlers"
 )
 
 func StartHttpServer(dep *dependency.Dependency) error {
@@ -29,5 +30,9 @@ func setUpRoutes(dep *dependency.Dependency) {
 	cartHandler := cart_handlers.CartHandler(dep)
 
 	cartHandler.SetCartRoutes()
+
+	userHandler := user_handler.New(dep)
+
+	userHandler.SetUserRoutes()
 
 }
