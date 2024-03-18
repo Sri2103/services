@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user;
 
-option go_package= ".user";
+option go_package ="github.com/Sri2103/services/pkg/rpc/user";
 
 message User {
     string id = 1;
@@ -44,9 +44,13 @@ message UpdateUserResp {
     User User = 3;
 }
 
+message GetUserByIdReq {
+    string userId = 1;
+}
+
 service UserService {
     rpc Login(LoginReq) returns (LoginResp);
-    rpc GetUserById(CreateUserReq) returns (CreateUserResp);
+    rpc GetUserById(GetUserByIdReq) returns (CreateUserResp);
     rpc CreateUser(CreateUserReq) returns (CreateUserResp);
     rpc EditUser(UpdateUserReq) returns (UpdateUserResp);
 }

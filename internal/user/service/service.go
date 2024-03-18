@@ -48,8 +48,8 @@ func (u *userImpl) CreateUser(ctx context.Context, r *user_pb.CreateUserReq) (*u
 	}, nil
 }
 
-func (u *userImpl) GetUserById(ctx context.Context, r *user_pb.CreateUserReq) (*user_pb.CreateUserResp, error) {
-	user, err := u.repo.GetUserById(ctx, r.User.Id)
+func (u *userImpl) GetUserById(ctx context.Context, r *user_pb.GetUserByIdReq) (*user_pb.CreateUserResp, error) {
+	user, err := u.repo.GetUserById(ctx, r.UserId)
 	if err != nil {
 		return nil, err
 	}
