@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	listen, err := net.Listen("tcp", ":8091") // listen on port 8081
+	listen, err := net.Listen("tcp", ":8091")
 	if err != nil {
 		log.Fatalf("Could not start server: %v\n", err)
 	}
