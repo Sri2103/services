@@ -165,6 +165,19 @@ var (
 			},
 		},
 	}
+	// RolesColumns holds the columns for the "roles" table.
+	RolesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "role", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// RolesTable holds the schema information for the "roles" table.
+	RolesTable = &schema.Table{
+		Name:       "roles",
+		Columns:    RolesColumns,
+		PrimaryKey: []*schema.Column{RolesColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "_id", Type: field.TypeUUID},
@@ -174,12 +187,21 @@ var (
 		{Name: "password", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "role_user", Type: field.TypeUUID, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "users_roles_user",
+				Columns:    []*schema.Column{UsersColumns[7]},
+				RefColumns: []*schema.Column{RolesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// CategoryProductsColumns holds the columns for the "category_products" table.
 	CategoryProductsColumns = []*schema.Column{
@@ -215,6 +237,7 @@ var (
 		OrdersTable,
 		OrderItemsTable,
 		ProductsTable,
+		RolesTable,
 		UsersTable,
 		CategoryProductsTable,
 	}
@@ -228,6 +251,7 @@ func init() {
 	OrderItemsTable.ForeignKeys[0].RefTable = OrdersTable
 	ProductsTable.ForeignKeys[0].RefTable = CartItemsTable
 	ProductsTable.ForeignKeys[1].RefTable = OrderItemsTable
+	UsersTable.ForeignKeys[0].RefTable = RolesTable
 	CategoryProductsTable.ForeignKeys[0].RefTable = CategoriesTable
 	CategoryProductsTable.ForeignKeys[1].RefTable = ProductsTable
 }

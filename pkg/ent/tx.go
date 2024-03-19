@@ -26,6 +26,8 @@ type Tx struct {
 	OrderItem *OrderItemClient
 	// Product is the client for interacting with the Product builders.
 	Product *ProductClient
+	// Role is the client for interacting with the Role builders.
+	Role *RoleClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -166,6 +168,7 @@ func (tx *Tx) init() {
 	tx.Order = NewOrderClient(tx.config)
 	tx.OrderItem = NewOrderItemClient(tx.config)
 	tx.Product = NewProductClient(tx.config)
+	tx.Role = NewRoleClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

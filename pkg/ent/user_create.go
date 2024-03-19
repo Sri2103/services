@@ -13,6 +13,7 @@ import (
 	"github.com/Sri2103/services/pkg/ent/address"
 	"github.com/Sri2103/services/pkg/ent/cart"
 	"github.com/Sri2103/services/pkg/ent/order"
+	"github.com/Sri2103/services/pkg/ent/role"
 	"github.com/Sri2103/services/pkg/ent/user"
 	"github.com/google/uuid"
 )
@@ -125,6 +126,25 @@ func (uc *UserCreate) AddAddresses(a ...*Address) *UserCreate {
 		ids[i] = a[i].ID
 	}
 	return uc.AddAddressIDs(ids...)
+}
+
+// SetRoleID sets the "role" edge to the Role entity by ID.
+func (uc *UserCreate) SetRoleID(id uuid.UUID) *UserCreate {
+	uc.mutation.SetRoleID(id)
+	return uc
+}
+
+// SetNillableRoleID sets the "role" edge to the Role entity by ID if the given value is not nil.
+func (uc *UserCreate) SetNillableRoleID(id *uuid.UUID) *UserCreate {
+	if id != nil {
+		uc = uc.SetRoleID(*id)
+	}
+	return uc
+}
+
+// SetRole sets the "role" edge to the Role entity.
+func (uc *UserCreate) SetRole(r *Role) *UserCreate {
+	return uc.SetRoleID(r.ID)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -297,6 +317,23 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.RoleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.RoleTable,
+			Columns: []string{user.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.role_user = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

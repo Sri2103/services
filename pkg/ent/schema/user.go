@@ -33,5 +33,6 @@ func (User) Edges() []ent.Edge {
 		edge.To("carts", Cart.Type),
 		edge.To("orders", Order.Type),
 		edge.To("addresses", Address.Type),
+		edge.From("role", Role.Type).Ref("user").Unique(),
 	}
 }

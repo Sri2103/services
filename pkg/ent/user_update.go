@@ -15,6 +15,7 @@ import (
 	"github.com/Sri2103/services/pkg/ent/cart"
 	"github.com/Sri2103/services/pkg/ent/order"
 	"github.com/Sri2103/services/pkg/ent/predicate"
+	"github.com/Sri2103/services/pkg/ent/role"
 	"github.com/Sri2103/services/pkg/ent/user"
 	"github.com/google/uuid"
 )
@@ -147,6 +148,25 @@ func (uu *UserUpdate) AddAddresses(a ...*Address) *UserUpdate {
 	return uu.AddAddressIDs(ids...)
 }
 
+// SetRoleID sets the "role" edge to the Role entity by ID.
+func (uu *UserUpdate) SetRoleID(id uuid.UUID) *UserUpdate {
+	uu.mutation.SetRoleID(id)
+	return uu
+}
+
+// SetNillableRoleID sets the "role" edge to the Role entity by ID if the given value is not nil.
+func (uu *UserUpdate) SetNillableRoleID(id *uuid.UUID) *UserUpdate {
+	if id != nil {
+		uu = uu.SetRoleID(*id)
+	}
+	return uu
+}
+
+// SetRole sets the "role" edge to the Role entity.
+func (uu *UserUpdate) SetRole(r *Role) *UserUpdate {
+	return uu.SetRoleID(r.ID)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -213,6 +233,12 @@ func (uu *UserUpdate) RemoveAddresses(a ...*Address) *UserUpdate {
 		ids[i] = a[i].ID
 	}
 	return uu.RemoveAddressIDs(ids...)
+}
+
+// ClearRole clears the "role" edge to the Role entity.
+func (uu *UserUpdate) ClearRole() *UserUpdate {
+	uu.mutation.ClearRole()
+	return uu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -401,6 +427,35 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.RoleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.RoleTable,
+			Columns: []string{user.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RoleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.RoleTable,
+			Columns: []string{user.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -536,6 +591,25 @@ func (uuo *UserUpdateOne) AddAddresses(a ...*Address) *UserUpdateOne {
 	return uuo.AddAddressIDs(ids...)
 }
 
+// SetRoleID sets the "role" edge to the Role entity by ID.
+func (uuo *UserUpdateOne) SetRoleID(id uuid.UUID) *UserUpdateOne {
+	uuo.mutation.SetRoleID(id)
+	return uuo
+}
+
+// SetNillableRoleID sets the "role" edge to the Role entity by ID if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableRoleID(id *uuid.UUID) *UserUpdateOne {
+	if id != nil {
+		uuo = uuo.SetRoleID(*id)
+	}
+	return uuo
+}
+
+// SetRole sets the "role" edge to the Role entity.
+func (uuo *UserUpdateOne) SetRole(r *Role) *UserUpdateOne {
+	return uuo.SetRoleID(r.ID)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -602,6 +676,12 @@ func (uuo *UserUpdateOne) RemoveAddresses(a ...*Address) *UserUpdateOne {
 		ids[i] = a[i].ID
 	}
 	return uuo.RemoveAddressIDs(ids...)
+}
+
+// ClearRole clears the "role" edge to the Role entity.
+func (uuo *UserUpdateOne) ClearRole() *UserUpdateOne {
+	uuo.mutation.ClearRole()
+	return uuo
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -813,6 +893,35 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(address.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.RoleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.RoleTable,
+			Columns: []string{user.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RoleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.RoleTable,
+			Columns: []string{user.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

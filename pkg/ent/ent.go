@@ -19,6 +19,7 @@ import (
 	"github.com/Sri2103/services/pkg/ent/order"
 	"github.com/Sri2103/services/pkg/ent/orderitem"
 	"github.com/Sri2103/services/pkg/ent/product"
+	"github.com/Sri2103/services/pkg/ent/role"
 	"github.com/Sri2103/services/pkg/ent/user"
 )
 
@@ -87,6 +88,7 @@ func checkColumn(table, column string) error {
 			order.Table:     order.ValidColumn,
 			orderitem.Table: orderitem.ValidColumn,
 			product.Table:   product.ValidColumn,
+			role.Table:      role.ValidColumn,
 			user.Table:      user.ValidColumn,
 		})
 	})

@@ -32,12 +32,16 @@ const (
 	EdgeOrders = "orders"
 	// EdgeAddresses holds the string denoting the addresses edge name in mutations.
 	EdgeAddresses = "addresses"
+	// EdgeRole holds the string denoting the role edge name in mutations.
+	EdgeRole = "role"
 	// CartFieldID holds the string denoting the ID field of the Cart.
 	CartFieldID = "id"
 	// OrderFieldID holds the string denoting the ID field of the Order.
 	OrderFieldID = "id"
 	// AddressFieldID holds the string denoting the ID field of the Address.
 	AddressFieldID = "id"
+	// RoleFieldID holds the string denoting the ID field of the Role.
+	RoleFieldID = "id"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// CartsTable is the table that holds the carts relation/edge.
@@ -61,6 +65,13 @@ const (
 	AddressesInverseTable = "addresses"
 	// AddressesColumn is the table column denoting the addresses relation/edge.
 	AddressesColumn = "user_addresses"
+	// RoleTable is the table that holds the role relation/edge.
+	RoleTable = "users"
+	// RoleInverseTable is the table name for the Role entity.
+	// It exists in this package in order to avoid circular dependency with the "role" package.
+	RoleInverseTable = "roles"
+	// RoleColumn is the table column denoting the role relation/edge.
+	RoleColumn = "role_user"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -74,10 +85,21 @@ var Columns = []string{
 	FieldUpdatedAt,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "users"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"role_user",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -170,6 +192,13 @@ func ByAddresses(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newAddressesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByRoleField orders the results by role field.
+func ByRoleField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRoleStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newCartsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -189,5 +218,12 @@ func newAddressesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AddressesInverseTable, AddressFieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, AddressesTable, AddressesColumn),
+	)
+}
+func newRoleStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RoleInverseTable, RoleFieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
 	)
 }

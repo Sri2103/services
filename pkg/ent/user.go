@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/Sri2103/services/pkg/ent/role"
 	"github.com/Sri2103/services/pkg/ent/user"
 	"github.com/google/uuid"
 )
@@ -33,6 +34,7 @@ type User struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
+	role_user    *uuid.UUID
 	selectValues sql.SelectValues
 }
 
@@ -44,9 +46,11 @@ type UserEdges struct {
 	Orders []*Order `json:"orders,omitempty"`
 	// Addresses holds the value of the addresses edge.
 	Addresses []*Address `json:"addresses,omitempty"`
+	// Role holds the value of the role edge.
+	Role *Role `json:"role,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // CartsOrErr returns the Carts value or an error if the edge
@@ -76,6 +80,17 @@ func (e UserEdges) AddressesOrErr() ([]*Address, error) {
 	return nil, &NotLoadedError{edge: "addresses"}
 }
 
+// RoleOrErr returns the Role value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) RoleOrErr() (*Role, error) {
+	if e.Role != nil {
+		return e.Role, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: role.Label}
+	}
+	return nil, &NotLoadedError{edge: "role"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -87,6 +102,8 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case user.FieldID:
 			values[i] = new(uuid.UUID)
+		case user.ForeignKeys[0]: // role_user
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -144,6 +161,13 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.UpdatedAt = value.Time
 			}
+		case user.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field role_user", values[i])
+			} else if value.Valid {
+				u.role_user = new(uuid.UUID)
+				*u.role_user = *value.S.(*uuid.UUID)
+			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
 		}
@@ -170,6 +194,11 @@ func (u *User) QueryOrders() *OrderQuery {
 // QueryAddresses queries the "addresses" edge of the User entity.
 func (u *User) QueryAddresses() *AddressQuery {
 	return NewUserClient(u.config).QueryAddresses(u)
+}
+
+// QueryRole queries the "role" edge of the User entity.
+func (u *User) QueryRole() *RoleQuery {
+	return NewUserClient(u.config).QueryRole(u)
 }
 
 // Update returns a builder for updating this User.

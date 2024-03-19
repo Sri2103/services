@@ -15,6 +15,7 @@ import (
 	"github.com/Sri2103/services/pkg/ent/cart"
 	"github.com/Sri2103/services/pkg/ent/order"
 	"github.com/Sri2103/services/pkg/ent/predicate"
+	"github.com/Sri2103/services/pkg/ent/role"
 	"github.com/Sri2103/services/pkg/ent/user"
 	"github.com/google/uuid"
 )
@@ -29,6 +30,8 @@ type UserQuery struct {
 	withCarts     *CartQuery
 	withOrders    *OrderQuery
 	withAddresses *AddressQuery
+	withRole      *RoleQuery
+	withFKs       bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -124,6 +127,28 @@ func (uq *UserQuery) QueryAddresses() *AddressQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(address.Table, address.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.AddressesTable, user.AddressesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRole chains the current query on the "role" edge.
+func (uq *UserQuery) QueryRole() *RoleQuery {
+	query := (&RoleClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(role.Table, role.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, user.RoleTable, user.RoleColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -326,6 +351,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withCarts:     uq.withCarts.Clone(),
 		withOrders:    uq.withOrders.Clone(),
 		withAddresses: uq.withAddresses.Clone(),
+		withRole:      uq.withRole.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -362,6 +388,17 @@ func (uq *UserQuery) WithAddresses(opts ...func(*AddressQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withAddresses = query
+	return uq
+}
+
+// WithRole tells the query-builder to eager-load the nodes that are connected to
+// the "role" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithRole(opts ...func(*RoleQuery)) *UserQuery {
+	query := (&RoleClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withRole = query
 	return uq
 }
 
@@ -442,13 +479,21 @@ func (uq *UserQuery) prepareQuery(ctx context.Context) error {
 func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, error) {
 	var (
 		nodes       = []*User{}
+		withFKs     = uq.withFKs
 		_spec       = uq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			uq.withCarts != nil,
 			uq.withOrders != nil,
 			uq.withAddresses != nil,
+			uq.withRole != nil,
 		}
 	)
+	if uq.withRole != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, user.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*User).scanValues(nil, columns)
 	}
@@ -485,6 +530,12 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadAddresses(ctx, query, nodes,
 			func(n *User) { n.Edges.Addresses = []*Address{} },
 			func(n *User, e *Address) { n.Edges.Addresses = append(n.Edges.Addresses, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withRole; query != nil {
+		if err := uq.loadRole(ctx, query, nodes, nil,
+			func(n *User, e *Role) { n.Edges.Role = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -581,6 +632,38 @@ func (uq *UserQuery) loadAddresses(ctx context.Context, query *AddressQuery, nod
 			return fmt.Errorf(`unexpected referenced foreign-key "user_addresses" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadRole(ctx context.Context, query *RoleQuery, nodes []*User, init func(*User), assign func(*User, *Role)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*User)
+	for i := range nodes {
+		if nodes[i].role_user == nil {
+			continue
+		}
+		fk := *nodes[i].role_user
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(role.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "role_user" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }
