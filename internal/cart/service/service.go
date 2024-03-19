@@ -4,15 +4,17 @@ import (
 	"context"
 	"fmt"
 
+	repository "github.com/Sri2103/services/internal/cart/repo"
 	cart_pb "github.com/Sri2103/services/pkg/rpc/cart"
 )
 
 type service struct {
+	repo repository.Repository
 	cart_pb.UnimplementedCartServiceServer
 }
 
-func New() cart_pb.CartServiceServer {
-	return &service{}
+func New(r repository.Repository) cart_pb.CartServiceServer {
+	return &service{repo: r}
 }
 
 func (s *service) AddItem(ctx context.Context, req *cart_pb.AddItemRequest) (*cart_pb.AddItemResponse, error) {

@@ -3,15 +3,17 @@ package service
 import (
 	"context"
 
+	"github.com/Sri2103/services/internal/order/repository"
 	order_pb "github.com/Sri2103/services/pkg/rpc/order"
 )
 
 type orderImpl struct {
+	repo repository.Repository
 	order_pb.UnimplementedOrderServiceServer
 }
 
-func New() order_pb.OrderServiceServer {
-	return &orderImpl{}
+func New(r repository.Repository) order_pb.OrderServiceServer {
+	return &orderImpl{repo: r}
 }
 
 func (o *orderImpl) CreateOrder(context.Context, *order_pb.OrderRequest) (*order_pb.OrderResponse, error) {
