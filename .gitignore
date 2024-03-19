@@ -1,3 +1,4 @@
 .log
 logs/
 data/
+internal/ui/node_modules/*

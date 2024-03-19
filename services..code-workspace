@@ -20,6 +20,9 @@
     },
     {
       "path": "internal/user"
+    },
+    {
+      "path": "internal/ui"
     }
   ],
   "settings": {}
