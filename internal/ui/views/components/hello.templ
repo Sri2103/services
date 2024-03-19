@@ -4,8 +4,13 @@ import "github.com/Sri2103/services/internal/ui/views/layout"
 
 templ Hello() {
 	@layouts.BaseLayout() {
+		@NavBar()
 		<div>
 			<p>Hello</p>
+			<h1 class="px-4 text-lg">Hello Admin</h1>
+			<h2>Hello</h2>
 		</div>
+		@ProductCard()
+        
 	}
 }
