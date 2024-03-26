@@ -1,0 +1,54 @@
+package products_templ
+
+import "encoding/json"
+
+func convertToMap(s string) string {
+	data, _ := json.Marshal(map[string]string{"product_Id": s})
+	return string(data)
+}
+
+templ EditProductRow(productID string) {
+	<tr
+		class="bg-white border-b dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600"
+		id={ productID }
+		x-data={ convertToMap(productID) }
+	>
+		<td class="w-4 p-4">
+			<div class="flex items-center">
+				<input id="checkbox-table-3" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+				<label for="checkbox-table-3" class="sr-only">checkbox</label>
+			</div>
+		</td>
+		<th
+			scope="row"
+			class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+		>
+			<input
+				type="text"
+				x-bind:value="findProductById(product_Id).productName"
+				x-on:change="editName=$event.target.value"
+			/>
+		</th>
+		<td class="px-6 py-4">
+			<input
+				type="text"
+				x-bind:value="findProductById(product_Id).productColor"
+				x-on:change="editColor=$event.target.value"
+			/>
+		</td>
+		<td class="px-6 py-4">
+			<input
+				type="text"
+				x-bind:value="findProductById(product_Id).productPrice"
+				x-on:change="editPrice=$event.target.value"
+			/>
+		</td>
+		<td class="px-6 py-4">
+			<input type="text" x-bind:value="findProductById(product_Id).productCategory" x-on:change="editCategory=$event.target.value"/>
+		</td>
+		<td class="px-6 py-4">
+			<button class="font-medium text-blue-600 dark:text-blue-500 hover:underline pr-4" x-on:click="editProduct(product_Id)">cancel</button>
+			<button class="font-medium text-blue-600 dark:text-blue-500 hover:underline pl-4" x-on:click="saveProduct(product_Id)">Save</button>
+		</td>
+	</tr>
+}

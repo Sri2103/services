@@ -1,11 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 
-	"github.com/Sri2103/services/internal/ui/static"
+	"github.com/Sri2103/services/internal/ui/handlers"
 	"github.com/Sri2103/services/internal/ui/views/components"
-	"github.com/a-h/templ"
+	"github.com/angelofallars/htmx-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -13,9 +14,14 @@ import (
 func main() {
 	server := echo.New()
 	server.Use(middleware.Logger())
-
+	server.Static("/dist", "./dist")
+	server.Static("/static", "./static")
 	cmp := components.Hello()
-	static.RegisterStaticContent(server)
-	server.GET("/", echo.WrapHandler(templ.Handler(cmp)))
+	productHandlers := handlers.NewProductHandlers()
+	server.GET("/", func(c echo.Context) error {
+		ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "home")
+		return htmx.NewResponse().RenderTempl(ctx, c.Response().Writer, cmp)
+	})
+	productHandlers.SetProductRoutes(server)
 	log.Fatal(server.Start(":1102"))
 }

@@ -1,0 +1,21 @@
+package page
+
+import "github.com/Sri2103/services/internal/ui/views/layout"
+import "github.com/Sri2103/services/internal/ui/views/components"
+
+type ProductPage struct {
+	Products []components.Product
+}
+
+templ Product(productPage ProductPage) {
+	@layouts.BaseLayout() {
+		<div class="container flex flex-col mx-auto">
+			@components.NavBar()
+			<div class="flex justify-start">
+				@components.AddProduct()
+			</div>
+			@components.ProductsTable(productPage.Products)
+		</div>
+
+	}
+}
