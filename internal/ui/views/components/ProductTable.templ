@@ -3,11 +3,12 @@ package components
 import "encoding/json"
 
 type Product struct {
-	ProductId       string `json:"productId"`
-	ProductName     string `json:"productName"`
-	ProductColor    string `json:"productColor"`
-	ProductCategory string `json:"productCategory"`
-	ProductPrice    string `json:"productPrice"`
+	ProductId          string `json:"productId"`
+	ProductName        string `json:"productName"`
+	ProductColor       string `json:"productColor"`
+	ProductCategory    string `json:"productCategory"`
+	ProductPrice       string `json:"productPrice"`
+	ProductDescription string `json:"productDescription"`
 }
 
 func convertToJson(products []Product) string {
@@ -41,7 +42,7 @@ templ ProductsTable(products []Product) {
 								id="table-search"
 								class="block pt-2 text-sm text-gray-900 border border-gray-300 rounded-l-lg ps-10 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 								placeholder="Search for products"
-                                x-bind:disabled="!currentEditID"
+								x-bind:disabled="!currentEditID"
 							/>
 							<button
 								type="button"

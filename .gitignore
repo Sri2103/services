@@ -2,3 +2,7 @@
 logs/
 data/
 internal/ui/node_modules/*
+
+**/**.log
+# remove tmp folder
+internal/ui/tmp/

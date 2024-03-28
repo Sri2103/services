@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/Sri2103/services/internal/ui/config"
+	product_service "github.com/Sri2103/services/internal/ui/services/products"
 	"github.com/Sri2103/services/internal/ui/views/Alerts"
 	"github.com/Sri2103/services/internal/ui/views/components"
 	page "github.com/Sri2103/services/internal/ui/views/pages"
@@ -12,13 +15,19 @@ import (
 )
 
 type productHandlers struct {
+	service *product_service.ProductService
 }
 
-func NewProductHandlers() *productHandlers {
-	return &productHandlers{}
+func NewProductHandlers(cfg *config.AppConfig) *productHandlers {
+	fmt.Println(cfg.ApiServer.Port, cfg.ApiServer.Url)
+	service := product_service.New(cfg)
+	return &productHandlers{
+		service: service,
+	}
 }
 
 func (h *productHandlers) ProductPage(c echo.Context) error {
+	h.service.GetProducts()
 	ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "products")
 	var pr page.ProductPage = page.ProductPage{
 		Products: []components.Product{
@@ -35,6 +44,12 @@ func (h *productHandlers) ProductPage(c echo.Context) error {
 //
 // It takes an echo.Context parameter and returns an error.
 func (h *productHandlers) HandleAddProduct(c echo.Context) error {
+	var product components.Product
+	product.ProductName = c.FormValue("name")
+	product.ProductPrice = c.FormValue("price")
+	product.ProductColor = c.FormValue("color")
+	product.ProductCategory = c.FormValue("category")
+	product.ProductDescription = c.FormValue("description")
 	return htmx.NewResponse().
 		AddTrigger(htmx.Trigger("reload-table")).
 		RenderTempl(
