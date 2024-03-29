@@ -1,3 +1,5 @@
+import { uploadImages } from '../firebase'
+
 export default () => {
   // create data for the form field
 
@@ -19,36 +21,91 @@ export default () => {
     },
     /**
      * Submits the form data to the server using AJAX.
+     * @param {type} event - description of event parameter
      */
-    submit() {
-      console.log('$el', this.$el)
-      window.htmx
-        .ajax('POST', '/products/add', {
-          values: {
-            name: this.name,
-            price: this.price,
-            category: this.category,
-            description: this.description,
-          },
-          swap: 'none',
-        })
-        .then(() => {
+    async submit() {
+      const currentElement = this.$el
+      this.hide()
+      /**
+       * Handle response error event.
+       *
+       * @param {type} event - description of event parameter
+       */
+      function handleResponseError(event) {
+        if (event.target == currentElement && event.detail.xhr.status >= 399) {
+          window.Swal.fire({
+            title: 'Error',
+            text: event.detail.xhr.responseText['message'],
+            icon: 'error',
+            confirmButtonText: 'OK',
+          })
+        }
+      }
+      /**
+       * Handles the event after making a request.
+       *
+       * @param {Event} event - The event object
+       */
+      function handleAfterRequest(event) {
+        if (event.target == currentElement && !event.detail.failed) {
           window.Swal.fire({
             title: 'Success',
             text: 'Product added successfully',
             icon: 'success',
             confirmButtonText: 'OK',
           })
+        }
+        if (event.target == currentElement) {
+          document.removeEventListener(
+            'htmx:responseError',
+            handleResponseError
+          )
+        }
+      }
+      try {
+        document.addEventListener('htmx:responseError', handleResponseError)
+        document.addEventListener('htmx:afterRequest', handleAfterRequest, {
+          once: true,
         })
-        .catch((error) => {
+        const images = currentElement.getElementById('multiple_files')
+        const files = images.files
+        // Checks if there are any selected files in the input field
+        if (files.length === 0) {
           window.Swal.fire({
             title: 'Error',
-            text: error,
+            text: 'Please select a file',
             icon: 'error',
             confirmButtonText: 'OK',
           })
+          return
+        }
+        console.log(files, 'files to upload')
+        const str = await uploadImages(files[0])
+        console.log(str, 'download string')
+
+        const color = currentElement.getElementById('color').value
+
+        await window.htmx.ajax('POST', '/products/add', {
+          values: {
+            name: this.name,
+            price: this.price,
+            category: this.category,
+            description: this.description,
+            image: [str],
+            color: color,
+          },
+          source: this.$el,
+          swap: 'none',
         })
-        .finally(() => this.hide())
+      } catch (error) {
+        console.log(error, 'error from the ajax add product')
+        window.Swal.fire({
+          title: 'Error',
+          text: error,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        })
+      }
     },
   }
 }

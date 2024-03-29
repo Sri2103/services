@@ -39,7 +39,6 @@ func (p *productImpl) GetProduct(ctx context.Context, r *product_pb.GetProductRe
 	return &gr, nil
 }
 
-
 func (p *productImpl) ListProducts(ctx context.Context, _ *product_pb.ListProductsRequest) (*product_pb.ListProductsResponse, error) {
 	var lr product_pb.ListProductsResponse
 	products, err := p.repo.GetProductList(ctx)
@@ -52,6 +51,8 @@ func (p *productImpl) ListProducts(ctx context.Context, _ *product_pb.ListProduc
 			Name:        v.Name,
 			Description: v.Description,
 			Price:       float32(v.Price),
+			Images:      v.Images,
+			Colors:      v.Color,
 		})
 
 	}
@@ -73,6 +74,8 @@ func (p *productImpl) CreateProduct(ctx context.Context, r *product_pb.CreatePro
 		Name:        r.Product.Name,
 		Description: r.Product.Description,
 		Price:       float64(r.Product.Price),
+		Images:      r.Product.Images,
+		Color:       r.Product.Colors,
 	}
 	pC, err := p.repo.CreateProduct(ctx, &pr)
 	if err != nil {

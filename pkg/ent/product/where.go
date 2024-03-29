@@ -211,6 +211,16 @@ func DescriptionContainsFold(v string) predicate.Product {
 	return predicate.Product(sql.FieldContainsFold(FieldDescription, v))
 }
 
+// ColorIsNil applies the IsNil predicate on the "color" field.
+func ColorIsNil() predicate.Product {
+	return predicate.Product(sql.FieldIsNull(FieldColor))
+}
+
+// ColorNotNil applies the NotNil predicate on the "color" field.
+func ColorNotNil() predicate.Product {
+	return predicate.Product(sql.FieldNotNull(FieldColor))
+}
+
 // PriceEQ applies the EQ predicate on the "price" field.
 func PriceEQ(v float64) predicate.Product {
 	return predicate.Product(sql.FieldEQ(FieldPrice, v))
@@ -249,6 +259,16 @@ func PriceLT(v float64) predicate.Product {
 // PriceLTE applies the LTE predicate on the "price" field.
 func PriceLTE(v float64) predicate.Product {
 	return predicate.Product(sql.FieldLTE(FieldPrice, v))
+}
+
+// ImagesIsNil applies the IsNil predicate on the "images" field.
+func ImagesIsNil() predicate.Product {
+	return predicate.Product(sql.FieldIsNull(FieldImages))
+}
+
+// ImagesNotNil applies the NotNil predicate on the "images" field.
+func ImagesNotNil() predicate.Product {
+	return predicate.Product(sql.FieldNotNull(FieldImages))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

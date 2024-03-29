@@ -71,6 +71,12 @@ func (pu *ProductUpdate) AppendColor(s []string) *ProductUpdate {
 	return pu
 }
 
+// ClearColor clears the value of the "color" field.
+func (pu *ProductUpdate) ClearColor() *ProductUpdate {
+	pu.mutation.ClearColor()
+	return pu
+}
+
 // SetPrice sets the "price" field.
 func (pu *ProductUpdate) SetPrice(f float64) *ProductUpdate {
 	pu.mutation.ResetPrice()
@@ -101,6 +107,12 @@ func (pu *ProductUpdate) SetImages(s []string) *ProductUpdate {
 // AppendImages appends s to the "images" field.
 func (pu *ProductUpdate) AppendImages(s []string) *ProductUpdate {
 	pu.mutation.AppendImages(s)
+	return pu
+}
+
+// ClearImages clears the value of the "images" field.
+func (pu *ProductUpdate) ClearImages() *ProductUpdate {
+	pu.mutation.ClearImages()
 	return pu
 }
 
@@ -224,6 +236,9 @@ func (pu *ProductUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			sqljson.Append(u, product.FieldColor, value)
 		})
 	}
+	if pu.mutation.ColorCleared() {
+		_spec.ClearField(product.FieldColor, field.TypeJSON)
+	}
 	if value, ok := pu.mutation.Price(); ok {
 		_spec.SetField(product.FieldPrice, field.TypeFloat64, value)
 	}
@@ -237,6 +252,9 @@ func (pu *ProductUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, product.FieldImages, value)
 		})
+	}
+	if pu.mutation.ImagesCleared() {
+		_spec.ClearField(product.FieldImages, field.TypeJSON)
 	}
 	if value, ok := pu.mutation.CreatedAt(); ok {
 		_spec.SetField(product.FieldCreatedAt, field.TypeTime, value)
@@ -349,6 +367,12 @@ func (puo *ProductUpdateOne) AppendColor(s []string) *ProductUpdateOne {
 	return puo
 }
 
+// ClearColor clears the value of the "color" field.
+func (puo *ProductUpdateOne) ClearColor() *ProductUpdateOne {
+	puo.mutation.ClearColor()
+	return puo
+}
+
 // SetPrice sets the "price" field.
 func (puo *ProductUpdateOne) SetPrice(f float64) *ProductUpdateOne {
 	puo.mutation.ResetPrice()
@@ -379,6 +403,12 @@ func (puo *ProductUpdateOne) SetImages(s []string) *ProductUpdateOne {
 // AppendImages appends s to the "images" field.
 func (puo *ProductUpdateOne) AppendImages(s []string) *ProductUpdateOne {
 	puo.mutation.AppendImages(s)
+	return puo
+}
+
+// ClearImages clears the value of the "images" field.
+func (puo *ProductUpdateOne) ClearImages() *ProductUpdateOne {
+	puo.mutation.ClearImages()
 	return puo
 }
 
@@ -532,6 +562,9 @@ func (puo *ProductUpdateOne) sqlSave(ctx context.Context) (_node *Product, err e
 			sqljson.Append(u, product.FieldColor, value)
 		})
 	}
+	if puo.mutation.ColorCleared() {
+		_spec.ClearField(product.FieldColor, field.TypeJSON)
+	}
 	if value, ok := puo.mutation.Price(); ok {
 		_spec.SetField(product.FieldPrice, field.TypeFloat64, value)
 	}
@@ -545,6 +578,9 @@ func (puo *ProductUpdateOne) sqlSave(ctx context.Context) (_node *Product, err e
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, product.FieldImages, value)
 		})
+	}
+	if puo.mutation.ImagesCleared() {
+		_spec.ClearField(product.FieldImages, field.TypeJSON)
 	}
 	if value, ok := puo.mutation.CreatedAt(); ok {
 		_spec.SetField(product.FieldCreatedAt, field.TypeTime, value)

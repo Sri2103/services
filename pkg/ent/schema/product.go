@@ -21,9 +21,9 @@ func (Product) Fields() []ent.Field {
 			Default(uuid.New),
 		field.String("name"),
 		field.String("description"),
-		field.JSON("color", []string{}),
+		field.Strings("color").Optional(),
 		field.Float("price"),
-		field.JSON("images", []string{}),
+		field.Strings("images").Optional(),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").

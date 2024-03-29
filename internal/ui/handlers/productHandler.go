@@ -3,10 +3,10 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/Sri2103/services/internal/ui/config"
 	product_service "github.com/Sri2103/services/internal/ui/services/products"
-	"github.com/Sri2103/services/internal/ui/views/Alerts"
 	"github.com/Sri2103/services/internal/ui/views/components"
 	page "github.com/Sri2103/services/internal/ui/views/pages"
 	products_templ "github.com/Sri2103/services/internal/ui/views/products"
@@ -52,15 +52,12 @@ func (h *productHandlers) HandleAddProduct(c echo.Context) error {
 	product.ProductDescription = c.FormValue("description")
 	err := h.service.AddProduct(product)
 	if err != nil {
-		return echo.ErrBadRequest
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to add new product.", err.Error())
 	}
+
 	return htmx.NewResponse().
-		AddTrigger(htmx.Trigger("reload-table")).
-		RenderTempl(
-			c.Request().Context(),
-			c.Response().Writer,
-			Alerts.SuccessAlert("Product added successfully"),
-		)
+		AddTrigger(htmx.Trigger("reload-table")).Write(nil)
+
 }
 
 func (h *productHandlers) HandleTableRequest(c echo.Context) error {

@@ -12,14 +12,12 @@ message Product {
   string imageLink = 3;
   string description = 4;
   repeated string images = 5;
-  repeated Color colors = 6;
+  repeated string colors = 6;
   float price = 7;
 }
 
 // Request message for getting a product by ID.
 message GetProductRequest { string id = 1; }
-
-message Color { string id = 1; }
 
 // Response message for getting a product by ID.
 message GetProductResponse { Product product = 1; }

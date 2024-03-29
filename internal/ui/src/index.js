@@ -14,5 +14,9 @@ Alpine.data('addProduct', addProduct)
 
 window.htmx = require('htmx.org')
 
+// document.addEventListener('htmx:responseError', (e) => {
+//   console.log('htmx:responseError', e)
+// })
+
 Alpine.plugin(focus)
 Alpine.start()

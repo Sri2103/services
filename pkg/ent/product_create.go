@@ -166,14 +166,8 @@ func (pc *ProductCreate) check() error {
 	if _, ok := pc.mutation.Description(); !ok {
 		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Product.description"`)}
 	}
-	if _, ok := pc.mutation.Color(); !ok {
-		return &ValidationError{Name: "color", err: errors.New(`ent: missing required field "Product.color"`)}
-	}
 	if _, ok := pc.mutation.Price(); !ok {
 		return &ValidationError{Name: "price", err: errors.New(`ent: missing required field "Product.price"`)}
-	}
-	if _, ok := pc.mutation.Images(); !ok {
-		return &ValidationError{Name: "images", err: errors.New(`ent: missing required field "Product.images"`)}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Product.created_at"`)}

@@ -48,11 +48,16 @@ func (d *dbImpl) GetProductList(ctx context.Context) ([]*ent.Product, error) {
 }
 
 func (d *dbImpl) CreateProduct(ctx context.Context, p *ent.Product) (*ent.Product, error) {
-	created, err := d.client.Create().SetName(p.Name).SetPrice(p.Price).SetDescription(p.Description).Save(ctx)
+	created, err := d.client.Create().
+		SetName(p.Name).
+		SetPrice(p.Price).
+		SetDescription(p.Description).
+		SetColor(p.Color).
+		SetImages(p.Images).
+		Save(ctx)
 	if err != nil {
-		
+
 		return nil, err
 	}
 	return created, nil
 }
-
