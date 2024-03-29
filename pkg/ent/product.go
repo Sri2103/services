@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -22,8 +23,12 @@ type Product struct {
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// Color holds the value of the "color" field.
+	Color []string `json:"color,omitempty"`
 	// Price holds the value of the "price" field.
 	Price float64 `json:"price,omitempty"`
+	// Images holds the value of the "images" field.
+	Images []string `json:"images,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -59,6 +64,8 @@ func (*Product) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case product.FieldColor, product.FieldImages:
+			values[i] = new([]byte)
 		case product.FieldPrice:
 			values[i] = new(sql.NullFloat64)
 		case product.FieldName, product.FieldDescription:
@@ -104,11 +111,27 @@ func (pr *Product) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pr.Description = value.String
 			}
+		case product.FieldColor:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field color", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pr.Color); err != nil {
+					return fmt.Errorf("unmarshal field color: %w", err)
+				}
+			}
 		case product.FieldPrice:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field price", values[i])
 			} else if value.Valid {
 				pr.Price = value.Float64
+			}
+		case product.FieldImages:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field images", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pr.Images); err != nil {
+					return fmt.Errorf("unmarshal field images: %w", err)
+				}
 			}
 		case product.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -183,8 +206,14 @@ func (pr *Product) String() string {
 	builder.WriteString("description=")
 	builder.WriteString(pr.Description)
 	builder.WriteString(", ")
+	builder.WriteString("color=")
+	builder.WriteString(fmt.Sprintf("%v", pr.Color))
+	builder.WriteString(", ")
 	builder.WriteString("price=")
 	builder.WriteString(fmt.Sprintf("%v", pr.Price))
+	builder.WriteString(", ")
+	builder.WriteString("images=")
+	builder.WriteString(fmt.Sprintf("%v", pr.Images))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(pr.CreatedAt.Format(time.ANSIC))

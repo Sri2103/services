@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/Sri2103/services/pkg/ent/category"
 	"github.com/Sri2103/services/pkg/ent/predicate"
@@ -58,6 +59,18 @@ func (pu *ProductUpdate) SetNillableDescription(s *string) *ProductUpdate {
 	return pu
 }
 
+// SetColor sets the "color" field.
+func (pu *ProductUpdate) SetColor(s []string) *ProductUpdate {
+	pu.mutation.SetColor(s)
+	return pu
+}
+
+// AppendColor appends s to the "color" field.
+func (pu *ProductUpdate) AppendColor(s []string) *ProductUpdate {
+	pu.mutation.AppendColor(s)
+	return pu
+}
+
 // SetPrice sets the "price" field.
 func (pu *ProductUpdate) SetPrice(f float64) *ProductUpdate {
 	pu.mutation.ResetPrice()
@@ -76,6 +89,18 @@ func (pu *ProductUpdate) SetNillablePrice(f *float64) *ProductUpdate {
 // AddPrice adds f to the "price" field.
 func (pu *ProductUpdate) AddPrice(f float64) *ProductUpdate {
 	pu.mutation.AddPrice(f)
+	return pu
+}
+
+// SetImages sets the "images" field.
+func (pu *ProductUpdate) SetImages(s []string) *ProductUpdate {
+	pu.mutation.SetImages(s)
+	return pu
+}
+
+// AppendImages appends s to the "images" field.
+func (pu *ProductUpdate) AppendImages(s []string) *ProductUpdate {
+	pu.mutation.AppendImages(s)
 	return pu
 }
 
@@ -191,11 +216,27 @@ func (pu *ProductUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.Description(); ok {
 		_spec.SetField(product.FieldDescription, field.TypeString, value)
 	}
+	if value, ok := pu.mutation.Color(); ok {
+		_spec.SetField(product.FieldColor, field.TypeJSON, value)
+	}
+	if value, ok := pu.mutation.AppendedColor(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, product.FieldColor, value)
+		})
+	}
 	if value, ok := pu.mutation.Price(); ok {
 		_spec.SetField(product.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := pu.mutation.AddedPrice(); ok {
 		_spec.AddField(product.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := pu.mutation.Images(); ok {
+		_spec.SetField(product.FieldImages, field.TypeJSON, value)
+	}
+	if value, ok := pu.mutation.AppendedImages(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, product.FieldImages, value)
+		})
 	}
 	if value, ok := pu.mutation.CreatedAt(); ok {
 		_spec.SetField(product.FieldCreatedAt, field.TypeTime, value)
@@ -296,6 +337,18 @@ func (puo *ProductUpdateOne) SetNillableDescription(s *string) *ProductUpdateOne
 	return puo
 }
 
+// SetColor sets the "color" field.
+func (puo *ProductUpdateOne) SetColor(s []string) *ProductUpdateOne {
+	puo.mutation.SetColor(s)
+	return puo
+}
+
+// AppendColor appends s to the "color" field.
+func (puo *ProductUpdateOne) AppendColor(s []string) *ProductUpdateOne {
+	puo.mutation.AppendColor(s)
+	return puo
+}
+
 // SetPrice sets the "price" field.
 func (puo *ProductUpdateOne) SetPrice(f float64) *ProductUpdateOne {
 	puo.mutation.ResetPrice()
@@ -314,6 +367,18 @@ func (puo *ProductUpdateOne) SetNillablePrice(f *float64) *ProductUpdateOne {
 // AddPrice adds f to the "price" field.
 func (puo *ProductUpdateOne) AddPrice(f float64) *ProductUpdateOne {
 	puo.mutation.AddPrice(f)
+	return puo
+}
+
+// SetImages sets the "images" field.
+func (puo *ProductUpdateOne) SetImages(s []string) *ProductUpdateOne {
+	puo.mutation.SetImages(s)
+	return puo
+}
+
+// AppendImages appends s to the "images" field.
+func (puo *ProductUpdateOne) AppendImages(s []string) *ProductUpdateOne {
+	puo.mutation.AppendImages(s)
 	return puo
 }
 
@@ -459,11 +524,27 @@ func (puo *ProductUpdateOne) sqlSave(ctx context.Context) (_node *Product, err e
 	if value, ok := puo.mutation.Description(); ok {
 		_spec.SetField(product.FieldDescription, field.TypeString, value)
 	}
+	if value, ok := puo.mutation.Color(); ok {
+		_spec.SetField(product.FieldColor, field.TypeJSON, value)
+	}
+	if value, ok := puo.mutation.AppendedColor(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, product.FieldColor, value)
+		})
+	}
 	if value, ok := puo.mutation.Price(); ok {
 		_spec.SetField(product.FieldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := puo.mutation.AddedPrice(); ok {
 		_spec.AddField(product.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := puo.mutation.Images(); ok {
+		_spec.SetField(product.FieldImages, field.TypeJSON, value)
+	}
+	if value, ok := puo.mutation.AppendedImages(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, product.FieldImages, value)
+		})
 	}
 	if value, ok := puo.mutation.CreatedAt(); ok {
 		_spec.SetField(product.FieldCreatedAt, field.TypeTime, value)

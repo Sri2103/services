@@ -19,8 +19,12 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldColor holds the string denoting the color field in the database.
+	FieldColor = "color"
 	// FieldPrice holds the string denoting the price field in the database.
 	FieldPrice = "price"
+	// FieldImages holds the string denoting the images field in the database.
+	FieldImages = "images"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -41,7 +45,9 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldDescription,
+	FieldColor,
 	FieldPrice,
+	FieldImages,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }

@@ -5,6 +5,7 @@ import focus from '@alpinejs/focus'
 import addProduct from './productHandling/addProduct'
 import productTable from './productHandling/productTable'
 import Swal from 'sweetalert2'
+
 // import 'htmx.org'
 window.Alpine = Alpine
 window.Swal = Swal

@@ -34,9 +34,21 @@ func (pc *ProductCreate) SetDescription(s string) *ProductCreate {
 	return pc
 }
 
+// SetColor sets the "color" field.
+func (pc *ProductCreate) SetColor(s []string) *ProductCreate {
+	pc.mutation.SetColor(s)
+	return pc
+}
+
 // SetPrice sets the "price" field.
 func (pc *ProductCreate) SetPrice(f float64) *ProductCreate {
 	pc.mutation.SetPrice(f)
+	return pc
+}
+
+// SetImages sets the "images" field.
+func (pc *ProductCreate) SetImages(s []string) *ProductCreate {
+	pc.mutation.SetImages(s)
 	return pc
 }
 
@@ -154,8 +166,14 @@ func (pc *ProductCreate) check() error {
 	if _, ok := pc.mutation.Description(); !ok {
 		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Product.description"`)}
 	}
+	if _, ok := pc.mutation.Color(); !ok {
+		return &ValidationError{Name: "color", err: errors.New(`ent: missing required field "Product.color"`)}
+	}
 	if _, ok := pc.mutation.Price(); !ok {
 		return &ValidationError{Name: "price", err: errors.New(`ent: missing required field "Product.price"`)}
+	}
+	if _, ok := pc.mutation.Images(); !ok {
+		return &ValidationError{Name: "images", err: errors.New(`ent: missing required field "Product.images"`)}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Product.created_at"`)}
@@ -206,9 +224,17 @@ func (pc *ProductCreate) createSpec() (*Product, *sqlgraph.CreateSpec) {
 		_spec.SetField(product.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
+	if value, ok := pc.mutation.Color(); ok {
+		_spec.SetField(product.FieldColor, field.TypeJSON, value)
+		_node.Color = value
+	}
 	if value, ok := pc.mutation.Price(); ok {
 		_spec.SetField(product.FieldPrice, field.TypeFloat64, value)
 		_node.Price = value
+	}
+	if value, ok := pc.mutation.Images(); ok {
+		_spec.SetField(product.FieldImages, field.TypeJSON, value)
+		_node.Images = value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.SetField(product.FieldCreatedAt, field.TypeTime, value)

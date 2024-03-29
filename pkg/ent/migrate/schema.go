@@ -139,7 +139,9 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString},
+		{Name: "color", Type: field.TypeJSON},
 		{Name: "price", Type: field.TypeFloat64},
+		{Name: "images", Type: field.TypeJSON},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "cart_item_product", Type: field.TypeUUID, Nullable: true},
@@ -153,13 +155,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "products_cart_items_product",
-				Columns:    []*schema.Column{ProductsColumns[6]},
+				Columns:    []*schema.Column{ProductsColumns[8]},
 				RefColumns: []*schema.Column{CartItemsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "products_order_items_product",
-				Columns:    []*schema.Column{ProductsColumns[7]},
+				Columns:    []*schema.Column{ProductsColumns[9]},
 				RefColumns: []*schema.Column{OrderItemsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

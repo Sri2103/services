@@ -21,6 +21,7 @@ export default () => {
      * Submits the form data to the server using AJAX.
      */
     submit() {
+      console.log('$el', this.$el)
       window.htmx
         .ajax('POST', '/products/add', {
           values: {

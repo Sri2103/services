@@ -37,6 +37,7 @@
   "dependencies": {
     "@alpinejs/focus": "^3.13.7",
     "alpinejs": "^3.13.7",
+    "firebase": "^10.10.0",
     "flowbite": "^2.3.0",
     "htmx.org": "^1.9.11",
     "sweetalert": "^2.1.2",

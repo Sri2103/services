@@ -3763,8 +3763,12 @@ type ProductMutation struct {
 	id              *uuid.UUID
 	name            *string
 	description     *string
+	color           *[]string
+	appendcolor     []string
 	price           *float64
 	addprice        *float64
+	images          *[]string
+	appendimages    []string
 	created_at      *time.Time
 	updated_at      *time.Time
 	clearedFields   map[string]struct{}
@@ -3952,6 +3956,57 @@ func (m *ProductMutation) ResetDescription() {
 	m.description = nil
 }
 
+// SetColor sets the "color" field.
+func (m *ProductMutation) SetColor(s []string) {
+	m.color = &s
+	m.appendcolor = nil
+}
+
+// Color returns the value of the "color" field in the mutation.
+func (m *ProductMutation) Color() (r []string, exists bool) {
+	v := m.color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldColor returns the old "color" field's value of the Product entity.
+// If the Product object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProductMutation) OldColor(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldColor: %w", err)
+	}
+	return oldValue.Color, nil
+}
+
+// AppendColor adds s to the "color" field.
+func (m *ProductMutation) AppendColor(s []string) {
+	m.appendcolor = append(m.appendcolor, s...)
+}
+
+// AppendedColor returns the list of values that were appended to the "color" field in this mutation.
+func (m *ProductMutation) AppendedColor() ([]string, bool) {
+	if len(m.appendcolor) == 0 {
+		return nil, false
+	}
+	return m.appendcolor, true
+}
+
+// ResetColor resets all changes to the "color" field.
+func (m *ProductMutation) ResetColor() {
+	m.color = nil
+	m.appendcolor = nil
+}
+
 // SetPrice sets the "price" field.
 func (m *ProductMutation) SetPrice(f float64) {
 	m.price = &f
@@ -4006,6 +4061,57 @@ func (m *ProductMutation) AddedPrice() (r float64, exists bool) {
 func (m *ProductMutation) ResetPrice() {
 	m.price = nil
 	m.addprice = nil
+}
+
+// SetImages sets the "images" field.
+func (m *ProductMutation) SetImages(s []string) {
+	m.images = &s
+	m.appendimages = nil
+}
+
+// Images returns the value of the "images" field in the mutation.
+func (m *ProductMutation) Images() (r []string, exists bool) {
+	v := m.images
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImages returns the old "images" field's value of the Product entity.
+// If the Product object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProductMutation) OldImages(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImages is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImages requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImages: %w", err)
+	}
+	return oldValue.Images, nil
+}
+
+// AppendImages adds s to the "images" field.
+func (m *ProductMutation) AppendImages(s []string) {
+	m.appendimages = append(m.appendimages, s...)
+}
+
+// AppendedImages returns the list of values that were appended to the "images" field in this mutation.
+func (m *ProductMutation) AppendedImages() ([]string, bool) {
+	if len(m.appendimages) == 0 {
+		return nil, false
+	}
+	return m.appendimages, true
+}
+
+// ResetImages resets all changes to the "images" field.
+func (m *ProductMutation) ResetImages() {
+	m.images = nil
+	m.appendimages = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -4168,15 +4274,21 @@ func (m *ProductMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProductMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 7)
 	if m.name != nil {
 		fields = append(fields, product.FieldName)
 	}
 	if m.description != nil {
 		fields = append(fields, product.FieldDescription)
 	}
+	if m.color != nil {
+		fields = append(fields, product.FieldColor)
+	}
 	if m.price != nil {
 		fields = append(fields, product.FieldPrice)
+	}
+	if m.images != nil {
+		fields = append(fields, product.FieldImages)
 	}
 	if m.created_at != nil {
 		fields = append(fields, product.FieldCreatedAt)
@@ -4196,8 +4308,12 @@ func (m *ProductMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case product.FieldDescription:
 		return m.Description()
+	case product.FieldColor:
+		return m.Color()
 	case product.FieldPrice:
 		return m.Price()
+	case product.FieldImages:
+		return m.Images()
 	case product.FieldCreatedAt:
 		return m.CreatedAt()
 	case product.FieldUpdatedAt:
@@ -4215,8 +4331,12 @@ func (m *ProductMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldName(ctx)
 	case product.FieldDescription:
 		return m.OldDescription(ctx)
+	case product.FieldColor:
+		return m.OldColor(ctx)
 	case product.FieldPrice:
 		return m.OldPrice(ctx)
+	case product.FieldImages:
+		return m.OldImages(ctx)
 	case product.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case product.FieldUpdatedAt:
@@ -4244,12 +4364,26 @@ func (m *ProductMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDescription(v)
 		return nil
+	case product.FieldColor:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetColor(v)
+		return nil
 	case product.FieldPrice:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPrice(v)
+		return nil
+	case product.FieldImages:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImages(v)
 		return nil
 	case product.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -4335,8 +4469,14 @@ func (m *ProductMutation) ResetField(name string) error {
 	case product.FieldDescription:
 		m.ResetDescription()
 		return nil
+	case product.FieldColor:
+		m.ResetColor()
+		return nil
 	case product.FieldPrice:
 		m.ResetPrice()
+		return nil
+	case product.FieldImages:
+		m.ResetImages()
 		return nil
 	case product.FieldCreatedAt:
 		m.ResetCreatedAt()

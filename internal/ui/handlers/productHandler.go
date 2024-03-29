@@ -50,6 +50,10 @@ func (h *productHandlers) HandleAddProduct(c echo.Context) error {
 	product.ProductColor = c.FormValue("color")
 	product.ProductCategory = c.FormValue("category")
 	product.ProductDescription = c.FormValue("description")
+	err := h.service.AddProduct(product)
+	if err != nil {
+		return echo.ErrBadRequest
+	}
 	return htmx.NewResponse().
 		AddTrigger(htmx.Trigger("reload-table")).
 		RenderTempl(

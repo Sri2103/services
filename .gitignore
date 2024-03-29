@@ -6,3 +6,4 @@ internal/ui/node_modules/*
 **/**.log
 # remove tmp folder
 internal/ui/tmp/
+internal/ui/dist/

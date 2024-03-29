@@ -3,25 +3,26 @@ syntax = "proto3";
 
 package product;
 
-option  go_package="github.com/Sri2103/services/pkg/rpc/product";
+option go_package = "github.com/Sri2103/services/pkg/rpc/product";
 
 // Message defining a product.
 message Product {
   string id = 1;
   string name = 2;
-  string description = 3;
-  float price = 4;
+  string imageLink = 3;
+  string description = 4;
+  repeated string images = 5;
+  repeated Color colors = 6;
+  float price = 7;
 }
 
 // Request message for getting a product by ID.
-message GetProductRequest {
-  string id = 1;
-}
+message GetProductRequest { string id = 1; }
+
+message Color { string id = 1; }
 
 // Response message for getting a product by ID.
-message GetProductResponse {
-  Product product = 1;
-}
+message GetProductResponse { Product product = 1; }
 
 // Request message for listing products.
 message ListProductsRequest {
@@ -29,27 +30,21 @@ message ListProductsRequest {
   int32 results_per_page = 3;
 }
 
-message CreateProductRequest {
-    Product product = 1;
-}
+message CreateProductRequest { Product product = 1; }
 
-message CreateProductResponse {
-    Product product = 1;
-}
+message CreateProductResponse { Product product = 1; }
 
 // Response message for listing products.
-message ListProductsResponse {
-  repeated Product products = 1;
-}
+message ListProductsResponse { repeated Product products = 1; }
 
 // Service defining the product-related RPCs.
 service ProductService {
   // Gets a product by ID.
-  rpc GetProduct (GetProductRequest) returns (GetProductResponse);
-  
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse);
+
   // Lists products.
-  rpc ListProducts (ListProductsRequest) returns (ListProductsResponse);
+  rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
 
   // Create product
-  rpc  CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
 }
