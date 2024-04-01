@@ -47,6 +47,7 @@ export default (products) => {
     },
     editProduct(productId) {
       this.currentEditID = productId
+      console.log(productId, 'editProduct')
 
       window.htmx.ajax('GET', `/products/edit/${productId}`, {
         target: `#${productId}`,

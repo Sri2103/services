@@ -93,3 +93,33 @@ func (p *productImpl) CreateProduct(ctx context.Context, r *product_pb.CreatePro
 
 	return &res, nil
 }
+
+// update products
+func (p *productImpl) UpdateProduct(ctx context.Context, r *product_pb.UpdateProductRequest) (*product_pb.UpdateProductResponse, error) {
+	var res product_pb.UpdateProductResponse
+	id, err := uuid.Parse(r.Product.Id)
+	if err != nil {
+		return nil, err
+	}
+	pr := ent.Product{
+		ID:          id,
+		Name:        r.Product.Name,
+		Description: r.Product.Description,
+		Price:       float64(r.Product.Price),
+		Images:      r.Product.Images,
+		Color:       r.Product.Colors,
+	}
+	pC, err := p.repo.UpdateProduct(ctx, &pr)
+	if err != nil {
+		return nil, err
+	}
+	res.Product = &product_pb.Product{
+		Id:          pC.ID.String(),
+		Name:        pC.Name,
+		Description: pC.Description,
+		Price:       float32(pC.Price),
+		Images:      pC.Images,
+		Colors:      pC.Color,
+	}
+	return &res, nil
+}

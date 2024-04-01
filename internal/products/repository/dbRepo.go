@@ -61,3 +61,18 @@ func (d *dbImpl) CreateProduct(ctx context.Context, p *ent.Product) (*ent.Produc
 	}
 	return created, nil
 }
+
+func (d *dbImpl) UpdateProduct(ctx context.Context, p *ent.Product) (*ent.Product, error) {
+
+	updated, err := d.client.UpdateOneID(p.ID).
+		SetName(p.Name).
+		SetPrice(p.Price).
+		SetDescription(p.Description).
+		SetColor(p.Color).
+		SetImages(p.Images).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return updated, nil
+}

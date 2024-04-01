@@ -72,3 +72,24 @@ func (h *handlers) CreateProduct(c echo.Context) error {
 	return c.JSON(http.StatusCreated, resp.Product)
 
 }
+
+// update Product
+func (h *handlers) UpdateProduct(c echo.Context) error {
+	var pC product.Product
+	if err := c.Bind(&pC); err != nil {
+		fmt.Println(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid data format")
+	}
+	pC.Id = c.Param("id")
+	var ctx = c.Request().Context()
+	resp, err := h.ProductClient.UpdateProduct(ctx, &product.UpdateProductRequest{
+		Product: &pC,
+	})
+	if err != nil {
+		fmt.Println(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to process request")
+	}
+	return c.JSON(http.StatusCreated, resp.Product)
+}
+
+

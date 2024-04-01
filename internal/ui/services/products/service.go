@@ -18,6 +18,7 @@ type service struct {
 type ProductService interface {
 	GetProducts() ([]components.Product, error)
 	AddProduct(product components.Product) error
+	UpdateProduct(id string, product components.Product) (components.Product, error)
 }
 
 func New(cfg *config.AppConfig) ProductService {
@@ -80,4 +81,34 @@ func (s *service) AddProduct(p components.Product) error {
 	}
 
 	return nil
+}
+
+// Update product
+func (s *service) UpdateProduct(id string, p components.Product) (components.Product, error) {
+	price, err := strconv.Atoi(p.ProductPrice)
+	if err != nil {
+		return components.Product{}, err
+	}
+
+	product := Product{
+		Id:          id,
+		Name:        p.ProductName,
+		Description: p.ProductPrice,
+		Price:       float32(price),
+		Images:      p.ProductImages,
+		Colors:      p.ProductColor,
+	}
+
+	updateReq := s.AllClients.ProductClient.NewRequest().SetBody(product)
+	res, err := updateReq.Put("")
+	if err != nil {
+		return components.Product{}, err
+	}
+	if res.IsError() {
+		return components.Product{}, fmt.Errorf("%v", res.StatusCode())
+	}
+	var updatedProduct Product
+	err = json.Unmarshal(res.Body(), &updatedProduct)
+
+	return convertToComponentModal(updatedProduct), nil
 }

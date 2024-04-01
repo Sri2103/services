@@ -96,13 +96,17 @@ func (h *productHandlers) SendEditTableRowForm(c echo.Context) error {
 // sendSaved Product
 func (h *productHandlers) SaveEditedProduct(c echo.Context) error {
 	if htmx.IsHTMX(c.Request()) {
-		var pr components.Product
-		pr.ProductId = c.FormValue("productId")
-		pr.ProductCategory = c.FormValue("productCategory")
-		pr.ProductName = c.FormValue("productName")
-		pr.ProductPrice = c.FormValue("productPrice")
-		productColor := c.FormValue("productColor")
-		pr.ProductColor = []string{productColor}
+		product := components.Product{
+			ProductId:       c.FormValue("productId"),
+			ProductName:     c.FormValue("productName"),
+			ProductPrice:    c.FormValue("productPrice"),
+			ProductColor:    []string{c.FormValue("productColor")},
+			ProductCategory: c.FormValue("productCategory"),
+		}
+		pr, err := h.service.UpdateProduct(product.ProductId, product)
+		if err != nil {
+			return echo.NewHTTPError(500, "Could not update product", err)
+		}
 		tpl := products_templ.SavedProductRow(pr)
 		return htmx.NewResponse().
 			RenderTempl(c.Request().Context(), c.Response().Writer, tpl)

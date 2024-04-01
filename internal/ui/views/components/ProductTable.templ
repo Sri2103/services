@@ -103,7 +103,6 @@ templ ProductsTable(products []Product) {
 									<button
 										class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
 										x-on:click="editProduct(product.productId)"
-										x-bind:disabled="currentEditID && product.productId !== currentEditID"
 									>Edit</button>
 								</td>
 							</tr>

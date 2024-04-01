@@ -83,7 +83,6 @@ export default () => {
         console.log(str, 'download string')
 
         const colorElement = document.getElementById('color')
-        console.log(colorElement, 'color element')
         const colorValue = colorElement.value
 
         await window.htmx.ajax('POST', '/products/add', {

@@ -34,6 +34,11 @@ message CreateProductResponse { Product product = 1; }
 // Response message for listing products.
 message ListProductsResponse { repeated Product products = 1; }
 
+// Request message for updating a product.
+message UpdateProductRequest { Product product = 1; }
+
+// Response message for updating a product.
+message UpdateProductResponse { Product product = 1; }
 // Service defining the product-related RPCs.
 service ProductService {
   // Gets a product by ID.
@@ -44,4 +49,7 @@ service ProductService {
 
   // Create product
   rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+
+  //   Update product
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse);
 }

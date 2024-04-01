@@ -39,3 +39,6 @@ func (d *data) CreateProduct(ctx context.Context, p *ent.Product) (*ent.Product,
 	panic("not implemented")
 }
 
+func (d *data) UpdateProduct(ctx context.Context, p *ent.Product) (*ent.Product, error) {
+	panic("not implemented")
+}

@@ -22,3 +22,8 @@ func (m *mockProductService) AddProduct(product components.Product) error {
 
 	return nil
 }
+
+func (m *mockProductService) UpdateProduct(id string, product components.Product) (components.Product, error) {
+	var updatedProduct components.Product
+	return updatedProduct, nil
+}
