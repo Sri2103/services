@@ -87,6 +87,8 @@ func (p *productImpl) CreateProduct(ctx context.Context, r *product_pb.CreatePro
 		Name:        pC.Name,
 		Description: pC.Description,
 		Price:       float32(pC.Price),
+		Images:      pC.Images,
+		Colors:      pC.Color,
 	}
 
 	return &res, nil

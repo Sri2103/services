@@ -76,9 +76,8 @@ export async function uploadImages(file) {
   const url = uploadTask
     .then((snapshot) => {
       const url = getDownloadURL(snapshot.ref).then((url) => {
-        downloadURL = url
-        console.log('File available at', downloadURL)
-        return downloadURL
+        console.log('File available at', url)
+        return url
       })
       return url
     })

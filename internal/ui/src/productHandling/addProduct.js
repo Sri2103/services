@@ -25,7 +25,6 @@ export default () => {
      */
     async submit() {
       const currentElement = this.$el
-      this.hide()
       /**
        * Handle response error event.
        *
@@ -67,7 +66,7 @@ export default () => {
         document.addEventListener('htmx:afterRequest', handleAfterRequest, {
           once: true,
         })
-        const images = currentElement.getElementById('multiple_files')
+        const images = document.getElementById('multiple_files')
         const files = images.files
         // Checks if there are any selected files in the input field
         if (files.length === 0) {
@@ -83,7 +82,9 @@ export default () => {
         const str = await uploadImages(files[0])
         console.log(str, 'download string')
 
-        const color = currentElement.getElementById('color').value
+        const colorElement = document.getElementById('color')
+        console.log(colorElement, 'color element')
+        const colorValue = colorElement.value
 
         await window.htmx.ajax('POST', '/products/add', {
           values: {
@@ -92,7 +93,7 @@ export default () => {
             category: this.category,
             description: this.description,
             image: [str],
-            color: color,
+            color: colorValue,
           },
           source: this.$el,
           swap: 'none',
@@ -106,6 +107,7 @@ export default () => {
           confirmButtonText: 'OK',
         })
       }
+      this.hide()
     },
   }
 }

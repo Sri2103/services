@@ -3,12 +3,13 @@ package components
 import "encoding/json"
 
 type Product struct {
-	ProductId          string `json:"productId"`
-	ProductName        string `json:"productName"`
-	ProductColor       string `json:"productColor"`
-	ProductCategory    string `json:"productCategory"`
-	ProductPrice       string `json:"productPrice"`
-	ProductDescription string `json:"productDescription"`
+	ProductId          string   `json:"productId"`
+	ProductName        string   `json:"productName"`
+	ProductColor       []string `json:"productColor"`
+	ProductCategory    string   `json:"productCategory"`
+	ProductPrice       string   `json:"productPrice"`
+	ProductDescription string   `json:"productDescription"`
+	ProductImages      []string `json:"productImages"`
 }
 
 func convertToJson(products []Product) string {
@@ -65,7 +66,7 @@ templ ProductsTable(products []Product) {
 								Product name
 							</th>
 							<th scope="col" class="px-6 py-3">
-								Color
+								Primary Color
 							</th>
 							<th scope="col" class="px-6 py-3">
 								Category

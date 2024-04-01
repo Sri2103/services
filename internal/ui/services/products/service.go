@@ -1,6 +1,7 @@
 package product_service
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -10,31 +11,54 @@ import (
 	"github.com/Sri2103/services/internal/ui/views/components"
 )
 
-type ProductService struct {
+type service struct {
 	AllClients *client.ClientAggregator
 }
 
-func New(cfg *config.AppConfig) *ProductService {
-	return &ProductService{
-		AllClients: client.AllClients(client.New(cfg)),
+type ProductService interface {
+	GetProducts() ([]components.Product, error)
+	AddProduct(product components.Product) error
+}
+
+func New(cfg *config.AppConfig) ProductService {
+
+	switch cfg.DevConfig.UseApi {
+	case false:
+		return NewMockService()
+
+	case true:
+		return &service{
+			AllClients: client.AllClients(client.New(cfg)),
+		}
+	default:
+		return nil
 	}
 }
 
 // Get all products
-func (s *ProductService) GetProducts() error {
+func (s *service) GetProducts() ([]components.Product, error) {
 	req := s.AllClients.ProductClient.NewRequest()
 	res, err := req.Get("/all")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if res.IsError() {
-		return errors.New(res.String())
+		return nil, errors.New(res.String())
 	}
-	fmt.Println("Products: ", res.String())
-	return nil
+	var data []Product
+	err = json.Unmarshal(res.Body(), &data)
+	if err != nil {
+		return nil, fmt.Errorf("cannot marshall the data" + err.Error())
+	}
+	fmt.Println("Products: ", data)
+	products := make([]components.Product, len(data))
+	for i, v := range data {
+		products[i] = convertToComponentModal(v)
+	}
+	return products, nil
 }
 
-func (s *ProductService) AddProduct(p components.Product) error {
+func (s *service) AddProduct(p components.Product) error {
 	price, err := strconv.Atoi(p.ProductPrice)
 	if err != nil {
 		return err
@@ -44,6 +68,8 @@ func (s *ProductService) AddProduct(p components.Product) error {
 		Name:        p.ProductName,
 		Description: p.ProductPrice,
 		Price:       float32(price),
+		Images:      p.ProductImages,
+		Colors:      p.ProductColor,
 	})
 	res, err := req.Post("")
 	if err != nil {
@@ -52,7 +78,6 @@ func (s *ProductService) AddProduct(p components.Product) error {
 	if res.IsError() {
 		return fmt.Errorf("%v", res.StatusCode())
 	}
-	fmt.Println(res.String())
 
 	return nil
 }

@@ -9,11 +9,10 @@ option go_package = "github.com/Sri2103/services/pkg/rpc/product";
 message Product {
   string id = 1;
   string name = 2;
-  string imageLink = 3;
-  string description = 4;
-  repeated string images = 5;
-  repeated string colors = 6;
-  float price = 7;
+  string description = 3;
+  repeated string images = 4;
+  repeated string colors = 5;
+  float price = 6;
 }
 
 // Request message for getting a product by ID.

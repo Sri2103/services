@@ -15,7 +15,7 @@ import (
 )
 
 type productHandlers struct {
-	service *product_service.ProductService
+	service product_service.ProductService
 }
 
 func NewProductHandlers(cfg *config.AppConfig) *productHandlers {
@@ -27,16 +27,24 @@ func NewProductHandlers(cfg *config.AppConfig) *productHandlers {
 }
 
 func (h *productHandlers) ProductPage(c echo.Context) error {
-	h.service.GetProducts()
-	ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "products")
-	var pr page.ProductPage = page.ProductPage{
-		Products: []components.Product{
-			{ProductId: "Id_1", ProductName: "Apple", ProductPrice: "$5", ProductColor: "Red", ProductCategory: "Fruits"},
-			{ProductId: "Id_2", ProductName: "Orange", ProductPrice: "$3", ProductColor: "Orange", ProductCategory: "Fruits"},
-			{ProductId: "Id_3", ProductName: "Chicken Wings", ProductPrice: "$3", ProductColor: "Violet", ProductCategory: "Food"},
-		},
+	gp, err := h.service.GetProducts()
+	if err != nil {
+		return echo.NewHTTPError(500, err.Error())
 	}
-	tpl := page.Product(pr)
+	fmt.Println(gp, "products from the db")
+	ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "products")
+	// pr := page.ProductPage{
+	// 	Products: []components.Product{
+	// 		{ProductId: "Id_1", ProductName: "Apple", ProductPrice: "$5", ProductColor: []string{"Red", "green"}, ProductCategory: "Fruits"},
+	// 		{ProductId: "Id_2", ProductName: "Orange", ProductPrice: "$3", ProductColor: []string{"Orange"}, ProductCategory: "Fruits"},
+	// 		{ProductId: "Id_3", ProductName: "Chicken Wings", ProductPrice: "$3", ProductColor: []string{"Violet"}, ProductCategory: "Food"},
+	// 	},
+	// }
+	var pr2 page.ProductPage = page.ProductPage{
+		Products: gp,
+	}
+
+	tpl := page.Product(pr2)
 	return htmx.NewResponse().RenderTempl(ctx, c.Response().Writer, tpl)
 }
 
@@ -47,7 +55,8 @@ func (h *productHandlers) HandleAddProduct(c echo.Context) error {
 	var product components.Product
 	product.ProductName = c.FormValue("name")
 	product.ProductPrice = c.FormValue("price")
-	product.ProductColor = c.FormValue("color")
+	color := c.FormValue("color")
+	product.ProductColor = []string{color}
 	product.ProductCategory = c.FormValue("category")
 	product.ProductDescription = c.FormValue("description")
 	err := h.service.AddProduct(product)
@@ -56,18 +65,21 @@ func (h *productHandlers) HandleAddProduct(c echo.Context) error {
 	}
 
 	return htmx.NewResponse().
-		AddTrigger(htmx.Trigger("reload-table")).Write(nil)
-
+		AddTrigger(htmx.Trigger("reload-table")).StatusCode(200).Write(c.Response().Writer)
 }
 
 func (h *productHandlers) HandleTableRequest(c echo.Context) error {
 	if htmx.IsHTMX(c.Request()) {
-		var products = []components.Product{
-			{ProductId: "Id_1", ProductName: "Apple", ProductPrice: "$5", ProductColor: "Red", ProductCategory: "Fruits"},
-			{ProductId: "Id_2", ProductName: "Orange", ProductPrice: "$3", ProductColor: "Orange", ProductCategory: "Fruits"},
-			{ProductId: "Id_3", ProductName: "Chicken Wings", ProductPrice: "$3", ProductColor: "Violet", ProductCategory: "Food"},
+		_ = []components.Product{
+			{ProductId: "Id_1", ProductName: "Apple", ProductPrice: "$5", ProductColor: []string{"Red"}, ProductCategory: "Fruits"},
+			{ProductId: "Id_2", ProductName: "Orange", ProductPrice: "$3", ProductColor: []string{"Orange"}, ProductCategory: "Fruits"},
+			{ProductId: "Id_3", ProductName: "Chicken Wings", ProductPrice: "$3", ProductColor: []string{"Violet"}, ProductCategory: "Food"},
 		}
-		tpl := components.ProductsTable(products)
+		gp, err := h.service.GetProducts()
+		if err != nil {
+			return echo.NewHTTPError(500, "Could not retrieve products", err)
+		}
+		tpl := components.ProductsTable(gp)
 		return htmx.NewResponse().
 			RenderTempl(c.Request().Context(), c.Response().Writer, tpl)
 	}
@@ -89,7 +101,8 @@ func (h *productHandlers) SaveEditedProduct(c echo.Context) error {
 		pr.ProductCategory = c.FormValue("productCategory")
 		pr.ProductName = c.FormValue("productName")
 		pr.ProductPrice = c.FormValue("productPrice")
-		pr.ProductColor = c.FormValue("productColor")
+		productColor := c.FormValue("productColor")
+		pr.ProductColor = []string{productColor}
 		tpl := products_templ.SavedProductRow(pr)
 		return htmx.NewResponse().
 			RenderTempl(c.Request().Context(), c.Response().Writer, tpl)
