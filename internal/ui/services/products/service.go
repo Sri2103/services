@@ -51,7 +51,6 @@ func (s *service) GetProducts() ([]components.Product, error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot marshall the data" + err.Error())
 	}
-	fmt.Println("Products: ", data)
 	products := make([]components.Product, len(data))
 	for i, v := range data {
 		products[i] = convertToComponentModal(v)

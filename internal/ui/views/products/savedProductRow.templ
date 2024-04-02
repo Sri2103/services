@@ -29,10 +29,7 @@ templ SavedProductRow(product components.Product) {
 		<td class="px-6 py-4" x-text="product.productCategory"></td>
 		<td class="px-6 py-4" x-text="product.productPrice"></td>
 		<td class="px-6 py-4">
-			<button
-				class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-				x-on:click="editProduct(product.productId)"
-			>Edit</button>
+			@components.EditProductModal()
 		</td>
 	</tr>
 }

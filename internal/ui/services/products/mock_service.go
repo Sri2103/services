@@ -25,5 +25,9 @@ func (m *mockProductService) AddProduct(product components.Product) error {
 
 func (m *mockProductService) UpdateProduct(id string, product components.Product) (components.Product, error) {
 	var updatedProduct components.Product
+
+	if updatedProduct.ProductName == "" {
+		updatedProduct = product
+	}
 	return updatedProduct, nil
 }

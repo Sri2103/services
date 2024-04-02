@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/Sri2103/services/internal/ui/config"
@@ -19,7 +18,6 @@ type productHandlers struct {
 }
 
 func NewProductHandlers(cfg *config.AppConfig) *productHandlers {
-	fmt.Println(cfg.ApiServer.Port, cfg.ApiServer.Url)
 	service := product_service.New(cfg)
 	return &productHandlers{
 		service: service,
@@ -31,7 +29,6 @@ func (h *productHandlers) ProductPage(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(500, err.Error())
 	}
-	fmt.Println(gp, "products from the db")
 	ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "products")
 	// pr := page.ProductPage{
 	// 	Products: []components.Product{
@@ -106,6 +103,9 @@ func (h *productHandlers) SaveEditedProduct(c echo.Context) error {
 		pr, err := h.service.UpdateProduct(product.ProductId, product)
 		if err != nil {
 			return echo.NewHTTPError(500, "Could not update product", err)
+		}
+		if pr.ProductId == "" {
+			pr = product
 		}
 		tpl := products_templ.SavedProductRow(pr)
 		return htmx.NewResponse().
