@@ -3,7 +3,7 @@ package components
 templ Carousal() {
 	<div x-data="carousel()" class="relative">
 		<img
-			class="h-64 w-full object-cover object-center"
+			class="object-cover object-center w-full h-64"
 			:src="images[selected]"
 			alt="mountains"
 		/>
@@ -23,12 +23,12 @@ templ Carousal() {
 				&rarr;
 			</span>
 		</button>
-		<div class="absolute bottom-0 w-full p-4 flex justify-center space-x-2">
+		<div class="absolute bottom-0 flex justify-center w-full p-4 space-x-2">
 			<template x-for="(image,index) in images" :key="index">
 				<button
 					@click="selected = index"
 					:class="{'bg-gray-300': selected == index, 'bg-gray-500': selected != index}"
-					class="h-2 w-2 rounded-full hover:bg-gray-300 ring-2 ring-gray-300"
+					class="w-2 h-2 rounded-full hover:bg-gray-300 ring-2 ring-gray-300"
 				></button>
 			</template>
 		</div>

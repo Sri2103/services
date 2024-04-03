@@ -8,11 +8,20 @@ templ Home() {
 	@layouts.BaseLayout() {
 		@components.NavBar()
 		<div class="container mx-auto">
-			<h1>Welcome to the Home Page</h1>
-			@products_templ.ProductCard(components.Product{})
-		</div>
-		<div class="container mx-auto">
 			@components.Carousal()
 		</div>
+		<div class="container hidden mx-auto md:block">
+			@products_templ.ProductCategories()
+		</div>
+		<div class="container mx-auto">
+			<div class="container grid justify-center gap-4 md:grid-cols-2 lg:grid-cols-3">
+				for _ = range 8 {
+					@products_templ.ProductCard(components.Product{})
+				}
+			</div>
+		</div>
+		<footer class="container mx-auto">
+			@components.Footer()
+		</footer>
 	}
 }
