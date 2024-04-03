@@ -5,5 +5,4 @@ func (h *handler) SetUserRoutes() {
 	user.GET("/:userId", h.GetUserById)
 	user.POST("/", h.CreateUser)
 	user.PUT("/", h.EditUser)
-
 }

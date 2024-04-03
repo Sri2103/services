@@ -25,60 +25,11 @@ func New(r repository.Repo) user_pb.UserServiceServer {
 	}
 }
 
-func (u *userImpl) Login(ctx context.Context, r *user_pb.LoginReq) (*user_pb.LoginResp, error) {
-	getUser, err := u.repo.GetUserById(ctx, r.GetEmail())
+func (u *userImpl) handleUser(_ context.Context, user *ent.User, err error) (*user_pb.CreateUserResp, error) {
 	if err != nil {
 		return nil, err
 	}
-	isValidPassword := getUser.Password == r.Password
-	if !isValidPassword {
-		return nil, ErrWrongPassword
-	}
-	currentTime := time.Now().Format("2006-01-02 15:04:05")
-	// render loginResp
-	return &user_pb.LoginResp{
-		Code:    200,
-		Msg:     "success",
-		LoginAt: currentTime,
-		UserInfo: &user_pb.User{
-			Id:       getUser.ID.String(),
-			Name:     getUser.Name,
-			Email:    getUser.Email,
-			UserName: getUser.Username,
-			Password: getUser.Password,
-		},
-	}, nil
-}
-func (u *userImpl) CreateUser(ctx context.Context, r *user_pb.CreateUserReq) (*user_pb.CreateUserResp, error) {
-	user := r.User
-	createdUser, err := u.repo.CreateUser(ctx, &ent.User{
-		Name:     user.GetName(),
-		Password: user.GetPassword(),
-		Username: user.GetUserName(),
-		Email:    user.GetEmail(),
-	})
 
-	if err != nil {
-		return nil, err
-	}
-	return &user_pb.CreateUserResp{
-		Code: 200,
-		Msg:  "success",
-		User: &user_pb.User{
-			Id:       createdUser.ID.String(),
-			Name:     createdUser.Name,
-			Email:    createdUser.Email,
-			UserName: createdUser.Username,
-			Password: createdUser.Password,
-		},
-	}, nil
-}
-
-func (u *userImpl) GetUserById(ctx context.Context, r *user_pb.GetUserByIdReq) (*user_pb.CreateUserResp, error) {
-	user, err := u.repo.GetUserById(ctx, r.UserId)
-	if err != nil {
-		return nil, err
-	}
 	return &user_pb.CreateUserResp{
 		Code: 200,
 		Msg:  "success",
@@ -87,9 +38,62 @@ func (u *userImpl) GetUserById(ctx context.Context, r *user_pb.GetUserByIdReq) (
 			Name:     user.Name,
 			Email:    user.Email,
 			UserName: user.Username,
-			Password: string(user.Password),
+			Password: user.Password,
 		},
 	}, nil
+}
+
+func (u *userImpl) handleLogin(_ context.Context, user *ent.User, err error) (*user_pb.LoginResp, error) {
+	if err != nil {
+		return nil, err
+	}
+
+	currentTime := time.Now().Format("2006-01-02 15:04:05")
+
+	return &user_pb.LoginResp{
+		Code:    200,
+		Msg:     "success",
+		LoginAt: currentTime,
+		UserInfo: &user_pb.User{
+			Id:       user.ID.String(),
+			Name:     user.Name,
+			Email:    user.Email,
+			UserName: user.Username,
+			Password: user.Password,
+		},
+	}, nil
+}
+
+func (u *userImpl) Login(ctx context.Context, r *user_pb.LoginReq) (*user_pb.LoginResp, error) {
+	getUser, err := u.repo.GetUserById(ctx, r.GetEmail())
+	if err != nil {
+		return nil, err
+	}
+
+	isValidPassword := getUser.Password == r.Password
+	if !isValidPassword {
+		return nil, ErrWrongPassword
+	}
+
+	return u.handleLogin(ctx, getUser, nil)
+}
+
+func (u *userImpl) CreateUser(ctx context.Context, r *user_pb.CreateUserReq) (*user_pb.CreateUserResp, error) {
+	user := r.User
+
+	createdUser, err := u.repo.CreateUser(ctx, &ent.User{
+		Name:     user.GetName(),
+		Password: user.GetPassword(),
+		Username: user.GetUserName(),
+		Email:    user.GetEmail(),
+	})
+
+	return u.handleUser(ctx, createdUser, err)
+}
+
+func (u *userImpl) GetUserById(ctx context.Context, r *user_pb.GetUserByIdReq) (*user_pb.CreateUserResp, error) {
+	user, err := u.repo.GetUserById(ctx, r.UserId)
+	return u.handleUser(ctx, user, err)
 }
 
 func (u *userImpl) EditUser(ctx context.Context, r *user_pb.UpdateUserReq) (*user_pb.UpdateUserResp, error) {
@@ -103,6 +107,7 @@ func (u *userImpl) EditUser(ctx context.Context, r *user_pb.UpdateUserReq) (*use
 	if err != nil {
 		return nil, err
 	}
+
 	return &user_pb.UpdateUserResp{
 		Code: 200,
 		Msg:  "success",

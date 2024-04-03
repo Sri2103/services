@@ -14,11 +14,13 @@ type ApiClient struct {
 
 type ClientAggregator struct {
 	ProductClient *resty.Client
+	UserClient    *resty.Client
 }
 
 func AllClients(api *ApiClient) *ClientAggregator {
 	return &ClientAggregator{
 		ProductClient: ProductClient(api),
+		UserClient:    UserClient(api),
 	}
 }
 
@@ -31,6 +33,12 @@ func New(cfg *config.AppConfig) *ApiClient {
 
 func ProductClient(api *ApiClient) *resty.Client {
 	client := resty.New().SetBaseURL(fmt.Sprintf("%s:%s/products", api.BaseUrl, api.Port))
+	// Add some default headers to all requests
+	return client
+}
+
+func UserClient(api *ApiClient) *resty.Client {
+	client := resty.New().SetBaseURL(fmt.Sprintf("%s:%s/users", api.BaseUrl, api.Port))
 	// Add some default headers to all requests
 	return client
 }
