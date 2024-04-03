@@ -2,13 +2,19 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"entgo.io/ent/dialect"
 	"github.com/Sri2103/services/pkg/database"
+	"github.com/Sri2103/services/pkg/ent/user"
 	"github.com/google/uuid"
 
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/Sri2103/services/pkg/ent"
+)
+
+var (
+	ErrNoSuchUser = fmt.Errorf("no such user")
 )
 
 type dbImpl struct {
@@ -63,4 +69,15 @@ func (d *dbImpl) UpdateUser(ctx context.Context, id string, user *ent.User) (*en
 		updater = updater.SetEmail(user.Email)
 	}
 	return updater.Save(ctx)
+}
+
+// GetUserByEmail implements Repo
+func (d *dbImpl) GetUserByEmail(ctx context.Context, email string) (*ent.User, error) {
+	userGet, err := d.client.Query().Where(user.Email(email)).Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, ErrNoSuchUser
+	} else if err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+	return userGet, err
 }

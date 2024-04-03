@@ -18,9 +18,5 @@ Alpine.data('carousel', carousel)
 
 window.htmx = require('htmx.org')
 
-// document.addEventListener('htmx:responseError', (e) => {
-//   console.log('htmx:responseError', e)
-// })
-
 Alpine.plugin(focus)
 Alpine.start()

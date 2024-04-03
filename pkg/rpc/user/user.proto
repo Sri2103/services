@@ -2,56 +2,50 @@ syntax = "proto3";
 
 package user;
 
-option go_package ="github.com/Sri2103/services/pkg/rpc/user";
+option go_package = "github.com/Sri2103/services/pkg/rpc/user";
 
 message User {
-    string id = 1;
-    string name = 2;
-    string userName = 3;
-    string email=4;
-    string password = 5;
+  string id = 1;
+  string name = 2;
+  string userName = 3;
+  string email = 4;
+  string password = 5;
 }
 
-message  LoginReq {
-    string email = 1;
-    string username=2;
-    string password =3;
-    }
-
-message LoginResp{
-    int32 code = 1;
-    string msg = 2;
-    User userInfo = 3;
+message LoginReq {
+  string email = 1;
+  string username = 2;
+  string password = 3;
 }
 
-message CreateUserReq{
-    User user = 1;
+message LoginResp {
+  int32 code = 1;
+  string msg = 2;
+  string LoginAt = 3;
+  User userInfo = 4;
 }
 
-message CreateUserResp{
-    int32 code = 1;
-    string msg = 2;
-    User user = 3;
+message CreateUserReq { User user = 1; }
+
+message CreateUserResp {
+  int32 code = 1;
+  string msg = 2;
+  User user = 3;
 }
 
-message UpdateUserReq {
-    User  user = 1;
-}
+message UpdateUserReq { User user = 1; }
 
 message UpdateUserResp {
-    int32 code  = 1;
-    string msg = 2;
-    User User = 3;
+  int32 code = 1;
+  string msg = 2;
+  User User = 3;
 }
 
-message GetUserByIdReq {
-    string userId = 1;
-}
+message GetUserByIdReq { string userId = 1; }
 
 service UserService {
-    rpc Login(LoginReq) returns (LoginResp);
-    rpc GetUserById(GetUserByIdReq) returns (CreateUserResp);
-    rpc CreateUser(CreateUserReq) returns (CreateUserResp);
-    rpc EditUser(UpdateUserReq) returns (UpdateUserResp);
+  rpc Login(LoginReq) returns (LoginResp);
+  rpc GetUserById(GetUserByIdReq) returns (CreateUserResp);
+  rpc CreateUser(CreateUserReq) returns (CreateUserResp);
+  rpc EditUser(UpdateUserReq) returns (UpdateUserResp);
 }
-

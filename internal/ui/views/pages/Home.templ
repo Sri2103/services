@@ -14,7 +14,7 @@ templ Home() {
 			@products_templ.ProductCategories()
 		</div>
 		<div class="container mx-auto">
-			<div class="container grid justify-center gap-4 md:grid-cols-2 lg:grid-cols-3">
+			<div class="container grid justify-center gap-4 md:grid-cols-2 xl:grid-cols-3 place-items-center">
 				for _ = range 8 {
 					@products_templ.ProductCard(components.Product{})
 				}
