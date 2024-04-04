@@ -6,8 +6,8 @@ import (
 )
 
 type mockUserService struct {
-	returnUser *User
-	returnErr  error
+	returnUsers []*User
+	returnErr   error
 }
 
 var userDummy = &User{
@@ -18,31 +18,37 @@ var userDummy = &User{
 	UserName: "user-1",
 }
 
+var user_2 = &User{
+	Id:       "1235",
+	Name:     " user-2",
+	Email:    "duser.two@example.com",
+	Password: "$2a$10",
+	UserName: "user-2",
+}
+
 // EditUser implements UserService.
-func (m *mockUserService) EditUser(ctx context.Context, req *User) (*User, error) {
+func (m *mockUserService) EditUser(ctx context.Context, user *User) (*User, error) {
 
-	if m.returnErr != nil {
-		return nil, m.returnErr
-	}
-
-	return m.returnUser, nil
+	return user, m.returnErr
 }
 
 // GetUser implements UserService.
-func (m *mockUserService) GetUser(ctx context.Context, req *User) (*User, error) {
-	if m.returnUser != nil && m.returnUser.Id == req.Id {
-		return m.returnUser, nil
+func (m *mockUserService) GetUser(ctx context.Context, id string) (*User, error) {
+	for _, user := range m.returnUsers {
+		if user.Id == id {
+			return user, nil
+		}
 	}
-
-	return nil, fmt.Errorf("user with id %s not found", req.Id)
+	return nil, fmt.Errorf("user with id %s not found", id)
 }
 
 // LoginUser implements UserService.
-func (m *mockUserService) LoginUser(ctx context.Context, req *User) (*User, error) {
-	if m.returnUser != nil && m.returnUser.Email == req.Email && m.returnUser.Password == req.Password {
-		return m.returnUser, nil
+func (m *mockUserService) LoginUser(ctx context.Context, u *User) (*User, error) {
+	for _, user := range m.returnUsers {
+		if user.Email == u.Email && user.Password == u.Password {
+			return user, nil
+		}
 	}
-
 	return nil, ErrInvalidCred
 }
 
@@ -63,10 +69,21 @@ func (m *mockUserService) SignUpUser(ctx context.Context, req *User) (*User, err
 	return newUser, nil
 }
 
+// GetUserByEmail implements UserService.
+func (m *mockUserService) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	for _, user := range m.returnUsers {
+		if user.Email == email {
+			return user, nil
+		}
+	}
+	return nil, fmt.Errorf("user with email %s not found", email)
+}
+
+
 func NewMockService() UserService {
 
 	return &mockUserService{
-		returnUser: userDummy,
-		returnErr:  nil,
+		returnUsers: []*User{userDummy, user_2},
+		returnErr:   nil,
 	}
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/Sri2103/services/internal/ui/config"
 	"github.com/Sri2103/services/internal/ui/handlers"
+	user_handlers "github.com/Sri2103/services/internal/ui/handlers/user"
 	"github.com/Sri2103/services/internal/ui/views/components"
 	page "github.com/Sri2103/services/internal/ui/views/pages"
 	"github.com/angelofallars/htmx-go"
@@ -25,10 +26,12 @@ func main() {
 	server.Static("/static", "./static")
 	cmp := page.Home()
 	productHandlers := handlers.NewProductHandlers(appConfig)
+	userHandler := user_handlers.NewHandler()
 	server.GET("/", func(c echo.Context) error {
 		ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "home")
 		return htmx.NewResponse().RenderTempl(ctx, c.Response().Writer, cmp)
 	})
 	productHandlers.SetProductRoutes(server)
+	userHandler.SetUserRoutes(server)
 	log.Fatal(server.Start(":1102"))
 }
