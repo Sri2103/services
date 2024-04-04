@@ -1,0 +1,13 @@
+package page 
+
+import "github.com/Sri2103/services/internal/ui/views/layout"
+import "github.com/Sri2103/services/internal/ui/views/products"
+import "github.com/Sri2103/services/internal/ui/views/components"
+
+templ ProductPageDetails() {
+	@layouts.BaseLayout() {
+		@components.NavBar()
+		@products_templ.ProductDetails()
+        @components.Footer()
+	}
+}

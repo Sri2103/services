@@ -113,3 +113,11 @@ func (h *productHandlers) SaveEditedProduct(c echo.Context) error {
 	}
 	return echo.ErrMethodNotAllowed
 }
+
+// ProductDetailsPage
+func (h *productHandlers) ProductDetailsPage(c echo.Context) error {
+
+	_ = c.Param("id")
+	tpl := page.ProductPageDetails()
+	return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, tpl)
+}

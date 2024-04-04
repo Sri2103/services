@@ -10,6 +10,8 @@ import (
 	"github.com/Sri2103/services/internal/ui/views/components"
 	page "github.com/Sri2103/services/internal/ui/views/pages"
 	"github.com/angelofallars/htmx-go"
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -22,12 +24,19 @@ func main() {
 		log.Fatalf("Error while getting app configurations: %s", err)
 	}
 	server.Use(middleware.Logger())
+	server.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
+
 	server.Static("/dist", "./dist")
 	server.Static("/static", "./static")
-	cmp := page.Home()
+
+	server.Use(
+		middleware.Recover(),
+	)
+
 	productHandlers := handlers.NewProductHandlers(appConfig)
 	userHandler := user_handlers.NewHandler()
 	server.GET("/", func(c echo.Context) error {
+		cmp := page.Home()
 		ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "home")
 		return htmx.NewResponse().RenderTempl(ctx, c.Response().Writer, cmp)
 	})

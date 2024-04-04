@@ -11,4 +11,5 @@ func (h *productHandlers) SetProductRoutes(router *echo.Echo) {
 	pg.GET("/reload-table", h.HandleTableRequest)
 	pg.GET("/edit/:id", h.SendEditTableRowForm)
 	pg.POST("/update/:id", h.SaveEditedProduct)
+	pg.GET("/details/:id", h.ProductDetailsPage)
 }

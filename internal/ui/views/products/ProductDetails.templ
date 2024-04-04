@@ -1,0 +1,50 @@
+package products_templ
+
+templ ProductDetails() {
+	<div class="container mx-auto p-6">
+		<div class="bg-white rounded-lg overflow-hidden shadow-md flex flex-col md:flex-row">
+			<div class="md:w-1/2 p-6">
+				<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80" alt="Product Image" class="w-full h-auto object-cover"/>
+			</div>
+			<div class="md:w-1/2 p-6">
+				<h2 class="text-2xl font-semibold text-gray-800">Product Name</h2>
+				<p class="text-gray-600 mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam rhoncus odio non nisl fringilla, id malesuada purus venenatis. Suspendisse potenti.</p>
+				<p class="text-gray-800 font-semibold mt-4">$49.99</p>
+				<div class="mt-4">
+					<label for="quantity" class="text-gray-600">Quantity:</label>
+					<input type="number" id="quantity" name="quantity" class="border border-gray-300 px-4 py-2 rounded-md mt-1 w-20"/>
+				</div>
+				<button class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 mt-4">Add to Cart</button>
+			</div>
+		</div>
+		<!-- Product Cards -->
+		<div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+			<!-- Product Card -->
+			<div class="bg-white overflow-hidden shadow-md rounded-lg">
+				<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80" alt="Product Image" class="w-full h-48 object-cover"/>
+				<div class="p-4">
+					<h3 class="text-lg font-semibold text-gray-800">Product Name</h3>
+					<p class="text-gray-600 mt-2">$29.99</p>
+					<button class="block w-full px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 mt-4">Add to Cart</button>
+				</div>
+			</div>
+			<div class="bg-white overflow-hidden shadow-md rounded-lg">
+				<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80" alt="Product Image" class="w-full h-48 object-cover"/>
+				<div class="p-4">
+					<h3 class="text-lg font-semibold text-gray-800">Product Name</h3>
+					<p class="text-gray-600 mt-2">$29.99</p>
+					<button class="block w-full px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 mt-4">Add to Cart</button>
+				</div>
+			</div>
+			<div class="bg-white overflow-hidden shadow-md rounded-lg">
+				<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80" alt="Product Image" class="w-full h-48 object-cover"/>
+				<div class="p-4">
+					<h3 class="text-lg font-semibold text-gray-800">Product Name</h3>
+					<p class="text-gray-600 mt-2">$29.99</p>
+					<button class="block w-full px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 mt-4">Add to Cart</button>
+				</div>
+			</div>
+			<!-- Add more product cards here -->
+		</div>
+	</div>
+}
