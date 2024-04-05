@@ -12,7 +12,14 @@ templ ProductDetails() {
 				<p class="text-gray-800 font-semibold mt-4">$49.99</p>
 				<div class="mt-4">
 					<label for="quantity" class="text-gray-600">Quantity:</label>
-					<input type="number" id="quantity" name="quantity" class="border border-gray-300 px-4 py-2 rounded-md mt-1 w-20"/>
+					<input
+						type="number"
+						id="quantity"
+						name="quantity"
+						min="1"
+						value="1"
+						class="border border-gray-300 px-4 py-2 rounded-md mt-1 w-20"
+					/>
 				</div>
 				<button class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 mt-4">Add to Cart</button>
 			</div>
@@ -44,7 +51,6 @@ templ ProductDetails() {
 					<button class="block w-full px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 mt-4">Add to Cart</button>
 				</div>
 			</div>
-			<!-- Add more product cards here -->
 		</div>
 	</div>
 }

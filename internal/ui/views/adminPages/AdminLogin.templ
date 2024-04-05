@@ -1,0 +1,10 @@
+package AdminPage
+
+import "github.com/Sri2103/services/internal/ui/views/user"
+import "github.com/Sri2103/services/internal/ui/views/layout"
+
+templ LoginPage() {
+	@layouts.BaseLayout() {
+		@user.LoginPage()
+	}
+}

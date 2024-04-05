@@ -6,6 +6,7 @@ import (
 
 	"github.com/Sri2103/services/internal/ui/config"
 	"github.com/Sri2103/services/internal/ui/handlers"
+	admin_handlers "github.com/Sri2103/services/internal/ui/handlers/admin"
 	user_handlers "github.com/Sri2103/services/internal/ui/handlers/user"
 	"github.com/Sri2103/services/internal/ui/views/components"
 	page "github.com/Sri2103/services/internal/ui/views/pages"
@@ -42,5 +43,11 @@ func main() {
 	})
 	productHandlers.SetProductRoutes(server)
 	userHandler.SetUserRoutes(server)
+	initiateAdmin(server)
 	log.Fatal(server.Start(":1102"))
+}
+
+func initiateAdmin(e *echo.Echo) {
+	adminHandler := admin_handlers.NewHandler()
+	adminHandler.SetAdminRoutes(e)
 }

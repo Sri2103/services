@@ -8,4 +8,12 @@ func (h *handler) SetUserRoutes(r *echo.Echo) {
 	user.GET("/register", h.RegisterPage)
 	// htmxRequests
 	user.POST("/login", h.LoginUser)
+
+	// toggle login as in  loginPage
+
+	// admin Page
+	// admin := r.Group("/admin")
+	// admin.Use(h.AdminMiddleware) // admin middleware
+	// admin.GET("", h.AdminPage)
+
 }
