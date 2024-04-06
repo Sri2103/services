@@ -28,3 +28,8 @@ func (h *handler) RegisterPage(c echo.Context) error {
 	template := page.Register()
 	return template.Render(c.Request().Context(), c.Response().Writer)
 }
+
+func (h *handler) SettingsPage(c echo.Context) error {
+	template := page.UserSettings()
+	return template.Render(c.Request().Context(), c.Response().Writer)
+}

@@ -6,6 +6,7 @@ func (h *handler) SetUserRoutes(r *echo.Echo) {
 	user := r.Group("/user")
 	user.GET("/login", h.LoginPage)
 	user.GET("/register", h.RegisterPage)
+	user.GET("/settings",h.SettingsPage,AddUserContext,RequireLoginUser)
 	// htmxRequests
 	user.POST("/login", h.LoginUser)
 

@@ -42,7 +42,7 @@ func main() {
 		if ok {
 			ctx = context.WithValue(ctx, components.UserKey{}, user)
 		}
-		return htmx.NewResponse().RenderTempl(ctx, c.Response().Writer, cmp)
+		return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, cmp)
 	}, user_handlers.AddUserContext)
 	initiateProducts(appConfig, server)
 	initiateUsers(appConfig, server)

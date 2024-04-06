@@ -1,8 +1,11 @@
 package user_handlers
 
 import (
+	"context"
 	"fmt"
 
+	user_service "github.com/Sri2103/services/internal/ui/services/user"
+	"github.com/Sri2103/services/internal/ui/views/components"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
@@ -13,8 +16,20 @@ func AddUserContext(next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			fmt.Println(err.Error(), "Error from the AddUser context")
 		}
-		c.Set("user", sess.Values["user"])
-		fmt.Println(c.Get("user"), "User from the login")
+		ctx := context.WithValue(c.Request().Context(), components.UserKey{}, sess.Values["user"])
+		c.SetRequest(c.Request().WithContext(ctx))
+		return next(c)
+	}
+}
+
+// requireLoginUser
+func RequireLoginUser(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		// check context if user exists
+		if _, ok := c.Request().Context().Value(components.UserKey{}).(*user_service.User); !ok {
+			return c.Redirect(302, "/user/login")
+		}
+
 		return next(c)
 	}
 }

@@ -1,0 +1,56 @@
+package user
+
+templ UserSettings() {
+	<!-- Sidebar -->
+	<section class="bg-zinc-100">
+		<div class="flex flex-col lg:flex-row h-screen bg-gray-200">
+			<div class="w-full lg:w-64 bg-gray-800">
+				<!-- Sidebar content -->
+				<div class="p-4">
+					<h2 class="text-white text-lg font-semibold mb-4">Settings</h2>
+					<ul>
+						<li><a href="#" class="block text-gray-200 hover:bg-gray-700 py-2 px-4"><i class="fas fa-cog mr-2"></i>Profile</a></li>
+						<li><a href="#" class="block text-gray-200 hover:bg-gray-700 py-2 px-4"><i class="fas fa-lock mr-2"></i>Security</a></li>
+						<li><a href="#" class="block text-gray-200 hover:bg-gray-700 py-2 px-4"><i class="fas fa-shopping-bag mr-2"></i>Orders</a></li>
+						<li><a href="#" class="block text-gray-200 hover:bg-gray-700 py-2 px-4"><i class="fas fa-credit-card mr-2"></i>Payment Methods</a></li>
+						<!-- Add more sidebar links with icons -->
+						<li><a href="#" class="block text-gray-200 hover:bg-gray-700 py-2 px-4"><i class="fas fa-heart mr-2"></i>Favorites</a></li>
+						<li><a href="#" class="block text-gray-200 hover:bg-gray-700 py-2 px-4"><i class="fas fa-envelope mr-2"></i>Messages</a></li>
+						<li><a href="#" class="block text-gray-200 hover:bg-gray-700 py-2 px-4"><i class="fas fa-history mr-2"></i>History</a></li>
+						<!-- Add more sidebar links as needed -->
+					</ul>
+				</div>
+			</div>
+			<!-- Main content area -->
+			<div class="flex-1">
+				<!-- Content wrapper -->
+				<div class="p-4 lg:p-10">
+					<!-- Page title -->
+					<h1 class="text-2xl font-semibold mb-6">Profile Settings</h1>
+					<!-- Settings form -->
+					<div class="max-w-md">
+						<div class="mb-4">
+							<label for="firstName" class="block text-gray-700 font-semibold mb-2">First Name</label>
+							<input type="text" id="firstName" name="firstName" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500" value="John"/>
+						</div>
+						<div class="mb-4">
+							<label for="lastName" class="block text-gray-700 font-semibold mb-2">Last Name</label>
+							<input type="text" id="lastName" name="lastName" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500" value="Doe"/>
+						</div>
+						<div class="mb-4">
+							<label for="email" class="block text-gray-700 font-semibold mb-2">Email</label>
+							<input type="email" id="email" name="email" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500" value="john.doe@example.com"/>
+						</div>
+						<div class="mb-4">
+							<label for="phone" class="block text-gray-700 font-semibold mb-2">Phone Number</label>
+							<input type="tel" id="phone" name="phone" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500" value="1234567890"/>
+						</div>
+						<div class="mt-6">
+							<button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Save Changes</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+}
