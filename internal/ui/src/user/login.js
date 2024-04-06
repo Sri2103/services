@@ -7,8 +7,12 @@ export default () => {
       this.callApi()
     },
     callApi() {
+      const apiUrl =
+        window.location.pathname === '/user/login'
+          ? '/user/login'
+          : '/admin/login'
       window.htmx
-        .ajax('POST', '/user/login', {
+        .ajax('POST', apiUrl, {
           values: {
             email: this.email,
             password: this.password,

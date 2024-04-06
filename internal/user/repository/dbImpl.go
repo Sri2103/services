@@ -19,13 +19,13 @@ var (
 
 type dbImpl struct {
 	DB     *database.DB
-	client *ent.UserClient
+	client *ent.Client
 }
 
-func setUpEnt(db *database.DB) *ent.UserClient {
+func setUpEnt(db *database.DB) *ent.Client {
 	drv := entsql.OpenDB(dialect.Postgres, db.Conn)
 	client := ent.NewClient(ent.Driver(drv))
-	return client.Debug().User
+	return client
 }
 
 func NewDB(db *database.DB) Repo {
@@ -37,20 +37,27 @@ func NewDB(db *database.DB) Repo {
 
 // CreateUser implements Repo.
 func (d *dbImpl) CreateUser(ctx context.Context, user *ent.User) (*ent.User, error) {
-	user, err := d.client.Create().
+	user, err := d.client.User.Create().
 		SetName(user.Name).
 		SetEmail(user.Email).
 		SetUsername(user.Username).
 		SetID(user.ID).
 		SetPassword(user.Password).
 		Save(ctx)
-
+	if err != nil {
+		return nil, err
+	}
+	role, err := d.client.Role.Create().AddUser(user).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	user.Edges.Role = role
 	return user, err
 }
 
 // GetUserById implements Repo.
 func (d *dbImpl) GetUserById(ctx context.Context, userId string) (*ent.User, error) {
-	userGet, err := d.client.Get(ctx, uuid.MustParse(userId))
+	userGet, err := d.client.User.Get(ctx, uuid.MustParse(userId))
 	return userGet, err
 }
 
@@ -61,7 +68,7 @@ func (d *dbImpl) UpdateUser(ctx context.Context, id string, user *ent.User) (*en
 	if err != nil {
 		return nil, err
 	}
-	updater := d.client.UpdateOneID(u.ID)
+	updater := d.client.User.UpdateOneID(u.ID)
 	if user.Name != "" {
 		updater = updater.SetName(user.Name)
 	}
@@ -73,7 +80,7 @@ func (d *dbImpl) UpdateUser(ctx context.Context, id string, user *ent.User) (*en
 
 // GetUserByEmail implements Repo
 func (d *dbImpl) GetUserByEmail(ctx context.Context, email string) (*ent.User, error) {
-	userGet, err := d.client.Query().Where(user.Email(email)).Only(ctx)
+	userGet, err := d.client.User.Query().Where(user.Email(email)).Only(ctx)
 	if ent.IsNotFound(err) {
 		return nil, ErrNoSuchUser
 	} else if err != nil {

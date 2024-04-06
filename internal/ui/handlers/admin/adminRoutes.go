@@ -7,8 +7,11 @@ func (h *handler) SetAdminRoutes(r *echo.Echo) {
 
 	// page routing
 	// LOGIN
-	admin.GET("", h.AdminPage)
+	admin.GET("", h.AdminPage, AdminMiddleware)
+	admin.GET("/login", h.AdminLoginPage)
 
 	// htmx routing
+	// lOGIN action
+	admin.POST("/login", h.LoginUser)
 
 }

@@ -14,7 +14,7 @@ var userDummy = &User{
 	Id:       "1234",
 	Name:     " user-1",
 	Email:    "duser.one@example.com",
-	Password: "$2a$10",
+	Password: "user-1",
 	UserName: "user-1",
 }
 
@@ -44,6 +44,7 @@ func (m *mockUserService) GetUser(ctx context.Context, id string) (*User, error)
 
 // LoginUser implements UserService.
 func (m *mockUserService) LoginUser(ctx context.Context, u *User) (*User, error) {
+	fmt.Println("Mocks loginService called")
 	for _, user := range m.returnUsers {
 		if user.Email == u.Email && user.Password == u.Password {
 			return user, nil
@@ -78,7 +79,6 @@ func (m *mockUserService) GetUserByEmail(ctx context.Context, email string) (*Us
 	}
 	return nil, fmt.Errorf("user with email %s not found", email)
 }
-
 
 func NewMockService() UserService {
 

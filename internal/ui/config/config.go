@@ -1,6 +1,7 @@
 package config
 
 import "github.com/spf13/viper"
+import "fmt"
 
 type AppConfig struct {
 	ApiServer *ApiServer `json:"product"`
@@ -32,10 +33,10 @@ func GetAppConfig() (*AppConfig, error) {
 	}
 	conf.ApiServer = &pCfg
 
-	var DevConfig DevConfig = DevConfig{UseApi: false}
+	var DevConfig DevConfig
 	viper.Unmarshal(&DevConfig)
 	conf.DevConfig = &DevConfig
-
+	fmt.Println(conf.DevConfig.UseApi,"Use- API")
 	return conf, nil
 
 }

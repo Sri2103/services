@@ -1,6 +1,10 @@
 package components
 
+import "github.com/Sri2103/services/internal/ui/services/user"
+
 type CurrentPageKey string
+
+type UserKey struct{}
 
 var LocationContextKey CurrentPageKey = "current_page"
 
@@ -9,6 +13,13 @@ func VerifyCurrentPage(ctx context.Context, current_page string) bool {
 		return current_page == stored_page
 	}
 	return false
+}
+
+func getUser(ctx context.Context) *user_service.User {
+	if user, ok := ctx.Value(UserKey{}).(*user_service.User); ok {
+		return user
+	}
+	return nil
 }
 
 templ NavBar() {
@@ -25,19 +36,56 @@ templ NavBar() {
 				</svg>
 			</button>
 			<div class="hidden w-full md:block md:w-auto" id="navbar-default">
-				<ul class="flex flex-col p-4 mt-4 font-medium border border-gray-100 rounded-lg md:p-0 bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-					<li>
-						<a href="/" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"home")) }>Home</a>
-					</li>
+				<ul class="flex flex-col p-4 mt-4 font-medium border border-gray-100 rounded-lg md:p-0 bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 items-center">
 					<li>
 						<a href="#" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"settings")) }>Settings</a>
 					</li>
 					<li>
 						<a href="#" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"cart")) }>Cart</a>
 					</li>
-					<li>
-						<a href="/user/login" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"login")) }>Login</a>
-					</li>
+					if user := getUser(ctx); user != nil {
+						<li>
+							<div class="relative" x-data="{ open: false }">
+								<button
+									@click="open = !open"
+									class="block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+								>
+									<span>Menu</span>
+									<svg
+										class="h-5 w-5 inline-block"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+										xmlns="http://www.w3.org/2000/svg"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M19 9l-7 7-7-7"
+										></path>
+									</svg>
+								</button>
+								<!-- Dropdown menu -->
+								<div
+									x-show="open"
+									@click.away="open = false"
+									class="absolute z-10 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 right-0"
+								>
+									<a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+									<a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">About</a>
+									<a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Services</a>
+									<a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Contact</a>
+								</div>
+							</div>
+						</li>
+					} else {
+						<li>
+							<a href="/user/login" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"login")) }>
+								Login
+							</a>
+						</li>
+					}
 				</ul>
 			</div>
 		</div>
@@ -47,7 +95,7 @@ templ NavBar() {
 templ AdminNavBar() {
 	<nav class="bg-white border-gray-200 dark:bg-gray-900">
 		<div class="flex flex-wrap items-center justify-between max-w-screen-xl p-4 mx-auto">
-			<a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+			<a href="/admin" class="flex items-center space-x-3 rtl:space-x-reverse">
 				<img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo"/>
 				<span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Brace-Pros</span>
 			</a>
@@ -60,22 +108,19 @@ templ AdminNavBar() {
 			<div class="hidden w-full md:block md:w-auto" id="navbar-default">
 				<ul class="flex flex-col p-4 mt-4 font-medium border border-gray-100 rounded-lg md:p-0 bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
 					<li>
-						<a href="/" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"home")) }>Home</a>
-					</li>
-					<li>
 						<a href="#" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"inventory")) }>Inventory</a>
 					</li>
 					<li>
 						<a href="#" class="block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Metrics</a>
 					</li>
 					<li>
-						<a href="/products" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"products")) }>Products</a>
+						<a href="/admin/products" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"products")) }>Products</a>
 					</li>
 					<li>
 						<a href="#" class="block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Settings</a>
 					</li>
 					<li>
-						<a href="/user/login" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"Login")) }>Login</a>
+						<a href="/admin/login" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"Login")) }>Login</a>
 					</li>
 				</ul>
 			</div>

@@ -4,8 +4,10 @@ export default () => {
     username: '',
     email: '',
     password: '',
+    confirmPassword: '',
     submit() {
-      this.callApi()
+      //
+      console.log(this.name, this.email, this.password)
     },
     callApi() {
       window.htmx

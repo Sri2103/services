@@ -1,16 +1,21 @@
 package user_handlers
 
 import (
+	"github.com/Sri2103/services/internal/ui/config"
+	user_service "github.com/Sri2103/services/internal/ui/services/user"
 	page "github.com/Sri2103/services/internal/ui/views/pages"
 	"github.com/labstack/echo/v4"
 )
 
 type handler struct {
+	UserService user_service.UserService
 }
 
-func NewHandler() *handler {
-
-	return &handler{}
+func NewHandler(cfg *config.AppConfig) *handler {
+	userService := user_service.New(cfg)
+	return &handler{
+		UserService: userService,
+	}
 }
 
 // Page Handlers
