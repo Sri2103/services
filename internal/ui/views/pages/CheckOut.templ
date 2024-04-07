@@ -1,0 +1,12 @@
+package page
+
+import "github.com/Sri2103/services/internal/ui/views/layout"
+import "github.com/Sri2103/services/internal/ui/views/components"
+import "github.com/Sri2103/services/internal/ui/views/user"
+
+templ CheckOutPage() {
+	@layouts.BaseLayout() {
+		@components.NavBar()
+		@user.CheckOut()
+	}
+}

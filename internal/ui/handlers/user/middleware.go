@@ -16,7 +16,9 @@ func AddUserContext(next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			fmt.Println(err.Error(), "Error from the AddUser context")
 		}
+
 		ctx := context.WithValue(c.Request().Context(), components.UserKey{}, sess.Values["user"])
+		// fmt.Println("user added to request context", sess.Values["user"])
 		c.SetRequest(c.Request().WithContext(ctx))
 		return next(c)
 	}
@@ -26,7 +28,7 @@ func AddUserContext(next echo.HandlerFunc) echo.HandlerFunc {
 func RequireLoginUser(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// check context if user exists
-		if _, ok := c.Request().Context().Value(components.UserKey{}).(*user_service.User); !ok {
+		if _, ok := c.Request().Context().Value(components.UserKey{}).(user_service.User); !ok {
 			return c.Redirect(302, "/user/login")
 		}
 

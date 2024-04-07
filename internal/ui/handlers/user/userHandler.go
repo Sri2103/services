@@ -33,3 +33,15 @@ func (h *handler) SettingsPage(c echo.Context) error {
 	template := page.UserSettings()
 	return template.Render(c.Request().Context(), c.Response().Writer)
 }
+
+func (h *handler) CartPage(c echo.Context) error {
+	template := page.CartPage()
+	return template.Render(c.Request().Context(), c.Response().Writer)
+}
+
+
+// checkoutPage
+func (h *handler) CheckoutPage(c echo.Context) error {
+	template := page.CheckOutPage()
+	return template.Render(c.Request().Context(), c.Response().Writer)
+}

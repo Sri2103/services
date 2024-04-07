@@ -1,0 +1,12 @@
+package page
+
+import "github.com/Sri2103/services/internal/ui/views/layout"
+import "github.com/Sri2103/services/internal/ui/views/user"
+import "github.com/Sri2103/services/internal/ui/views/components"
+
+templ CartPage() {
+	@layouts.BaseLayout() {
+		@components.NavBar()
+		@user.Cart()
+	}
+}

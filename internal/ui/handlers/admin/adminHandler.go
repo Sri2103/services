@@ -1,8 +1,6 @@
 package admin_handlers
 
 import (
-	"fmt"
-
 	AdminPage "github.com/Sri2103/services/internal/ui/views/adminPages"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -36,7 +34,7 @@ func (h *handler) AdminLoginPage(c echo.Context) error {
 	}
 	scss.Values["admin"] = "true"
 	scss.Save(c.Request(), c.Response())
-	fmt.Println(scss.Name(), scss.Values, "session")
+	// fmt.Println(scss.Name(), scss.Values, "session")
 	template := AdminPage.LoginPage()
 	return template.Render(c.Request().Context(), c.Response().Writer)
 }

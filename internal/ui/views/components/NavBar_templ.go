@@ -26,8 +26,8 @@ func VerifyCurrentPage(ctx context.Context, current_page string) bool {
 }
 
 func getUser(ctx context.Context) *user_service.User {
-	if user, ok := ctx.Value(UserKey{}).(*user_service.User); ok {
-		return user
+	if user, ok := ctx.Value(UserKey{}).(user_service.User); ok {
+		return &user
 	}
 	return nil
 }
