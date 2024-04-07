@@ -9,6 +9,7 @@ import editProduct from './productHandling/editProduct'
 import carousel from './views/carousel'
 import login from './user/login'
 import register from './user/register'
+import cart from './user/cart'
 
 // import 'htmx.org'
 window.Alpine = Alpine
@@ -19,6 +20,7 @@ Alpine.data('editProduct', editProduct)
 Alpine.data('carousel', carousel)
 Alpine.data('login', login)
 Alpine.data('register', register)
+Alpine.data('cart', cart)
 
 window.htmx = require('htmx.org')
 

@@ -6,14 +6,12 @@ import (
 	"log"
 
 	mongodbstore "github.com/2-72/gorilla-sessions-mongodb"
+	handlerServices "github.com/Sri2103/services/internal/ui/allServices"
 	"github.com/Sri2103/services/internal/ui/config"
 	"github.com/Sri2103/services/internal/ui/handlers"
 	admin_handlers "github.com/Sri2103/services/internal/ui/handlers/admin"
 	user_handlers "github.com/Sri2103/services/internal/ui/handlers/user"
 	user_service "github.com/Sri2103/services/internal/ui/services/user"
-	"github.com/Sri2103/services/internal/ui/views/components"
-	page "github.com/Sri2103/services/internal/ui/views/pages"
-	"github.com/angelofallars/htmx-go"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -35,6 +33,7 @@ func main() {
 		log.Printf("error connecting to mongodb %v \n", err)
 		return
 	}
+	defer client.Disconnect(context.TODO())
 	coll := client.Database("app_db").Collection("sessions")
 	store, err := mongodbstore.NewMongoDBStore(coll, []byte("secret"))
 	if err != nil {
@@ -52,14 +51,10 @@ func main() {
 	server.Use(
 		middleware.Recover(),
 	)
-
-	server.GET("/", func(c echo.Context) error {
-		cmp := page.Home()
-		ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "home")
-		return htmx.NewResponse().RenderTempl(ctx, c.Response().Writer, cmp)
-	}, user_handlers.AddUserContext)
-	initiateProducts(appConfig, server)
-	initiateUsers(appConfig, server)
+	server.Use(user_handlers.AddUserContext)
+	svc := handlerServices.New(appConfig)
+	initiateProducts(svc, server)
+	initiateUsers(svc, server)
 	initiateAdmin(server)
 	log.Fatal(server.Start(":1102"))
 }
@@ -69,13 +64,13 @@ func initiateAdmin(e *echo.Echo) {
 	adminHandler.SetAdminRoutes(e)
 }
 
-func initiateUsers(appConfig *config.AppConfig, e *echo.Echo) {
-	userHandler := user_handlers.NewHandler(appConfig)
+func initiateUsers(s *handlerServices.Services, e *echo.Echo) {
+	userHandler := user_handlers.NewHandler(s)
 	userHandler.SetUserRoutes(e)
 }
 
-func initiateProducts(appConfig *config.AppConfig, server *echo.Echo) {
-	productHandlers := handlers.NewProductHandlers(appConfig)
+func initiateProducts(s *handlerServices.Services, server *echo.Echo) {
+	productHandlers := handlers.NewProductHandlers(s)
 	productHandlers.SetProductRoutes(server)
 }
 

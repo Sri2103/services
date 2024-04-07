@@ -16,7 +16,7 @@ func (h *handler) LoginUser(c echo.Context) error {
 		Password: c.FormValue("password"),
 	}
 
-	u, err := h.UserService.LoginUser(c.Request().Context(), user)
+	u, err := h.services.UserService.LoginUser(c.Request().Context(), user)
 	if err != nil {
 		return c.JSONBlob(400, []byte(err.Error()))
 	}

@@ -3,47 +3,14 @@ package user
 templ Cart() {
 	<div
 		class="bg-gray-100"
-		x-data="{
-    items: [
-        { name: 'Product A', price: 99.99, quantity: 1, image: 'https://via.placeholder.com/50' },
-        { name: 'Product B', price: 49.99, quantity: 1, image: 'https://via.placeholder.com/50' },
-        { name: 'Product C', price: 29.99, quantity: 1, image: 'https://via.placeholder.com/50' }
-    ],
-    taxRate: 0.1,
-    coupon: null,
-    applyCoupon() {
-        if (this.coupon === 'DISCOUNT10') {
-            // Apply 10% discount
-            return 0.1; // 10% discount
-        } else {
-            // No discount
-            return 0;
-        }
-    },
-    subtotal() {
-        return this.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    },
-    tax() {
-        return this.subtotal() * this.taxRate;
-    },
-    discount() {
-        // Calculate discount based on coupon
-        return this.applyCoupon() * this.subtotal();
-    },
-    total() {
-        return this.subtotal() + this.tax() - this.discount();
-    },
-    removeItem(index) {
-        this.items.splice(index, 1);
-    }
-}"
+		x-data="cart"
 	>
 		<div class="container mx-auto py-8">
-			<h1 class="text-2xl font-bold mb-4">Your Shopping Cart</h1>
+			<h1 class="text-2xl font-bold mb-4 pl-4">Your Shopping Cart</h1>
 			<!-- Cart Items -->
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div class="grid grid-cols-1 md:flex md:flex-col gap-4">
 				<template x-for="(item, index) in items" :key="index">
-					<div class="bg-white shadow-md p-4">
+					<div class="bg-white shadow-md p-4 m-2 md:max-w-md">
 						<div class="flex justify-between items-center mb-2">
 							<div class="flex items-center">
 								<img :src="item.image" alt="Product Image" class="w-12 h-12 mr-2"/>

@@ -1,20 +1,22 @@
 package user_handlers
 
 import (
-	"github.com/Sri2103/services/internal/ui/config"
-	user_service "github.com/Sri2103/services/internal/ui/services/user"
+	"context"
+
+	handlerServices "github.com/Sri2103/services/internal/ui/allServices"
+	"github.com/Sri2103/services/internal/ui/views/components"
 	page "github.com/Sri2103/services/internal/ui/views/pages"
+	"github.com/angelofallars/htmx-go"
 	"github.com/labstack/echo/v4"
 )
 
 type handler struct {
-	UserService user_service.UserService
+	services *handlerServices.Services
 }
 
-func NewHandler(cfg *config.AppConfig) *handler {
-	userService := user_service.New(cfg)
+func NewHandler(s *handlerServices.Services) *handler {
 	return &handler{
-		UserService: userService,
+		services: s,
 	}
 }
 
@@ -35,13 +37,19 @@ func (h *handler) SettingsPage(c echo.Context) error {
 }
 
 func (h *handler) CartPage(c echo.Context) error {
-	template := page.CartPage()
+	// template := page.CartPage()
+	template := page.CartCopy()
 	return template.Render(c.Request().Context(), c.Response().Writer)
 }
-
 
 // checkoutPage
 func (h *handler) CheckoutPage(c echo.Context) error {
 	template := page.CheckOutPage()
 	return template.Render(c.Request().Context(), c.Response().Writer)
+}
+
+func (h *handler) HomePage(c echo.Context) error {
+	cmp := page.Home()
+	ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "home")
+	return htmx.NewResponse().RenderTempl(ctx, c.Response().Writer, cmp)
 }

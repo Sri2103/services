@@ -4,8 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/Sri2103/services/internal/ui/config"
-	product_service "github.com/Sri2103/services/internal/ui/services/products"
+	handlerServices "github.com/Sri2103/services/internal/ui/allServices"
 	"github.com/Sri2103/services/internal/ui/views/components"
 	page "github.com/Sri2103/services/internal/ui/views/pages"
 	products_templ "github.com/Sri2103/services/internal/ui/views/products"
@@ -14,18 +13,17 @@ import (
 )
 
 type productHandlers struct {
-	service product_service.ProductService
+	services *handlerServices.Services
 }
 
-func NewProductHandlers(cfg *config.AppConfig) *productHandlers {
-	service := product_service.New(cfg)
+func NewProductHandlers(s *handlerServices.Services) *productHandlers {
 	return &productHandlers{
-		service: service,
+		services: s,
 	}
 }
 
 func (h *productHandlers) ProductPage(c echo.Context) error {
-	gp, err := h.service.GetProducts()
+	gp, err := h.services.ProductService.GetProducts()
 	if err != nil {
 		return echo.NewHTTPError(500, err.Error())
 	}
@@ -56,7 +54,7 @@ func (h *productHandlers) HandleAddProduct(c echo.Context) error {
 	product.ProductColor = []string{color}
 	product.ProductCategory = c.FormValue("category")
 	product.ProductDescription = c.FormValue("description")
-	err := h.service.AddProduct(product)
+	err := h.services.ProductService.AddProduct(product)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to add new product.", err.Error())
 	}
@@ -72,7 +70,7 @@ func (h *productHandlers) HandleTableRequest(c echo.Context) error {
 			{ProductId: "Id_2", ProductName: "Orange", ProductPrice: "$3", ProductColor: []string{"Orange"}, ProductCategory: "Fruits"},
 			{ProductId: "Id_3", ProductName: "Chicken Wings", ProductPrice: "$3", ProductColor: []string{"Violet"}, ProductCategory: "Food"},
 		}
-		gp, err := h.service.GetProducts()
+		gp, err := h.services.ProductService.GetProducts()
 		if err != nil {
 			return echo.NewHTTPError(500, "Could not retrieve products", err)
 		}
@@ -100,7 +98,7 @@ func (h *productHandlers) SaveEditedProduct(c echo.Context) error {
 			ProductColor:    []string{c.FormValue("productColor")},
 			ProductCategory: c.FormValue("productCategory"),
 		}
-		pr, err := h.service.UpdateProduct(product.ProductId, product)
+		pr, err := h.services.ProductService.UpdateProduct(product.ProductId, product)
 		if err != nil {
 			return echo.NewHTTPError(500, "Could not update product", err)
 		}
