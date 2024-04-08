@@ -1,12 +1,96 @@
 package product_service
 
-import "github.com/Sri2103/services/internal/ui/views/components"
+import (
+	"fmt"
+	"math/rand"
+
+	"github.com/Sri2103/services/internal/ui/views/components"
+)
 
 type mockProductService struct {
+	data []components.Product
 }
 
 func NewMockService() ProductService {
-	return &mockProductService{}
+	return &mockProductService{
+		data: GenerateDummyData(),
+	}
+}
+
+func GenerateDummyData() []components.Product {
+	var products []components.Product
+
+	// Fruits
+	for i := 1; i <= 20; i++ {
+		product := components.Product{
+			ProductId:          fmt.Sprintf("FR-%d", i),
+			ProductName:        fmt.Sprintf("Fruit%d", i),
+			ProductColor:       []string{"Red", "Green", "Yellow"},
+			ProductCategory:    "fruits",
+			ProductPrice:       fmt.Sprintf("%.2f", rand.Float64()*5.0),
+			ProductDescription: fmt.Sprintf("Description for Fruit%d", i),
+			ProductImages:      []string{"image1.jpg", "image2.jpg"},
+		}
+		products = append(products, product)
+	}
+
+	// Food
+	for i := 1; i <= 20; i++ {
+		product := components.Product{
+			ProductId:          fmt.Sprintf("FD-%d", i),
+			ProductName:        fmt.Sprintf("Food%d", i),
+			ProductColor:       []string{"Brown", "White", "Yellow"},
+			ProductCategory:    "food",
+			ProductPrice:        fmt.Sprintf("%.2f", rand.Float64()*5.0),
+			ProductDescription: fmt.Sprintf("Description for Food%d", i),
+			ProductImages:      []string{"image1.jpg", "image2.jpg"},
+		}
+		products = append(products, product)
+	}
+
+	// Vegetables
+	for i := 1; i <= 20; i++ {
+		product := components.Product{
+			ProductId:          fmt.Sprintf("VG-%d", i),
+			ProductName:        fmt.Sprintf("Vegetable%d", i),
+			ProductColor:       []string{"Green", "Yellow", "Purple"},
+			ProductCategory:    "vegetables",
+			ProductPrice:       fmt.Sprintf("%.2f", rand.Float64()*5.0),
+			ProductDescription: fmt.Sprintf("Description for Vegetable%d", i),
+			ProductImages:      []string{"image1.jpg", "image2.jpg"},
+		}
+		products = append(products, product)
+	}
+
+	// Drinks
+	for i := 1; i <= 20; i++ {
+		product := components.Product{
+			ProductId:          fmt.Sprintf("DR-%d", i),
+			ProductName:        fmt.Sprintf("Drink%d", i),
+			ProductColor:       []string{"Clear", "Brown", "Red"},
+			ProductCategory:    "drinks",
+			ProductPrice:        fmt.Sprintf("%.2f", rand.Float64()*5.0),
+			ProductDescription: fmt.Sprintf("Description for Drink%d", i),
+			ProductImages:      []string{"image1.jpg", "image2.jpg"},
+		}
+		products = append(products, product)
+	}
+
+	// Dairy
+	for i := 1; i <= 20; i++ {
+		product := components.Product{
+			ProductId:          fmt.Sprintf("DY-%d", i),
+			ProductName:        fmt.Sprintf("Dairy%d", i),
+			ProductColor:       []string{"White", "Yellow"},
+			ProductCategory:    "dairy",
+			ProductPrice:       fmt.Sprintf("%.2f", rand.Float64()*5.0),
+			ProductDescription: fmt.Sprintf("Description for Dairy%d", i),
+			ProductImages:      []string{"image1.jpg", "image2.jpg"},
+		}
+		products = append(products, product)
+	}
+
+	return products
 }
 
 func (m *mockProductService) GetProducts() ([]components.Product, error) {
@@ -30,4 +114,29 @@ func (m *mockProductService) UpdateProduct(id string, product components.Product
 		updatedProduct = product
 	}
 	return updatedProduct, nil
+}
+
+func (s *mockProductService) GetProductsByCategory(category string, pageNumber int, pageSize int) ([]components.Product, error) {
+	// get category from the data with category, pagination, pagesize
+	var products []components.Product
+	startIndex := (pageNumber-1)*pageSize + 1
+	endIndex := startIndex + pageSize
+	categoryProducts := s.getProductsByCategory(category)
+	if endIndex > len(categoryProducts) {
+		endIndex = len(categoryProducts)
+	}
+	for i := startIndex; i < endIndex; i++ {
+		products = append(products, categoryProducts[i-1])
+	}
+	return products, nil
+}
+
+func (s *mockProductService) getProductsByCategory(category string) []components.Product {
+	var categoryProducts []components.Product
+	for _, product := range s.data {
+		if product.ProductCategory == category {
+			categoryProducts = append(categoryProducts, product)
+		}
+	}
+	return categoryProducts
 }

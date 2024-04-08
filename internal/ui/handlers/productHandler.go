@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	handlerServices "github.com/Sri2103/services/internal/ui/allServices"
 	"github.com/Sri2103/services/internal/ui/views/components"
@@ -118,4 +120,37 @@ func (h *productHandlers) ProductDetailsPage(c echo.Context) error {
 	_ = c.Param("id")
 	tpl := page.ProductPageDetails()
 	return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, tpl)
+}
+
+// ProductCategories
+func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
+	category := c.Param("category")
+	fmt.Println(category, "Category of the page")
+	pageNumberStr := c.QueryParam("page")
+	pageSizeStr := c.QueryParam("pagesize")
+	pageNumber := 1
+	pageSize := 8
+	var err error
+	if pageNumberStr != "" {
+		pageNumber, err = strconv.Atoi(pageNumberStr)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid page number")
+		}
+	}
+	if pageSizeStr != "" {
+		pageSize, err = strconv.Atoi(pageSizeStr)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid page size")
+		}
+	}
+	p, err := h.services.ProductService.GetProductsByCategory(category, pageNumber, pageSize)
+	if err != nil {
+		return echo.NewHTTPError(500, "Could not retrieve products", err)
+	}
+	tpl := page.ProductCategoryPage(page.ProductCategoryPageProps{
+		Category: category,
+		Products: p,
+	})
+	return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, tpl)
+
 }
