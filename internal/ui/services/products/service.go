@@ -108,6 +108,10 @@ func (s *service) UpdateProduct(id string, p components.Product) (components.Pro
 	}
 	var updatedProduct Product
 	err = json.Unmarshal(res.Body(), &updatedProduct)
+	if err != nil {
+		return components.Product{}, err
+	}
 
 	return convertToComponentModal(updatedProduct), nil
 }
+

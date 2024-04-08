@@ -15,6 +15,8 @@ type Product struct {
 	Images      []string `json:"images"`
 }
 
+
+
 func convertToComponentModal(product Product) components.Product {
 	return components.Product{
 		ProductId:          product.Id,
@@ -24,4 +26,24 @@ func convertToComponentModal(product Product) components.Product {
 		ProductColor:       product.Colors,
 		ProductImages:      product.Images,
 	}
+}
+
+func convertToProduct(product components.Product) Product {
+	price, _ := strconv.ParseFloat(product.ProductPrice, 32)
+	return Product{
+		Id:          product.ProductId,
+		Name:        product.ProductName,
+		Description: product.ProductDescription,
+		Price:       float32(price),
+		Colors:      product.ProductColor,
+		Images:      product.ProductImages,
+	}
+}
+
+func convertToProducts(products []Product) []components.Product {
+	var componentsProducts []components.Product
+	for _, product := range products {
+		componentsProducts = append(componentsProducts, convertToComponentModal(product))
+	}
+	return componentsProducts
 }

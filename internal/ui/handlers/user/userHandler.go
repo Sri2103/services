@@ -20,6 +20,10 @@ func NewHandler(s *handlerServices.Services) *handler {
 	}
 }
 
+func (h *handler) handleInternalError(err error) error {
+	return echo.NewHTTPError(500, err.Error())
+}
+
 // Page Handlers
 func (h *handler) LoginPage(c echo.Context) error {
 	template := page.Login()
@@ -49,7 +53,20 @@ func (h *handler) CheckoutPage(c echo.Context) error {
 }
 
 func (h *handler) HomePage(c echo.Context) error {
-	cmp := page.Home()
+	products, err := h.services.ProductService.GetProducts()
+	if err != nil {
+		h.handleInternalError(err)
+	}
+
+	categories, err := h.services.CategoryService.GetCategories()
+	if err != nil {
+		h.handleInternalError(err)
+	}
+
+	cmp := page.Home(page.HomePageProps{
+		Categories: categories,
+		Products:   products,
+	})
 	ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "home")
 	return htmx.NewResponse().RenderTempl(ctx, c.Response().Writer, cmp)
 }

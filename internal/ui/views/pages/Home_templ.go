@@ -15,10 +15,11 @@ import "github.com/Sri2103/services/internal/ui/views/layout"
 import "github.com/Sri2103/services/internal/ui/views/products"
 
 type HomePageProps struct {
-	Products []components.Product
+	Products   []components.Product
+	Categories []products_templ.ProductCategory
 }
 
-func Home() templ.Component {
+func Home(props HomePageProps) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -53,7 +54,7 @@ func Home() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = products_templ.ProductCategories().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = products_templ.ProductCategories(props.Categories).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -61,8 +62,8 @@ func Home() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			for _ = range 8 {
-				templ_7745c5c3_Err = products_templ.ProductCard(components.Product{}).Render(ctx, templ_7745c5c3_Buffer)
+			for _, pr := range props.Products {
+				templ_7745c5c3_Err = products_templ.ProductCard(pr).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
