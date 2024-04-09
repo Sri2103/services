@@ -13,12 +13,34 @@ import "bytes"
 import "github.com/Sri2103/services/internal/ui/views/layout"
 import "github.com/Sri2103/services/internal/ui/views/components"
 import "github.com/Sri2103/services/internal/ui/views/products"
+import "fmt"
+import "encoding/json"
 
 type ProductCategoryPageProps struct {
 	PageCount   int
 	CurrentPage int
 	Category    string
 	Products    []components.Product
+	Sort        int
+}
+
+func evaluateSort(sort int) string {
+	if sort == 0 {
+		return ""
+	}
+
+	if sort == 1 {
+		return "asc"
+	}
+
+	return "desc"
+}
+
+func ConvertCategoryPageDataToJson(sort int) string {
+	data, _ := json.Marshal(map[string]string{
+		"sort": evaluateSort(sort),
+	})
+	return string(data)
 }
 
 func ProductCategoryPage(props ProductCategoryPageProps) templ.Component {
@@ -51,13 +73,39 @@ func ProductCategoryPage(props ProductCategoryPageProps) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.Category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\pages\ProductsCategoryPage.templ`, Line: 21, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\pages\ProductsCategoryPage.templ`, Line: 41, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ConvertCategoryPageDataToJson(props.Sort))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\pages\ProductsCategoryPage.templ`, Line: 43, Col: 93}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/products/category/%s", props.Category))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\pages\ProductsCategoryPage.templ`, Line: 62, Col: 68}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -70,7 +118,7 @@ func ProductCategoryPage(props ProductCategoryPageProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

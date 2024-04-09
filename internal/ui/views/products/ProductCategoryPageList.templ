@@ -10,6 +10,7 @@ type ProductsListComponentProps struct {
 	Category    string
 	PageCount   int
 	CurrentPage int
+	Sort        int
 }
 
 func disableLeftNavigation(pageNum int) int {
@@ -27,14 +28,34 @@ func disableRightNavigation(pageNum, totalPage int) int {
 	return 0
 }
 
-func ConvertPageDataToJson(pageNum int, TotalPages int) string {
+func ConvertPageDataToJson(pageNum int, TotalPages int, sort int) string {
 	data, _ := json.Marshal(map[string]int{
 		"current_page":  pageNum,
 		"total_pages":   TotalPages,
 		"disable_left":  disableLeftNavigation(pageNum),
 		"disable_right": disableRightNavigation(pageNum, TotalPages),
+		"sort":          sort,
 	})
 	return string(data)
+}
+
+func sortIntToString(sort int) string {
+	if sort == 0 {
+		return ""
+	}
+
+	if sort == 1 {
+		return "asc"
+	}
+	return "desc"
+}
+
+func urlString(category string, pageNum int, pageSize int, sort int) string {
+    if sortIntToString(sort) == "" {
+        return fmt.Sprintf("/products/category/%s?page=%d&pagesize=%d", category, pageNum, pageSize)
+    }
+
+	return fmt.Sprintf("/products/category/%s?page=%d&pagesize=%d&sort=%s", category, pageNum, pageSize, sortIntToString(sort))
 }
 
 templ ProductsList(props ProductsListComponentProps) {
@@ -50,7 +71,7 @@ templ ProductsList(props ProductsListComponentProps) {
 				</li>
 			}
 		</ul>
-		<div x-data={ ConvertPageDataToJson(props.CurrentPage, props.PageCount) }>
+		<div x-data={ ConvertPageDataToJson(props.CurrentPage, props.PageCount, props.Sort) }>
 			<div
 				class="flex justify-center mt-8"
 			>
@@ -58,12 +79,13 @@ templ ProductsList(props ProductsListComponentProps) {
 					class="px-4 py-2 text-white bg-blue-500 rounded-l-md disabled:opacity-50"
 					:disabled="disable_left===1"
 					hx-get={ fmt.Sprintf("/products/category/%s?page=%d", props.Category, props.CurrentPage-1) }
-                    hx-target="#product-list"
+					hx-target="#product-list"
 				>Previous</button>
 				<div>
 					for  i := range props.PageCount {
 						<button
-							hx-get={ fmt.Sprintf("/products/category/%s?page=%d", props.Category, i+1) }
+							
+                            hx-get={urlString(props.Category, i+1, 8, props.Sort)}
 							hx-target="#product-list"
 							class="px-4 py-2 mx-2 rounded-md"
 							hx-swap="outerHTML"
@@ -74,8 +96,8 @@ templ ProductsList(props ProductsListComponentProps) {
 				<button
 					class="px-4 py-2 text-white bg-blue-500 rounded-r-md disabled:opacity-50"
 					:disabled="disable_right===1"
-					hx-get={ fmt.Sprintf("/products/category/%s?page=%d", props.Category, props.CurrentPage+1) }
-                    hx-target="#product-list"
+                    hx-get={urlString(props.Category, props.CurrentPage+1, 8, props.Sort)}
+					hx-target="#product-list"
 				>Next</button>
 			</div>
 		</div>

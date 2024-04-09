@@ -3,15 +3,35 @@ package page
 import "github.com/Sri2103/services/internal/ui/views/layout"
 import "github.com/Sri2103/services/internal/ui/views/components"
 import "github.com/Sri2103/services/internal/ui/views/products"
+import "fmt"
+import "encoding/json"
 
 type ProductCategoryPageProps struct {
 	PageCount   int
 	CurrentPage int
 	Category    string
 	Products    []components.Product
+	Sort        int
 }
 
+func evaluateSort(sort int) string {
+    if sort == 0 {
+        return ""
+    }
+    
+    if sort == 1 {
+        return "asc"
+    }
+    
+    return "desc"
+}
 
+func ConvertCategoryPageDataToJson(sort int) string {
+   data,_ := json.Marshal(map[string]string{
+        "sort":evaluateSort(sort),
+    })
+    return string(data)
+}
 
 templ ProductCategoryPage(props ProductCategoryPageProps) {
 	@layouts.BaseLayout() {
@@ -20,10 +40,10 @@ templ ProductCategoryPage(props ProductCategoryPageProps) {
 			<div class="container py-8 mx-auto">
 				<h1 class="mb-4 text-3xl font-semibold">{ props.Category }</h1>
 				<!-- Filter and Sort By -->
-				<div class="flex justify-between mb-4">
+				<div class="flex justify-between mb-4" x-data={ ConvertCategoryPageDataToJson(props.Sort) }>
 					<div>
 						<label for="filter" class="mr-2">Filter:</label>
-						<select id="filter" x-model="filter" class="px-2 py-1 border rounded-md">
+						<select id="filter" class="px-2 py-1 border rounded-md">
 							<option value="all">All</option>
 							<option value="under_50">$50 and under</option>
 							<option value="50_to_100">$50 - $100</option>
@@ -32,102 +52,22 @@ templ ProductCategoryPage(props ProductCategoryPageProps) {
 					</div>
 					<div>
 						<label for="sort" class="mr-2">Sort By:</label>
-						<select id="sort" x-model="sortBy" class="px-2 py-1 border rounded-md">
-							<option value="price_asc">Price: Low to High</option>
-							<option value="price_desc">Price: High to Low</option>
+						<select
+							x-model="sort"
+							id="sort"
+							class="px-2 py-1 border rounded-md"
+							x-on:change="sort=$event.target.value"
+							hx-trigger="change"
+							hx-target="#product-list"
+							hx-get={ fmt.Sprintf("/products/category/%s", props.Category) }
+							hx-vals="js:{ sort: event.target.value }"
+						>
+							<option :selected='sort==""' value="">sort by price</option>
+							<option :selected='sort=="asc"' value="asc">Price: Low to High</option>
+							<option :selected='sort=="desc"' value="desc">Price: High to Low</option>
 						</select>
 					</div>
 				</div>
-				<!-- Product List -->
-				// <div x-data="{
-				//     products: [
-				//         { id: 1, name: 'Product 1', price: 19.99 },
-				//         { id: 2, name: 'Product 2', price: 29.99 },
-				//         { id: 3, name: 'Product 3', price: 39.99 },
-				//         { id: 4, name: 'Product 4', price: 49.99 },
-				//         { id: 5, name: 'Product 5', price: 59.99 },
-				//         { id: 6, name: 'Product 6', price: 69.99 },
-				//         { id: 7, name: 'Product 7', price: 79.99 },
-				//         { id: 8, name: 'Product 8', price: 89.99 },
-				//         { id: 9, name: 'Product 9', price: 99.99 },
-				//         { id: 10, name: 'Product 10', price: 109.99 }
-				//     ],
-				//     filteredProducts: [],
-				//     page: 1,
-				//     pageSize: 3, // For demonstration purposes, reduced to 3 per page
-				//     totalPages: 1,
-				//     filter: 'all',
-				//     sortBy: 'price_asc',
-				//     fetchProducts() {
-				//         this.filteredProducts = this.products.filter(product => {
-				//             if (this.filter === 'under_50') {
-				//                 return product.price <= 50;
-				//             } else if (this.filter === '50_to_100') {
-				//                 return product.price > 50 && product.price <= 100;
-				//             } else if (this.filter === 'over_100') {
-				//                 return product.price > 100;
-				//             } else {
-				//                 return true;
-				//             }
-				//         });
-				//         this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
-				//         this.sortProducts();
-				//     },
-				//     sortProducts() {
-				//         if (this.sortBy === 'price_asc') {
-				//             this.filteredProducts.sort((a, b) => a.price - b.price);
-				//         } else if (this.sortBy === 'price_desc') {
-				//             this.filteredProducts.sort((a, b) => b.price - a.price);
-				//         }
-				//     },
-				//     nextPage() {
-				//         if (this.page < this.totalPages) {
-				//             this.page++;
-				//         }
-				//     },
-				//     prevPage() {
-				//         if (this.page > 1) {
-				//             this.page--;
-				//         }
-				//     }
-				// }" x-init="fetchProducts()">
-				//     <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-				//         <template x-for="(product, index) in filteredProducts.slice((page - 1) * pageSize, page * pageSize)" :key="product.id">
-				//             <li class="overflow-hidden bg-white rounded-md shadow-md">
-				//                 <div class="p-4">
-				//                     <img src="https://via.placeholder.com/300" alt="Product Image" class="object-cover object-center w-full h-56">
-				//                     <h2 class="mb-2 text-lg font-semibold truncate">{{ product.name }}</h2>
-				//                     <p class="text-gray-600">${{ product.price }}</p>
-				//                 </div>
-				//             </li>
-				//         </template>
-				//     </ul>
-				//     <!-- Pagination -->
-				//     <div class="flex justify-center mt-8">
-				//         <button @click="prevPage()" :disabled="page === 1"
-				//             class="px-4 py-2 text-white bg-blue-500 rounded-l-md disabled:opacity-50">Previous</button>
-				//         <template x-for="pageNumber in totalPages" :key="pageNumber">
-				//             <button @click="page = pageNumber"
-				//                 :class="{ 'bg-blue-500 text-white': page === pageNumber, 'bg-white text-blue-500': page !== pageNumber }"
-				//                 class="px-4 py-2 mx-2 rounded-md">{{ pageNumber }}</button>
-				//         </template>
-				//         <button @click="nextPage()" :disabled="page === totalPages"
-				//             class="px-4 py-2 text-white bg-blue-500 rounded-r-md disabled:opacity-50">Next</button>
-				//     </div>
-				// </div>
-				// <div id="product-list">
-				// 	<ul class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-				// 		for _,product := range props.Products {
-				// 			<li class="overflow-hidden bg-white rounded-md shadow-md">
-				// 				<div class="p-4">
-				// 					<img src={ product.ProductImages[0] } alt="Product Image" class="object-cover object-center w-full h-56"/>
-				// 					<h2 class="mb-2 text-lg font-semibold truncate">{ product.ProductName } </h2>
-				// 					<p class="text-gray-600">{ product.ProductPrice } </p>
-				// 				</div>
-				// 			</li>
-				// 		}
-				// 	</ul>
-				// </div>
 				@products_templ.ProductsList(products_templ.ProductsListComponentProps{
 					Products:    props.Products,
 					Category:    props.Category,

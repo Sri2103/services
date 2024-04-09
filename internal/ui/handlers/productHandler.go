@@ -127,6 +127,7 @@ func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 	category := c.Param("category")
 	pageNumberStr := c.QueryParam("page")
 	pageSizeStr := c.QueryParam("pagesize")
+	sort := c.QueryParam("sort")
 	pageNumber := 1
 	pageSize := 8
 	var err error
@@ -142,13 +143,47 @@ func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid page size")
 		}
 	}
-	p, resultsPages, err := h.services.ProductService.GetProductsByCategory(category, pageNumber, pageSize)
+	scss, _ := session.Get("session", c)
+
+	var sortStr string
+	if sort != "" {
+		switch sort {
+		case "asc":
+			sortStr = "asc"
+		case "desc":
+			sortStr = "desc"
+		}
+	} else {
+		if sortVal, ok := scss.Values["sort"].(int); ok {
+			switch sortVal {
+			case 1:
+				sortStr = "asc"
+			case 2:
+				sortStr = "desc"
+			default:
+				sortStr = ""
+			}
+		}
+	}
+
+	p, resultsPages, err := h.services.ProductService.GetProductsByCategory(category, pageNumber, pageSize, sortStr)
 	if err != nil {
 		return echo.NewHTTPError(500, "Could not retrieve products", err)
 	}
-	scss, _ := session.Get("session", c)
+
 	scss.Values["pageNumber"] = pageNumber
 	scss.Values["pageSize"] = pageSize
+
+	var sessionSort int
+	switch sortStr {
+	case "asc":
+		sessionSort = 1
+	case "desc":
+		sessionSort = 2
+	default:
+		sessionSort = 0
+	}
+	scss.Values["sort"] = sessionSort
 	scss.Save(c.Request(), c.Response())
 	if htmx.IsHTMX(c.Request()) {
 		template := products_templ.ProductsList(products_templ.ProductsListComponentProps{
@@ -156,6 +191,7 @@ func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 			Products:    p,
 			PageCount:   resultsPages,
 			CurrentPage: pageNumber,
+			Sort:        sessionSort,
 		})
 		return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, template)
 	} else {
@@ -164,6 +200,7 @@ func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 			Products:    p,
 			PageCount:   resultsPages,
 			CurrentPage: pageNumber,
+			Sort:        sessionSort,
 		})
 		return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, tpl)
 	}

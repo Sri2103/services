@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"sort"
 
 	"github.com/Sri2103/services/internal/ui/views/components"
 )
@@ -117,28 +118,47 @@ func (m *mockProductService) UpdateProduct(id string, product components.Product
 	return updatedProduct, nil
 }
 
-func (s *mockProductService) GetProductsByCategory(category string, pageNumber int, pageSize int) ([]components.Product, int, error) {
+func (s *mockProductService) GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int, error) {
 	// get category from the data with category, pagination, pagesize
 	var products []components.Product
 	startIndex := (pageNumber-1)*pageSize + 1
 	endIndex := startIndex + pageSize
-	categoryProducts := s.getProductsByCategory(category)
+	categoryProducts := s.getProductsByCategory(category,sort)
 	if endIndex > len(categoryProducts) {
 		endIndex = len(categoryProducts)
 	}
 	for i := startIndex; i < endIndex; i++ {
 		products = append(products, categoryProducts[i-1])
 	}
+	
 	numberOfResultPages := int(math.Ceil(float64(len(categoryProducts)) / float64(pageSize)))
 	return products, numberOfResultPages, nil
 }
 
-func (s *mockProductService) getProductsByCategory(category string) []components.Product {
+func (s *mockProductService) getProductsByCategory(category string,sort string) []components.Product {
 	var categoryProducts []components.Product
 	for _, product := range s.data {
 		if product.ProductCategory == category {
 			categoryProducts = append(categoryProducts, product)
 		}
 	}
+	if sort != "" {
+		categoryProducts = s.SortProducts(categoryProducts, sort)
+	}
 	return categoryProducts
+}
+
+// sort the products based on price asc or desc
+func (s *mockProductService) SortProducts(products []components.Product, sortString string) []components.Product {
+
+	if sortString == "desc" {
+		sort.Slice(products, func(i, j int) bool {
+			return products[i].ProductPrice > products[j].ProductPrice
+		})
+	} else if sortString == "asc" {
+		sort.Slice(products, func(i, j int) bool {
+			return products[i].ProductPrice < products[j].ProductPrice
+		})
+	}
+	return products
 }

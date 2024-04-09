@@ -20,6 +20,7 @@ type ProductsListComponentProps struct {
 	Category    string
 	PageCount   int
 	CurrentPage int
+	Sort        int
 }
 
 func disableLeftNavigation(pageNum int) int {
@@ -37,14 +38,34 @@ func disableRightNavigation(pageNum, totalPage int) int {
 	return 0
 }
 
-func ConvertPageDataToJson(pageNum int, TotalPages int) string {
+func ConvertPageDataToJson(pageNum int, TotalPages int, sort int) string {
 	data, _ := json.Marshal(map[string]int{
 		"current_page":  pageNum,
 		"total_pages":   TotalPages,
 		"disable_left":  disableLeftNavigation(pageNum),
 		"disable_right": disableRightNavigation(pageNum, TotalPages),
+		"sort":          sort,
 	})
 	return string(data)
+}
+
+func sortIntToString(sort int) string {
+	if sort == 0 {
+		return ""
+	}
+
+	if sort == 1 {
+		return "asc"
+	}
+	return "desc"
+}
+
+func urlString(category string, pageNum int, pageSize int, sort int) string {
+	if sortIntToString(sort) == "" {
+		return fmt.Sprintf("/products/category/%s?page=%d&pagesize=%d", category, pageNum, pageSize)
+	}
+
+	return fmt.Sprintf("/products/category/%s?page=%d&pagesize=%d&sort=%s", category, pageNum, pageSize, sortIntToString(sort))
 }
 
 func ProductsList(props ProductsListComponentProps) templ.Component {
@@ -72,7 +93,7 @@ func ProductsList(props ProductsListComponentProps) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(product.ProductImages[0])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 46, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 67, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -85,7 +106,7 @@ func ProductsList(props ProductsListComponentProps) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(product.ProductName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 47, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 68, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -98,7 +119,7 @@ func ProductsList(props ProductsListComponentProps) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(product.ProductPrice)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 48, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 69, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -114,9 +135,9 @@ func ProductsList(props ProductsListComponentProps) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ConvertPageDataToJson(props.CurrentPage, props.PageCount))
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ConvertPageDataToJson(props.CurrentPage, props.PageCount, props.Sort))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 53, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 74, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -129,7 +150,7 @@ func ProductsList(props ProductsListComponentProps) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/products/category/%s?page=%d", props.Category, props.CurrentPage-1))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 60, Col: 95}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 81, Col: 95}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -145,9 +166,9 @@ func ProductsList(props ProductsListComponentProps) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/products/category/%s?page=%d", props.Category, i+1))
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(urlString(props.Category, i+1, 8, props.Sort))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 66, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 88, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -160,7 +181,7 @@ func ProductsList(props ProductsListComponentProps) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{'bg-blue-500 text-white': %d === %d, 'bg-white text-blue-500': %d !== %d}", props.CurrentPage, i+1, props.CurrentPage, i+1))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 70, Col: 159}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 92, Col: 159}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -173,7 +194,7 @@ func ProductsList(props ProductsListComponentProps) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(i + 1))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 71, Col: 26}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 93, Col: 26}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -189,9 +210,9 @@ func ProductsList(props ProductsListComponentProps) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/products/category/%s?page=%d", props.Category, props.CurrentPage+1))
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(urlString(props.Category, props.CurrentPage+1, 8, props.Sort))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 77, Col: 95}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\products\ProductCategoryPageList.templ`, Line: 99, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
