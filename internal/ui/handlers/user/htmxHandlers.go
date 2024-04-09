@@ -30,13 +30,13 @@ func (h *handler) LoginUser(c echo.Context) error {
 
 // logoutUser
 func (h *handler) LogoutUser(c echo.Context) error {
-	sess, _ := session.Get("session", c)
-	sess.Options = &sessions.Options{
+	scss, _ := session.Get("session", c)
+	scss.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   -1,
 		HttpOnly: true,
 	}
-	err := sess.Save(c.Request(), c.Response())
+	err := scss.Save(c.Request(), c.Response())
 	if err != nil {
 		return c.NoContent(500)
 	}

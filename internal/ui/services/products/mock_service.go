@@ -2,6 +2,7 @@ package product_service
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 
 	"github.com/Sri2103/services/internal/ui/views/components"
@@ -29,7 +30,7 @@ func GenerateDummyData() []components.Product {
 			ProductCategory:    "fruits",
 			ProductPrice:       fmt.Sprintf("%.2f", rand.Float64()*5.0),
 			ProductDescription: fmt.Sprintf("Description for Fruit%d", i),
-			ProductImages:      []string{"image1.jpg", "image2.jpg"},
+			ProductImages:      []string{"https://images.unsplash.com/photo-1579613832125-5d34a13ffe2a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXBwbGV8ZW58MHx8MHx8fDA%3D"},
 		}
 		products = append(products, product)
 	}
@@ -41,9 +42,9 @@ func GenerateDummyData() []components.Product {
 			ProductName:        fmt.Sprintf("Food%d", i),
 			ProductColor:       []string{"Brown", "White", "Yellow"},
 			ProductCategory:    "food",
-			ProductPrice:        fmt.Sprintf("%.2f", rand.Float64()*5.0),
+			ProductPrice:       fmt.Sprintf("%.2f", rand.Float64()*5.0),
 			ProductDescription: fmt.Sprintf("Description for Food%d", i),
-			ProductImages:      []string{"image1.jpg", "image2.jpg"},
+			ProductImages:      []string{"https://images.unsplash.com/photo-1579613832125-5d34a13ffe2a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXBwbGV8ZW58MHx8MHx8fDA%3D"},
 		}
 		products = append(products, product)
 	}
@@ -57,7 +58,7 @@ func GenerateDummyData() []components.Product {
 			ProductCategory:    "vegetables",
 			ProductPrice:       fmt.Sprintf("%.2f", rand.Float64()*5.0),
 			ProductDescription: fmt.Sprintf("Description for Vegetable%d", i),
-			ProductImages:      []string{"image1.jpg", "image2.jpg"},
+			ProductImages:      []string{"https://images.unsplash.com/photo-1579613832125-5d34a13ffe2a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXBwbGV8ZW58MHx8MHx8fDA%3D"},
 		}
 		products = append(products, product)
 	}
@@ -69,9 +70,9 @@ func GenerateDummyData() []components.Product {
 			ProductName:        fmt.Sprintf("Drink%d", i),
 			ProductColor:       []string{"Clear", "Brown", "Red"},
 			ProductCategory:    "drinks",
-			ProductPrice:        fmt.Sprintf("%.2f", rand.Float64()*5.0),
+			ProductPrice:       fmt.Sprintf("%.2f", rand.Float64()*5.0),
 			ProductDescription: fmt.Sprintf("Description for Drink%d", i),
-			ProductImages:      []string{"image1.jpg", "image2.jpg"},
+			ProductImages:      []string{"https://images.unsplash.com/photo-1579613832125-5d34a13ffe2a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXBwbGV8ZW58MHx8MHx8fDA%3D"},
 		}
 		products = append(products, product)
 	}
@@ -85,7 +86,7 @@ func GenerateDummyData() []components.Product {
 			ProductCategory:    "dairy",
 			ProductPrice:       fmt.Sprintf("%.2f", rand.Float64()*5.0),
 			ProductDescription: fmt.Sprintf("Description for Dairy%d", i),
-			ProductImages:      []string{"image1.jpg", "image2.jpg"},
+			ProductImages:      []string{"https://images.unsplash.com/photo-1579613832125-5d34a13ffe2a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXBwbGV8ZW58MHx8MHx8fDA%3D"},
 		}
 		products = append(products, product)
 	}
@@ -116,7 +117,7 @@ func (m *mockProductService) UpdateProduct(id string, product components.Product
 	return updatedProduct, nil
 }
 
-func (s *mockProductService) GetProductsByCategory(category string, pageNumber int, pageSize int) ([]components.Product, error) {
+func (s *mockProductService) GetProductsByCategory(category string, pageNumber int, pageSize int) ([]components.Product, int, error) {
 	// get category from the data with category, pagination, pagesize
 	var products []components.Product
 	startIndex := (pageNumber-1)*pageSize + 1
@@ -128,7 +129,8 @@ func (s *mockProductService) GetProductsByCategory(category string, pageNumber i
 	for i := startIndex; i < endIndex; i++ {
 		products = append(products, categoryProducts[i-1])
 	}
-	return products, nil
+	numberOfResultPages := int(math.Ceil(float64(len(categoryProducts)) / float64(pageSize)))
+	return products, numberOfResultPages, nil
 }
 
 func (s *mockProductService) getProductsByCategory(category string) []components.Product {

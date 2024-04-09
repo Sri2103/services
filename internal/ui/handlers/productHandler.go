@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -11,6 +10,7 @@ import (
 	page "github.com/Sri2103/services/internal/ui/views/pages"
 	products_templ "github.com/Sri2103/services/internal/ui/views/products"
 	"github.com/angelofallars/htmx-go"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
 
@@ -125,7 +125,6 @@ func (h *productHandlers) ProductDetailsPage(c echo.Context) error {
 // ProductCategories
 func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 	category := c.Param("category")
-	fmt.Println(category, "Category of the page")
 	pageNumberStr := c.QueryParam("page")
 	pageSizeStr := c.QueryParam("pagesize")
 	pageNumber := 1
@@ -143,14 +142,29 @@ func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid page size")
 		}
 	}
-	p, err := h.services.ProductService.GetProductsByCategory(category, pageNumber, pageSize)
+	p, resultsPages, err := h.services.ProductService.GetProductsByCategory(category, pageNumber, pageSize)
 	if err != nil {
 		return echo.NewHTTPError(500, "Could not retrieve products", err)
 	}
-	tpl := page.ProductCategoryPage(page.ProductCategoryPageProps{
-		Category: category,
-		Products: p,
-	})
-	return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, tpl)
-
+	scss, _ := session.Get("session", c)
+	scss.Values["pageNumber"] = pageNumber
+	scss.Values["pageSize"] = pageSize
+	scss.Save(c.Request(), c.Response())
+	if htmx.IsHTMX(c.Request()) {
+		template := products_templ.ProductsList(products_templ.ProductsListComponentProps{
+			Category:    category,
+			Products:    p,
+			PageCount:   resultsPages,
+			CurrentPage: pageNumber,
+		})
+		return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, template)
+	} else {
+		tpl := page.ProductCategoryPage(page.ProductCategoryPageProps{
+			Category:    category,
+			Products:    p,
+			PageCount:   resultsPages,
+			CurrentPage: pageNumber,
+		})
+		return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, tpl)
+	}
 }

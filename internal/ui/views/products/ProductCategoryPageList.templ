@@ -1,0 +1,83 @@
+package products_templ
+
+import "github.com/Sri2103/services/internal/ui/views/components"
+import "fmt"
+import "strconv"
+import "encoding/json"
+
+type ProductsListComponentProps struct {
+	Products    []components.Product
+	Category    string
+	PageCount   int
+	CurrentPage int
+}
+
+func disableLeftNavigation(pageNum int) int {
+	if pageNum == 1 {
+		return 1
+	}
+	return 0
+
+}
+
+func disableRightNavigation(pageNum, totalPage int) int {
+	if pageNum == totalPage {
+		return 1
+	}
+	return 0
+}
+
+func ConvertPageDataToJson(pageNum int, TotalPages int) string {
+	data, _ := json.Marshal(map[string]int{
+		"current_page":  pageNum,
+		"total_pages":   TotalPages,
+		"disable_left":  disableLeftNavigation(pageNum),
+		"disable_right": disableRightNavigation(pageNum, TotalPages),
+	})
+	return string(data)
+}
+
+templ ProductsList(props ProductsListComponentProps) {
+	<div id="product-list">
+		<ul class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+			for _,product := range props.Products {
+				<li class="overflow-hidden bg-white rounded-md shadow-md">
+					<div class="p-4">
+						<img src={ product.ProductImages[0] } alt="Product Image" class="object-cover object-center w-full h-56"/>
+						<h2 class="mb-2 text-lg font-semibold truncate">{ product.ProductName } </h2>
+						<p class="text-gray-600">{ product.ProductPrice } </p>
+					</div>
+				</li>
+			}
+		</ul>
+		<div x-data={ ConvertPageDataToJson(props.CurrentPage, props.PageCount) }>
+			<div
+				class="flex justify-center mt-8"
+			>
+				<button
+					class="px-4 py-2 text-white bg-blue-500 rounded-l-md disabled:opacity-50"
+					:disabled="disable_left===1"
+					hx-get={ fmt.Sprintf("/products/category/%s?page=%d", props.Category, props.CurrentPage-1) }
+                    hx-target="#product-list"
+				>Previous</button>
+				<div>
+					for  i := range props.PageCount {
+						<button
+							hx-get={ fmt.Sprintf("/products/category/%s?page=%d", props.Category, i+1) }
+							hx-target="#product-list"
+							class="px-4 py-2 mx-2 rounded-md"
+							hx-swap="outerHTML"
+							x-bind:class={ fmt.Sprintf("{'bg-blue-500 text-white': %d === %d, 'bg-white text-blue-500': %d !== %d}", props.CurrentPage, i+1, props.CurrentPage, i+1) }
+						>{ strconv.Itoa(i+1) }</button>
+					}
+				</div>
+				<button
+					class="px-4 py-2 text-white bg-blue-500 rounded-r-md disabled:opacity-50"
+					:disabled="disable_right===1"
+					hx-get={ fmt.Sprintf("/products/category/%s?page=%d", props.Category, props.CurrentPage+1) }
+                    hx-target="#product-list"
+				>Next</button>
+			</div>
+		</div>
+	</div>
+}

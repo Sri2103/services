@@ -21,7 +21,7 @@ type ProductService interface {
 	GetProducts() ([]components.Product, error)
 	AddProduct(product components.Product) error
 	UpdateProduct(id string, product components.Product) (components.Product, error)
-	GetProductsByCategory(category string, pageNumber int, pageSize int) ([]components.Product, error)
+	GetProductsByCategory(category string, pageNumber int, pageSize int) ([]components.Product, int,error)
 }
 
 func New(cfg *config.AppConfig) ProductService {
@@ -119,6 +119,6 @@ func (s *service) UpdateProduct(id string, p components.Product) (components.Pro
 }
 
 // GetProductsByCategory implements ProductService.
-func (s *service) GetProductsByCategory(category string, pageNumber int, pageSize int) ([]components.Product, error) {
+func (s *service) GetProductsByCategory(category string, pageNumber int, pageSize int) ([]components.Product,int, error) {
 	panic("unimplemented")
 }
