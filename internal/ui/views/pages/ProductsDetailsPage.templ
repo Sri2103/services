@@ -4,10 +4,17 @@ import "github.com/Sri2103/services/internal/ui/views/layout"
 import "github.com/Sri2103/services/internal/ui/views/products"
 import "github.com/Sri2103/services/internal/ui/views/components"
 
-templ ProductPageDetails() {
+
+type ProductDetailsPageProps struct {
+    Product components.Product
+}
+
+templ ProductPageDetails(props ProductDetailsPageProps) {
 	@layouts.BaseLayout() {
 		@components.NavBar()
-		@products_templ.ProductDetails()
-        @components.Footer()
+		@products_templ.ProductDetails(products_templ.ProductDetailsComponentProps{
+			Product: props.Product,
+		})
+		@components.Footer()
 	}
 }

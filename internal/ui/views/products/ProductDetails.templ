@@ -1,15 +1,21 @@
 package products_templ
 
-templ ProductDetails() {
+import "github.com/Sri2103/services/internal/ui/views/components"
+
+type ProductDetailsComponentProps struct {
+	Product components.Product
+}
+
+templ ProductDetails(props ProductDetailsComponentProps) {
 	<div class="container mx-auto p-6">
 		<div class="bg-white rounded-lg overflow-hidden shadow-md flex flex-col md:flex-row">
 			<div class="md:w-1/2 p-6">
-				<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80" alt="Product Image" class="w-full h-auto object-cover"/>
+				<img src={ props.Product.ProductImages[0] } alt="Product Image" class="w-full h-auto object-cover"/>
 			</div>
 			<div class="md:w-1/2 p-6">
-				<h2 class="text-2xl font-semibold text-gray-800">Product Name</h2>
+				<h2 class="text-2xl font-semibold text-gray-800">{ props.Product.ProductName }</h2>
 				<p class="text-gray-600 mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam rhoncus odio non nisl fringilla, id malesuada purus venenatis. Suspendisse potenti.</p>
-				<p class="text-gray-800 font-semibold mt-4">$49.99</p>
+				<p class="text-gray-800 font-semibold mt-4">${ props.Product.ProductPrice }</p>
 				<div class="mt-4">
 					<label for="quantity" class="text-gray-600">Quantity:</label>
 					<input

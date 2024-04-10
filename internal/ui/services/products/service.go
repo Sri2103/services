@@ -15,13 +15,12 @@ type service struct {
 	AllClients *client.ClientAggregator
 }
 
-
-
 type ProductService interface {
 	GetProducts() ([]components.Product, error)
 	AddProduct(product components.Product) error
 	UpdateProduct(id string, product components.Product) (components.Product, error)
-	GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int,error)
+	GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int, error)
+	GetProductById(id string) (components.Product, error)
 }
 
 func New(cfg *config.AppConfig) ProductService {
@@ -119,6 +118,11 @@ func (s *service) UpdateProduct(id string, p components.Product) (components.Pro
 }
 
 // GetProductsByCategory implements ProductService.
-func (s *service) GetProductsByCategory(category string, pageNumber int, pageSize int,sort string) ([]components.Product,int, error) {
+func (s *service) GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int, error) {
+	panic("unimplemented")
+}
+
+// get ProductById
+func (s *service) GetProductById(id string) (components.Product, error) {
 	panic("unimplemented")
 }

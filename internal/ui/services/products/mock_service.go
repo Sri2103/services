@@ -1,6 +1,7 @@
 package product_service
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"math/rand"
@@ -123,19 +124,19 @@ func (s *mockProductService) GetProductsByCategory(category string, pageNumber i
 	var products []components.Product
 	startIndex := (pageNumber-1)*pageSize + 1
 	endIndex := startIndex + pageSize
-	categoryProducts := s.getProductsByCategory(category,sort)
+	categoryProducts := s.getProductsByCategory(category, sort)
 	if endIndex > len(categoryProducts) {
 		endIndex = len(categoryProducts)
 	}
 	for i := startIndex; i < endIndex; i++ {
 		products = append(products, categoryProducts[i-1])
 	}
-	
+
 	numberOfResultPages := int(math.Ceil(float64(len(categoryProducts)) / float64(pageSize)))
 	return products, numberOfResultPages, nil
 }
 
-func (s *mockProductService) getProductsByCategory(category string,sort string) []components.Product {
+func (s *mockProductService) getProductsByCategory(category string, sort string) []components.Product {
 	var categoryProducts []components.Product
 	for _, product := range s.data {
 		if product.ProductCategory == category {
@@ -161,4 +162,15 @@ func (s *mockProductService) SortProducts(products []components.Product, sortStr
 		})
 	}
 	return products
+}
+
+// get ProductById
+func (s *mockProductService) GetProductById(id string) (components.Product, error) {
+
+	for _, product := range s.data {
+		if product.ProductId == id {
+			return product, nil
+		}
+	}
+	return components.Product{}, errors.New("product not found")
 }

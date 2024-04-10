@@ -14,7 +14,11 @@ import "github.com/Sri2103/services/internal/ui/views/layout"
 import "github.com/Sri2103/services/internal/ui/views/products"
 import "github.com/Sri2103/services/internal/ui/views/components"
 
-func ProductPageDetails() templ.Component {
+type ProductDetailsPageProps struct {
+	Product components.Product
+}
+
+func ProductPageDetails(props ProductDetailsPageProps) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -41,7 +45,9 @@ func ProductPageDetails() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = products_templ.ProductDetails().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = products_templ.ProductDetails(products_templ.ProductDetailsComponentProps{
+				Product: props.Product,
+			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

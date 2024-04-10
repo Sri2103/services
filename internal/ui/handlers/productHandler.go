@@ -116,9 +116,14 @@ func (h *productHandlers) SaveEditedProduct(c echo.Context) error {
 
 // ProductDetailsPage
 func (h *productHandlers) ProductDetailsPage(c echo.Context) error {
-
-	_ = c.Param("id")
-	tpl := page.ProductPageDetails()
+	id := c.Param("id")
+	p, err := h.services.ProductService.GetProductById(id)
+	if err != nil {
+		return echo.NewHTTPError(500, "Could not retrieve product", err)
+	}
+	tpl := page.ProductPageDetails(page.ProductDetailsPageProps{
+		Product: p,
+	})
 	return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, tpl)
 }
 
