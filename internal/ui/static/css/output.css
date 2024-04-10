@@ -1094,6 +1094,14 @@ input:checked + .toggle-bg {
   bottom: 0px;
 }
 
+.-end-2 {
+  inset-inline-end: -0.5rem;
+}
+
+.-top-2 {
+  top: -0.5rem;
+}
+
 .bottom-0 {
   bottom: 0px;
 }
@@ -1136,14 +1144,6 @@ input:checked + .toggle-bg {
 
 .top-4 {
   top: 1rem;
-}
-
-.-end-2 {
-  inset-inline-end: -0.5rem;
-}
-
-.-top-2 {
-  top: -0.5rem;
 }
 
 .z-10 {
@@ -1405,10 +1405,6 @@ input:checked + .toggle-bg {
   height: 2.25rem;
 }
 
-.h-\[350px\] {
-  height: 350px;
-}
-
 .h-auto {
   height: auto;
 }
@@ -1477,6 +1473,10 @@ input:checked + .toggle-bg {
   width: 14rem;
 }
 
+.w-6 {
+  width: 1.5rem;
+}
+
 .w-64 {
   width: 16rem;
 }
@@ -1507,10 +1507,6 @@ input:checked + .toggle-bg {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-6 {
-  width: 1.5rem;
 }
 
 .min-w-\[8rem\] {
@@ -1943,6 +1939,11 @@ input:checked + .toggle-bg {
   background-color: rgb(249 128 128 / var(--tw-bg-opacity));
 }
 
+.bg-red-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(240 82 82 / var(--tw-bg-opacity));
+}
+
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
@@ -1959,11 +1960,6 @@ input:checked + .toggle-bg {
 .bg-zinc-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(244 244 245 / var(--tw-bg-opacity));
-}
-
-.bg-red-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(240 82 82 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-40 {
@@ -2000,6 +1996,10 @@ input:checked + .toggle-bg {
   padding: 0.625rem;
 }
 
+.p-3 {
+  padding: 0.75rem;
+}
+
 .p-4 {
   padding: 1rem;
 }
@@ -2014,10 +2014,6 @@ input:checked + .toggle-bg {
 
 .p-7 {
   padding: 1.75rem;
-}
-
-.p-3 {
-  padding: 0.75rem;
 }
 
 .px-2 {
@@ -2768,13 +2764,13 @@ input:checked + .toggle-bg {
   border-color: rgb(55 65 81 / var(--tw-border-opacity));
 }
 
-:is(.dark .dark\:border-transparent) {
-  border-color: transparent;
-}
-
 :is(.dark .dark\:border-gray-900) {
   --tw-border-opacity: 1;
   border-color: rgb(17 24 39 / var(--tw-border-opacity));
+}
+
+:is(.dark .dark\:border-transparent) {
+  border-color: transparent;
 }
 
 :is(.dark .dark\:\!bg-primary-600) {
