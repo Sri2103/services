@@ -6,7 +6,7 @@ import "github.com/Sri2103/services/internal/ui/views/layout"
 templ Login() {
 	@layouts.BaseLayout() {
 		<div class="container flex flex-col mx-auto">
-            @user.LoginPage()
-        </div>
+			@user.LoginPage(user.USER)
+		</div>
 	}
 }

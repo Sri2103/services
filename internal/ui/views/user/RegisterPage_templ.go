@@ -10,11 +10,13 @@ import "context"
 import "io"
 import "bytes"
 
+import "fmt"
+
 type Role string
 
 const (
-	USER  Role = "USER"
-	ADMIN Role = "ADMIN"
+	USER  Role = "user"
+	ADMIN Role = "admin"
 )
 
 func RegisterPage(role Role) templ.Component {
@@ -31,6 +33,15 @@ func RegisterPage(role Role) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var2 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/%s/login", role))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -5,11 +5,12 @@ export default () => {
     email: '',
     password: '',
     confirmPassword: '',
+    role: '',
     submit() {
       //
       console.log(this.name, this.email, this.password)
-      console.log(window.location)
-      this.callApi()
+      console.log(window.location, 'register')
+      //   this.callApi()
     },
     callApi() {
       window.htmx
@@ -19,7 +20,7 @@ export default () => {
             username: this.username,
             email: this.email,
             password: this.password,
-            role: 'admin',
+            role: '',
           },
           swap: 'none',
         })

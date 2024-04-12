@@ -5,6 +5,6 @@ import "github.com/Sri2103/services/internal/ui/views/layout"
 
 templ LoginPage() {
 	@layouts.BaseLayout() {
-		@user.LoginPage()
+		@user.LoginPage(user.ADMIN)
 	}
 }

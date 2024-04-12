@@ -25,7 +25,7 @@ func VerifyCurrentPage(ctx context.Context, current_page string) bool {
 	return false
 }
 
-func getUser(ctx context.Context) *user_service.User {
+func GetUser(ctx context.Context) *user_service.User {
 	if user, ok := ctx.Value(UserKey{}).(user_service.User); ok {
 		return &user
 	}
@@ -71,15 +71,15 @@ func NavBar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if user := getUser(ctx); user != nil {
+		if user := GetUser(ctx); user != nil {
 			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(getUser(ctx).Name)
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(GetUser(ctx).Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\components\NavBar.templ`, Line: 61, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views\components\NavBar.templ`, Line: 60, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {

@@ -65,6 +65,7 @@ func (h *handler) RegisterUser(c echo.Context) error {
 }
 
 func (h *handler) addSession(c echo.Context, user *user_service.User) error {
+
 	scss, _ := session.Get("session", c)
 	scss.Options = &sessions.Options{
 		Path:     "/",

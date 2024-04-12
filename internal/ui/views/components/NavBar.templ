@@ -15,7 +15,7 @@ func VerifyCurrentPage(ctx context.Context, current_page string) bool {
 	return false
 }
 
-func getUser(ctx context.Context) *user_service.User {
+func GetUser(ctx context.Context) *user_service.User {
 	if user, ok := ctx.Value(UserKey{}).(user_service.User); ok {
 		return &user
 	}
@@ -36,7 +36,7 @@ templ NavBar() {
 				</svg>
 			</button>
 			<div class="hidden w-full md:block md:w-auto" id="navbar-default">
-				<ul class="flex flex-col p-4 mt-4 font-medium border border-gray-100 rounded-lg md:p-0 bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 items-center">
+				<ul class="flex flex-col items-center p-4 mt-4 font-medium border border-gray-100 rounded-lg md:p-0 bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
 					<li>
 						<a href="/user/cart" class={ "block px-3 py-2 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent", templ.KV("md:text-blue-700",VerifyCurrentPage(ctx,"cart")) }>
 							<button type="button" class="relative inline-flex items-center p-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -45,7 +45,7 @@ templ NavBar() {
 							</button>
 						</a>
 					</li>
-					if user := getUser(ctx); user != nil {
+					if user := GetUser(ctx); user != nil {
 						<li>
 							<div
 								class="relative"
@@ -54,14 +54,13 @@ templ NavBar() {
 							>
 								<button
 									@click="open = !open"
-
-                                    class=" items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+									class=" items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 								>
 									<i class="fa-solid fa-user"></i>
-									<span>{ getUser(ctx).Name }</span>
+									<span>{ GetUser(ctx).Name }</span>
 									<svg
 										:class="{ 'rotate-180': open, 'transition-transform' : true }"
-										class="h-5 w-5 inline-block"
+										class="inline-block w-5 h-5"
 										fill="none"
 										stroke="currentColor"
 										viewBox="0 0 24 24"
@@ -79,9 +78,8 @@ templ NavBar() {
 								<div
 									x-show="open"
 									@click.away="open = false"
-									class="absolute z-10 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 md:right-0"
+									class="absolute z-10 w-48 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg md:right-0"
 								>
-									<a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profile</a>
 									<a href="/user/settings" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Settings</a>
 									<a href="#" hx-get="/user/logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">LogOut</a>
 								</div>

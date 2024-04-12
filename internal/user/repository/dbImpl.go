@@ -82,7 +82,10 @@ func (d *dbImpl) UpdateUser(ctx context.Context, id string, user *ent.User) (*en
 
 // GetUserByEmail implements Repo
 func (d *dbImpl) GetUserByEmail(ctx context.Context, email string) (*ent.User, error) {
-	userGet, err := d.client.User.Query().Where(user.Email(email)).Only(ctx)
+	userGet, err := d.client.User.Query().
+		Where(user.Email(email)).
+		WithRole().
+		Only(ctx)
 	if ent.IsNotFound(err) {
 		return nil, ErrNoSuchUser
 	} else if err != nil {

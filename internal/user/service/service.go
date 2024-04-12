@@ -61,6 +61,7 @@ func (u *userImpl) handleLogin(_ context.Context, user *ent.User, err error) (*u
 			Email:    user.Email,
 			UserName: user.Username,
 			Password: user.Password,
+			Role:     user.Edges.Role.Role,
 		},
 	}, nil
 }

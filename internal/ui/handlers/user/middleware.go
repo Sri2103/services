@@ -30,8 +30,10 @@ func RequireLoginUser(next echo.HandlerFunc) echo.HandlerFunc {
 		// check context if user exists
 		if _, ok := c.Request().Context().Value(components.UserKey{}).(user_service.User); !ok {
 			return c.Redirect(302, "/user/login")
+		} else {
+			user, _ := c.Request().Context().Value(components.UserKey{}).(user_service.User)
+			fmt.Println(user, "user")
+			return next(c)
 		}
-
-		return next(c)
 	}
 }
