@@ -72,12 +72,32 @@ func (s *service) GetUser(ctx context.Context, userId string) (*User, error) {
 
 // LoginUser implements UserService.
 func (s *service) LoginUser(ctx context.Context, req *User) (*User, error) {
-	panic("unimplemented")
+   r := s.AllClients.UserClient.NewRequest().SetBody(req)
+   res, err := r.Post("/login")
+   if err != nil {
+	  return nil, fmt.Errorf("could not LoginUser user: %w", err)
+   }
+   var u User
+   err = json.Unmarshal(res.Body(), &u)
+   if err != nil {
+	  return nil, err
+   }
+   return &u, nil
+	
 }
-
 // SignUpUser implements UserService.
 func (s *service) SignUpUser(ctx context.Context, req *User) (*User, error) {
-	panic("unimplemented")
+	r := s.AllClients.UserClient.NewRequest().SetBody(req)
+	res, err := r.Post("/")
+	if err != nil {
+		return nil, fmt.Errorf("could not add user: %w", err)
+	}
+	var u User
+	err = json.Unmarshal(res.Body(), &u)
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
 }
 
 // GetUserByEmail implements UserService.
@@ -87,10 +107,10 @@ func (s *service) GetUserByEmail(ctx context.Context, email string) (*User, erro
 
 func New(cfg *config.AppConfig) UserService {
 	switch cfg.DevConfig.UseApi {
-	case false:
+	case true:
 		return NewMockService()
 
-	case true:
+	case false:
 		return &service{
 			AllClients: client.AllClients(client.New(cfg)),
 		}

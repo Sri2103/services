@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"entgo.io/ent/dialect"
 	"github.com/Sri2103/services/pkg/database"
@@ -37,22 +38,23 @@ func NewDB(db *database.DB) Repo {
 
 // CreateUser implements Repo.
 func (d *dbImpl) CreateUser(ctx context.Context, user *ent.User) (*ent.User, error) {
-	user, err := d.client.User.Create().
+	u, err := d.client.User.Create().
 		SetName(user.Name).
 		SetEmail(user.Email).
 		SetUsername(user.Username).
-		SetID(user.ID).
 		SetPassword(user.Password).
 		Save(ctx)
 	if err != nil {
 		return nil, err
 	}
-	role, err := d.client.Role.Create().AddUser(user).Save(ctx)
+	log.Println(user.Edges.Role.Role, "Role to be saved ")
+	role, err := d.client.Role.Create().AddUser(u).SetRole(user.Edges.Role.Role).Save(ctx)
 	if err != nil {
 		return nil, err
 	}
-	user.Edges.Role = role
-	return user, err
+	u.Edges.Role = role
+	log.Println(u.String())
+	return u, err
 }
 
 // GetUserById implements Repo.

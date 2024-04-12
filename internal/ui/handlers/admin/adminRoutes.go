@@ -9,9 +9,11 @@ func (h *handler) SetAdminRoutes(r *echo.Echo) {
 	// LOGIN
 	admin.GET("", h.AdminPage, AdminMiddleware)
 	admin.GET("/login", h.AdminLoginPage)
+	admin.GET("/register", h.AdminRegisterPage)
 
 	// htmx routing
 	// lOGIN action
 	admin.POST("/login", h.LoginUser)
+	admin.POST("/register", h.AdminRegister)
 
 }

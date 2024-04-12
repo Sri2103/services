@@ -38,3 +38,8 @@ func (h *handler) AdminLoginPage(c echo.Context) error {
 	template := AdminPage.LoginPage()
 	return template.Render(c.Request().Context(), c.Response().Writer)
 }
+
+func (h *handler) AdminRegisterPage(c echo.Context) error {
+	template := AdminPage.AdminRegisterPage()
+	return template.Render(c.Request().Context(), c.Response().Writer)
+}

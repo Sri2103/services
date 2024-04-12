@@ -8,6 +8,8 @@ export default () => {
     submit() {
       //
       console.log(this.name, this.email, this.password)
+      console.log(window.location)
+      this.callApi()
     },
     callApi() {
       window.htmx
@@ -17,6 +19,7 @@ export default () => {
             username: this.username,
             email: this.email,
             password: this.password,
+            role: 'admin',
           },
           swap: 'none',
         })

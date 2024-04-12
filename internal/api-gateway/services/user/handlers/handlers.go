@@ -25,10 +25,13 @@ func (h *handler) CreateUser(c echo.Context) error {
 	var r user.CreateUserReq
 	err := c.Bind(&r.User)
 	if err != nil {
+		h.dep.Logger.Error(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "bad request")
 	}
+	h.dep.Logger.Info(r.String()) // Use r.String() instead of r.User
 	res, err := h.userClient.CreateUser(c.Request().Context(), &r)
 	if err != nil {
+		h.dep.Logger.Error(err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, "server error")
 	}
 	return c.JSON(200, res.User)
@@ -58,4 +61,18 @@ func (h *handler) EditUser(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 	return c.JSON(201, u.User)
+}
+
+// login User
+
+func (h *handler) LoginUser(c echo.Context) error {
+	var r user.LoginReq
+	if err := c.Bind(&r); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "bad request")
+	}
+	res, err := h.userClient.Login(c.Request().Context(), &r)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+	return c.JSON(200, res.GetUserInfo())
 }

@@ -1,6 +1,13 @@
 package user 
 
-templ RegisterPage() {
+type Role string
+
+const (
+	USER  Role = "USER"
+	ADMIN Role = "ADMIN"
+)
+
+templ RegisterPage(role Role) {
 	<section
 		x-data="register"
 		class="bg-gray-50 dark:bg-gray-900"
@@ -16,7 +23,7 @@ templ RegisterPage() {
 						Create your account
 					</h1>
 					<form
-                        x-on:submit.prevent="submit()"
+						x-on:submit.prevent="submit()"
 						class="space-y-4 md:space-y-6"
 					>
 						<div>

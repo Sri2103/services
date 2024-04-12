@@ -39,6 +39,7 @@ func (u *userImpl) handleUser(_ context.Context, user *ent.User, err error) (*us
 			Email:    user.Email,
 			UserName: user.Username,
 			Password: user.Password,
+			Role:     user.Edges.Role.Role,
 		},
 	}, nil
 }
@@ -81,12 +82,15 @@ func (u *userImpl) Login(ctx context.Context, r *user_pb.LoginReq) (*user_pb.Log
 func (u *userImpl) CreateUser(ctx context.Context, r *user_pb.CreateUserReq) (*user_pb.CreateUserResp, error) {
 	user := r.User
 
-	createdUser, err := u.repo.CreateUser(ctx, &ent.User{
-		Name:     user.GetName(),
-		Password: user.GetPassword(),
-		Username: user.GetUserName(),
-		Email:    user.GetEmail(),
-	})
+	var entUser ent.User
+	entUser.Name = user.GetName()
+	entUser.Username = user.GetUserName()
+	entUser.Email = user.GetEmail()
+	entUser.Password = user.GetPassword()
+	entUser.Edges = ent.UserEdges{}
+	entUser.Edges.Role = &ent.Role{Role: user.GetRole()}
+
+	createdUser, err := u.repo.CreateUser(ctx, &entUser)
 
 	return u.handleUser(ctx, createdUser, err)
 }

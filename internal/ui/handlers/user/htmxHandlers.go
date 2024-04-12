@@ -45,7 +45,19 @@ func (h *handler) LogoutUser(c echo.Context) error {
 
 // registerUser
 func (h *handler) RegisterUser(c echo.Context) error {
-	h.addSession(c, &user_service.User{})
+	var newUser = &user_service.User{
+		Email:    c.FormValue("email"),
+		Password: c.FormValue("password"),
+		Name:     c.FormValue("name"),
+		UserName: c.FormValue("username"),
+		Role:     c.FormValue("role"),
+	}
+	u, err := h.services.UserService.SignUpUser(c.Request().Context(), newUser)
+	if err != nil {
+		return c.JSONBlob(400, []byte(err.Error()))
+	}
+
+	h.addSession(c, u)
 	return htmx.NewResponse().Redirect("/").Write(c.Response().Writer)
 }
 
@@ -57,7 +69,7 @@ func (h *handler) addSession(c echo.Context, user *user_service.User) error {
 		Secure:   false,
 		HttpOnly: true,
 	}
-	scss.Values["admin"] = "false"
+
 	// add user to the session storage
 	scss.Values["user"] = *user
 	// fmt.Println(scss.Name(), scss.Values, "session")

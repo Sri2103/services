@@ -14,6 +14,7 @@ func (h *handler) SetUserRoutes(r *echo.Echo) {
 	// htmxRequests
 	user.POST("/login", h.LoginUser)
 	user.GET("/logout", h.LogoutUser)
+	user.POST("/register", h.RegisterUser)
 
 	// toggle login as in  loginPage
 
