@@ -25,6 +25,9 @@ func (h *handler) LoginUser(c echo.Context) error {
 	if err != nil {
 		return c.JSONBlob(400, []byte(err.Error()))
 	}
+	if u.Id == "" {
+		return c.JSONBlob(400, []byte("User not found"))
+	}
 	return htmx.NewResponse().Redirect("/").Write(c.Response().Writer)
 }
 

@@ -66,7 +66,7 @@ func (u *userImpl) handleLogin(_ context.Context, user *ent.User, err error) (*u
 }
 
 func (u *userImpl) Login(ctx context.Context, r *user_pb.LoginReq) (*user_pb.LoginResp, error) {
-	getUser, err := u.repo.GetUserById(ctx, r.GetEmail())
+	getUser, err := u.repo.GetUserByEmail(ctx, r.GetEmail())
 	if err != nil {
 		return nil, err
 	}

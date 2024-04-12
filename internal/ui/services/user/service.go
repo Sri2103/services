@@ -82,6 +82,9 @@ func (s *service) LoginUser(ctx context.Context, req *User) (*User, error) {
    if err != nil {
 	  return nil, err
    }
+   if u.Id == "" {
+	  return nil, ErrInvalidCred
+   }
    return &u, nil
 	
 }
