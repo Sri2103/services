@@ -13,7 +13,8 @@ func (h *handler) SetAdminRoutes(r *echo.Echo) {
 
 	// htmx routing
 	// lOGIN action
-	admin.POST("/login", h.LoginUser)
+	admin.POST("/login", h.LoginAdmin)
 	admin.POST("/register", h.AdminRegister)
+	admin.GET("/logout", h.LogoutAdmin)
 
 }

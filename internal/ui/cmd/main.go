@@ -55,12 +55,12 @@ func main() {
 	svc := handlerServices.New(appConfig)
 	initiateProducts(svc, server)
 	initiateUsers(svc, server)
-	initiateAdmin(server)
+	initiateAdmin(svc, server)
 	log.Fatal(server.Start(":1102"))
 }
 
-func initiateAdmin(e *echo.Echo) {
-	adminHandler := admin_handlers.NewHandler()
+func initiateAdmin(s *handlerServices.Services, e *echo.Echo) {
+	adminHandler := admin_handlers.NewHandler(s)
 	adminHandler.SetAdminRoutes(e)
 }
 
