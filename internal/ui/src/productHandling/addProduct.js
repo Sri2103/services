@@ -67,9 +67,13 @@ export default () => {
           once: true,
         })
         const images = document.getElementById('multiple_files')
-        const files = images.files
+        const files = images && images.files
         // Checks if there are any selected files in the input field
-        if (files.length === 0) {
+
+        console.log(files, 'files to upload')
+        const str = files.length > 0 && (await uploadImages(files[0]))
+        console.log(str, 'download string')
+        if (str.length === 0) {
           window.Swal.fire({
             title: 'Error',
             text: 'Please select a file',
@@ -78,12 +82,18 @@ export default () => {
           })
           return
         }
-        console.log(files, 'files to upload')
-        const str = await uploadImages(files[0])
-        console.log(str, 'download string')
 
         const colorElement = document.getElementById('color')
         const colorValue = colorElement.value
+
+        const imageLinks = document.getElementById('image-links').value
+        let newImageLinks = ''
+        if (!!imageLinks && imageLinks.length > 0) {
+          newImageLinks = imageLinks + ',' + str
+        } else {
+          newImageLinks = str
+        }
+        console.log(newImageLinks, 'new image links')
 
         await window.htmx.ajax('POST', '/products/add', {
           values: {

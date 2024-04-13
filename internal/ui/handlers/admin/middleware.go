@@ -1,8 +1,6 @@
 package admin_handlers
 
 import (
-	"fmt"
-
 	user_service "github.com/Sri2103/services/internal/ui/services/user"
 	"github.com/Sri2103/services/internal/ui/views/components"
 	"github.com/labstack/echo-contrib/session"
@@ -22,7 +20,6 @@ func AdminMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		if scss.Values["admin"] != true {
 			return c.Redirect(302, "/admin/login")
 		}
-		fmt.Println(scss.Name(), scss.Values, "session admin")
 		return next(c)
 	}
 }

@@ -105,7 +105,9 @@ func (m *mockProductService) GetProducts() ([]components.Product, error) {
 	return pr, nil
 }
 
+// AddProduct
 func (m *mockProductService) AddProduct(product components.Product) error {
+	fmt.Println(product, "Add Product from the Add Product API called")
 
 	return nil
 }

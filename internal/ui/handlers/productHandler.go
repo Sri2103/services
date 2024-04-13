@@ -30,13 +30,6 @@ func (h *productHandlers) ProductPage(c echo.Context) error {
 		return echo.NewHTTPError(500, err.Error())
 	}
 	ctx := context.WithValue(c.Request().Context(), components.LocationContextKey, "products")
-	// pr := page.ProductPage{
-	// 	Products: []components.Product{
-	// 		{ProductId: "Id_1", ProductName: "Apple", ProductPrice: "$5", ProductColor: []string{"Red", "green"}, ProductCategory: "Fruits"},
-	// 		{ProductId: "Id_2", ProductName: "Orange", ProductPrice: "$3", ProductColor: []string{"Orange"}, ProductCategory: "Fruits"},
-	// 		{ProductId: "Id_3", ProductName: "Chicken Wings", ProductPrice: "$3", ProductColor: []string{"Violet"}, ProductCategory: "Food"},
-	// 	},
-	// }
 	var pr2 page.ProductPage = page.ProductPage{
 		Products: gp,
 	}
@@ -56,6 +49,8 @@ func (h *productHandlers) HandleAddProduct(c echo.Context) error {
 	product.ProductColor = []string{color}
 	product.ProductCategory = c.FormValue("category")
 	product.ProductDescription = c.FormValue("description")
+	product.ProductImages = []string{c.FormValue("images")}
+
 	err := h.services.ProductService.AddProduct(product)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to add new product.", err.Error())

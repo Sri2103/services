@@ -6,6 +6,7 @@ import (
 
 	"entgo.io/ent/dialect"
 	"github.com/Sri2103/services/pkg/database"
+	"github.com/Sri2103/services/pkg/ent/role"
 	"github.com/Sri2103/services/pkg/ent/user"
 	"github.com/google/uuid"
 
@@ -36,7 +37,7 @@ func NewDB(db *database.DB) Repo {
 }
 
 // CreateUser implements Repo.
-func (d *dbImpl) CreateUser(ctx context.Context, user *ent.User) (*ent.User, error) {
+func (d *dbImpl) CreateUser(ctx context.Context, user *ent.User, role *ent.Role) (*ent.User, error) {
 	u, err := d.client.User.Create().
 		SetName(user.Name).
 		SetEmail(user.Email).
@@ -46,11 +47,7 @@ func (d *dbImpl) CreateUser(ctx context.Context, user *ent.User) (*ent.User, err
 	if err != nil {
 		return nil, err
 	}
-	r, err := d.client.Role.Create().AddUser(u).SetRole(user.Edges.Role.Role).Save(ctx)
-	if err != nil {
-		return nil, err
-	}
-	u, err = u.Update().SetRole(r).Save(ctx)
+	_, err = d.client.Role.Create().AddUserIDs(u.ID).SetRole(role.Role).Save(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -92,5 +89,59 @@ func (d *dbImpl) GetUserByEmail(ctx context.Context, email string) (*ent.User, e
 	} else if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
+	fmt.Println(userGet.Edges.Role, "Role of the user found ", userGet)
 	return userGet, err
+}
+
+// create a chain of events with transactions
+func (d *dbImpl) CreateUserTransaction(ctx context.Context, user *ent.User, rl *ent.Role) (*ent.User, error) {
+	tx, err := d.client.Tx(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to start transaction: %w", err)
+	}
+	u, err := tx.User.Create().
+		SetName(user.Name).
+		SetPassword(user.Password).
+		SetEmail(user.Email).
+		SetUsername(user.Username).
+		Save(ctx)
+	if err != nil {
+		return nil, d.rollBackTxn(ctx, tx)
+	}
+	r, err := tx.Role.Query().Where(role.Role(rl.Role)).Only(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return nil, d.rollBackTxn(ctx, tx)
+		}
+		// create role and set to user
+		r, err = tx.Role.Create().SetRole(rl.Role).Save(ctx)
+		if err != nil {
+			return nil, d.rollBackTxn(ctx, tx)
+		}
+		u, err = tx.User.UpdateOne(u).SetRole(r).Save(ctx)
+		if err != nil {
+			return nil, d.rollBackTxn(ctx, tx)
+		}
+	} else {
+		u, err = tx.User.UpdateOne(u).SetRole(r).Save(ctx)
+		if err != nil {
+			return nil, d.rollBackTxn(ctx, tx)
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, d.rollBackTxn(ctx, tx)
+	}
+	u.Edges.Role = r
+
+	fmt.Println(u.Edges.Role, "Role to be saved ", u)
+
+	return u, nil
+}
+
+func (d *dbImpl) rollBackTxn(_ context.Context, tx *ent.Tx) error {
+	err := tx.Rollback()
+	if err != nil {
+		return fmt.Errorf("failed to rollback transaction: %w", err)
+	}
+	return nil
 }

@@ -1,0 +1,20 @@
+package AdminPage
+
+import "github.com/Sri2103/services/internal/ui/views/components"
+import "github.com/Sri2103/services/internal/ui/views/layout"
+
+type AdminProductPageProps struct {
+	Products []components.Product
+}
+
+templ AdminProductPage(productPage AdminProductPageProps) {
+	@layouts.BaseLayout() {
+		@components.AdminNavBar()
+		<div class="container flex flex-col mx-auto">
+			<div class="flex justify-start">
+				@components.AddProduct()
+			</div>
+			@components.ProductsTable(productPage.Products)
+		</div>
+	}
+}

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/Sri2103/services/internal/users/repository"
@@ -51,6 +52,10 @@ func (u *userImpl) handleLogin(_ context.Context, user *ent.User, err error) (*u
 
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
 
+	role := user.Edges.Role.Role
+
+	fmt.Println(role, "Role of the user found ", user)
+
 	return &user_pb.LoginResp{
 		Code:    200,
 		Msg:     "success",
@@ -69,7 +74,7 @@ func (u *userImpl) handleLogin(_ context.Context, user *ent.User, err error) (*u
 func (u *userImpl) Login(ctx context.Context, r *user_pb.LoginReq) (*user_pb.LoginResp, error) {
 	getUser, err := u.repo.GetUserByEmail(ctx, r.GetEmail())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
 	isValidPassword := getUser.Password == r.Password
@@ -88,10 +93,11 @@ func (u *userImpl) CreateUser(ctx context.Context, r *user_pb.CreateUserReq) (*u
 	entUser.Username = user.GetUserName()
 	entUser.Email = user.GetEmail()
 	entUser.Password = user.GetPassword()
-	entUser.Edges = ent.UserEdges{}
-	entUser.Edges.Role = &ent.Role{Role: user.GetRole()}
 
-	createdUser, err := u.repo.CreateUser(ctx, &entUser)
+	// assert the role here
+	role := &ent.Role{Role: user.GetRole()}
+
+	createdUser, err := u.repo.CreateUserTransaction(ctx, &entUser, role)
 
 	return u.handleUser(ctx, createdUser, err)
 }

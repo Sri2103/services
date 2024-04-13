@@ -59,6 +59,9 @@ func (h *handler) RegisterUser(c echo.Context) error {
 	if err != nil {
 		return c.JSONBlob(400, []byte(err.Error()))
 	}
+	if u.Email == "" {
+		return c.JSONBlob(400, []byte("User not found"))
+	}
 
 	h.addSession(c, u)
 	return htmx.NewResponse().Redirect("/").Write(c.Response().Writer)

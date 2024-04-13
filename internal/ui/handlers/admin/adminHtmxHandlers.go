@@ -1,6 +1,8 @@
 package admin_handlers
 
 import (
+	"fmt"
+
 	user_service "github.com/Sri2103/services/internal/ui/services/user"
 	"github.com/angelofallars/htmx-go"
 	"github.com/gorilla/sessions"
@@ -18,7 +20,10 @@ func (h *handler) LoginAdmin(c echo.Context) error {
 	if err != nil {
 		return c.JSONBlob(400, []byte(err.Error()))
 	}
-	if user.Role != "admin" {
+	fmt.Println(u, "User found from login")
+
+	if u.Role != "admin" {
+		fmt.Println(u.Role, "Role found from login")
 		return c.JSONBlob(403, []byte("Not an admin"))
 	}
 	// fmt.Println(u, "User found from login")
