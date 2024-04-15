@@ -60,3 +60,11 @@ func (h *handler) AdminProductPage(c echo.Context) error {
 	tpl := AdminPage.AdminProductPage(pr2)
 	return tpl.Render(c.Request().Context(), c.Response().Writer)
 }
+
+// Admin Settings Page
+
+func (h *handler) AdminSettingsPage(c echo.Context) error {
+
+	template := AdminPage.AdminSettingsPage()
+	return template.Render(c.Request().Context(), c.Response().Writer)
+}

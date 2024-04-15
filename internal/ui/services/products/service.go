@@ -26,10 +26,10 @@ type ProductService interface {
 func New(cfg *config.AppConfig) ProductService {
 
 	switch cfg.DevConfig.UseApi {
-	case false:
+	case true:
 		return NewMockService()
 
-	case true:
+	case false:
 		return &service{
 			AllClients: client.AllClients(client.New(cfg)),
 		}
@@ -68,7 +68,7 @@ func (s *service) AddProduct(p components.Product) error {
 
 	req := s.AllClients.ProductClient.NewRequest().SetBody(Product{
 		Name:        p.ProductName,
-		Description: p.ProductPrice,
+		Description: p.ProductDescription,
 		Price:       float32(price),
 		Images:      p.ProductImages,
 		Colors:      p.ProductColor,

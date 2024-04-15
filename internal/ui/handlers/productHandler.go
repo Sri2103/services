@@ -49,7 +49,7 @@ func (h *productHandlers) HandleAddProduct(c echo.Context) error {
 	product.ProductColor = []string{color}
 	product.ProductCategory = c.FormValue("category")
 	product.ProductDescription = c.FormValue("description")
-	product.ProductImages = []string{c.FormValue("images")}
+	product.ProductImages = []string{c.FormValue("image")}
 
 	err := h.services.ProductService.AddProduct(product)
 	if err != nil {

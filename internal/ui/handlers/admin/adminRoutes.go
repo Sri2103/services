@@ -21,5 +21,7 @@ func (h *handler) SetAdminRoutes(r *echo.Echo) {
 
 	// admin Page products
 	admin.GET("/products", h.AdminProductPage, AdminMiddleware)
+	// settings page
+	admin.GET("/settings", h.AdminSettingsPage, AdminMiddleware)
 
 }

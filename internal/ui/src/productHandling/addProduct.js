@@ -89,7 +89,11 @@ export default () => {
         const imageLinks = document.getElementById('image-links').value
         let newImageLinks = ''
         if (!!imageLinks && imageLinks.length > 0) {
-          newImageLinks = imageLinks + ',' + str
+          if (str) {
+            newImageLinks = imageLinks + ',' + str
+          } else {
+            newImageLinks = imageLinks
+          }
         } else {
           newImageLinks = str
         }
@@ -101,7 +105,7 @@ export default () => {
             price: this.price,
             category: this.category,
             description: this.description,
-            image: [str],
+            image: newImageLinks,
             color: colorValue,
           },
           source: this.$el,

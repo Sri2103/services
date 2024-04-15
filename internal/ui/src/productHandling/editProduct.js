@@ -1,16 +1,4 @@
 export default (product) => {
-  console.log(
-    {
-      editName: product.productName,
-      editPrice: product.productPrice,
-      editColor: product.productColor,
-      editCategory: product.productCategory,
-      currentEditID: product.productId,
-      editDescription: product.productDescription,
-      editImages: product.productImages || [],
-    },
-    'editProduct'
-  )
   return {
     modalOpen: false,
     editName: product.productName,

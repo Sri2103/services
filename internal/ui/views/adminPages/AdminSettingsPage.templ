@@ -1,0 +1,12 @@
+package AdminPage 
+
+import "github.com/Sri2103/services/internal/ui/views/layout"
+import "github.com/Sri2103/services/internal/ui/views/components"
+import "github.com/Sri2103/services/internal/ui/views/adminComponents"
+
+templ AdminSettingsPage() {
+	@layouts.BaseLayout() {
+		@components.AdminNavBar()
+		@AdminComponents.AdminSettings()
+	}
+}
