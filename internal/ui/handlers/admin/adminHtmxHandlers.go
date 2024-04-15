@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	user_service "github.com/Sri2103/services/internal/ui/services/user"
+	"github.com/Sri2103/services/internal/ui/views/adminComponents/adminSettingComponents"
 	"github.com/angelofallars/htmx-go"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -60,7 +61,7 @@ func (h *handler) addSession(c echo.Context, user *user_service.User) error {
 
 	scss, _ := session.Get("session", c)
 	scss.Options = &sessions.Options{
-		Path:     "/",
+		Path:     "/admin",
 		MaxAge:   86400 * 7,
 		Secure:   false,
 		HttpOnly: true,
@@ -86,4 +87,11 @@ func (h *handler) LogoutAdmin(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	return htmx.NewResponse().Redirect("/admin/login").Write(c.Response().Writer)
+}
+
+// AdminCategoriesComp
+func (h *handler) AdminCategoriesComp(c echo.Context) error {
+	categoriesTempl := adminSettingComponents.CategoryMain()
+	return htmx.NewResponse().
+		RenderTempl(c.Request().Context(), c.Response().Writer, categoriesTempl)
 }

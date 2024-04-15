@@ -26,8 +26,8 @@ func (h *handler) AdminPage(c echo.Context) error {
 // admin Login Page
 
 func (h *handler) AdminLoginPage(c echo.Context) error {
-	// add user to the session storage
-	// fmt.Println(scss.Name(), scss.Values, "session")
+	// check if the user is present and redirect to home page
+	
 	template := AdminPage.LoginPage()
 	return template.Render(c.Request().Context(), c.Response().Writer)
 }

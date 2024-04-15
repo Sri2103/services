@@ -4,6 +4,7 @@ module.exports = {
     './views/components/*.templ',
     './views/layouts/*.templ',
     './views/pages/*.templ',
+    './views/adminComponents/**/*.templ',
     './views/**/*.templ',
     './node_modules/flowbite/**/*.js',
   ],

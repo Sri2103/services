@@ -10,8 +10,8 @@ func (h *handler) SetAdminRoutes(r *echo.Echo) {
 	// page routing
 	// LOGIN
 	admin.GET("", h.AdminPage, AdminMiddleware)
-	admin.GET("/login", h.AdminLoginPage)
-	admin.GET("/register", h.AdminRegisterPage)
+	admin.GET("/login", h.AdminLoginPage, HomeRedirection)
+	admin.GET("/register", h.AdminRegisterPage, HomeRedirection)
 
 	// htmx routing
 	// lOGIN action
@@ -23,5 +23,7 @@ func (h *handler) SetAdminRoutes(r *echo.Echo) {
 	admin.GET("/products", h.AdminProductPage, AdminMiddleware)
 	// settings page
 	admin.GET("/settings", h.AdminSettingsPage, AdminMiddleware)
+
+	admin.GET("/hx/categories", h.AdminCategoriesComp)
 
 }
