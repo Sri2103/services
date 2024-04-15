@@ -77,7 +77,7 @@ func (p *productImpl) CreateProduct(ctx context.Context, r *product_pb.CreatePro
 		Images:      r.Product.Images,
 		Color:       r.Product.Colors,
 	}
-	pC, err := p.repo.CreateProduct(ctx, &pr)
+	pC, err := p.repo.CreateProduct(ctx, &pr, nil) // Added nil as the third argument
 	if err != nil {
 		return nil, err
 	}

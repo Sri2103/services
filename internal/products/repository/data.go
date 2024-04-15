@@ -17,6 +17,31 @@ type data struct {
 	Products []*ent.Product
 }
 
+// GetProductsByCategory implements Repo.
+func (d *data) GetProductsByCategory(ctx context.Context, id uuid.UUID) ([]*ent.Product, error) {
+	panic("unimplemented")
+}
+
+// CreateCategory implements Repo.
+func (d *data) CreateCategory(ctx context.Context, c *ent.Category) (*ent.Category, error) {
+	panic("unimplemented")
+}
+
+// DeleteCategory implements Repo.
+func (d *data) DeleteCategory(ctx context.Context, id uuid.UUID) error {
+	panic("unimplemented")
+}
+
+// GetCategories implements Repo.
+func (d *data) GetCategories(ctx context.Context) ([]*ent.Category, error) {
+	panic("unimplemented")
+}
+
+// GetCategory implements Repo.
+func (d *data) GetCategory(ctx context.Context, id uuid.UUID) (*ent.Category, error) {
+	panic("unimplemented")
+}
+
 func NewData() Repo {
 	d := &data{Products: products}
 	return d
@@ -35,7 +60,7 @@ func (d *data) GetProductList(ctx context.Context) ([]*ent.Product, error) {
 	return d.Products, nil
 }
 
-func (d *data) CreateProduct(ctx context.Context, p *ent.Product) (*ent.Product, error) {
+func (d *data) CreateProduct(ctx context.Context, p *ent.Product, _ *ent.Category) (*ent.Product, error) {
 	panic("not implemented")
 }
 

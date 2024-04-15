@@ -27,7 +27,10 @@ message ListProductsRequest {
   int32 results_per_page = 3;
 }
 
-message CreateProductRequest { Product product = 1; }
+message CreateProductRequest {
+  Product product = 1;
+  Category category = 2;
+}
 
 message CreateProductResponse { Product product = 1; }
 
@@ -40,6 +43,30 @@ message UpdateProductRequest { Product product = 1; }
 // Response message for updating a product.
 message UpdateProductResponse { Product product = 1; }
 // Service defining the product-related RPCs.
+
+// Create categoryRequest
+message CreateCategoryRequest { string name = 1; }
+
+// Create categoryResponse
+message CreateCategoryResponse {
+  string id = 1;
+  string name = 2;
+}
+
+message Category {
+  string id = 1;
+  string name = 2;
+}
+
+// get all categories
+message GetCategoryRequest { string id = 1; }
+message GetAllCategoriesRequest {}
+message GetAllCategoriesResponse { repeated Category categories = 1; }
+
+// get products by category
+message GetProductsByCategoryRequest { string category_id = 1; }
+message GetProductsByCategoryResponse { repeated Product products = 1; }
+
 service ProductService {
   // Gets a product by ID.
   rpc GetProduct(GetProductRequest) returns (GetProductResponse);
@@ -52,4 +79,14 @@ service ProductService {
 
   //   Update product
   rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse);
+
+  rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse);
+
+  rpc GetAllCategories(GetAllCategoriesRequest)
+      returns (GetAllCategoriesResponse);
+
+  rpc GetCategory(GetCategoryRequest) returns (Category);
+
+  rpc GetProductsByCategory(GetProductsByCategoryRequest)
+      returns (GetProductsByCategoryResponse);
 }

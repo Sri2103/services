@@ -54,16 +54,22 @@ func (h *handlers) GetAllProducts(c echo.Context) error {
 
 // create a product
 func (h *handlers) CreateProduct(c echo.Context) error {
-	var pC product.Product
+
+	type createBody struct {
+		Product  product.Product  `json:"product"`
+		Category product.Category `json:"category"`
+	}
+	var pC createBody
 	if err := c.Bind(&pC); err != nil {
 		fmt.Println(err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid data format")
 	}
-	pC.Id = uuid.New().String()
+	pC.Product.Id = uuid.New().String()
 
 	var ctx = c.Request().Context()
 	resp, err := h.ProductClient.CreateProduct(ctx, &product.CreateProductRequest{
-		Product: &pC,
+		Product:  &pC.Product,
+		Category: &pC.Category,
 	})
 	if err != nil {
 		fmt.Println(err.Error())
@@ -91,5 +97,3 @@ func (h *handlers) UpdateProduct(c echo.Context) error {
 	}
 	return c.JSON(http.StatusCreated, resp.Product)
 }
-
-
