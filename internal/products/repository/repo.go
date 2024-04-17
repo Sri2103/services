@@ -16,5 +16,5 @@ type Repo interface {
 	GetCategories(ctx context.Context) ([]*ent.Category, error)
 	GetCategory(ctx context.Context, id uuid.UUID) (*ent.Category, error)
 	DeleteCategory(ctx context.Context, id uuid.UUID) error
-	GetProductsByCategory(ctx context.Context, id uuid.UUID) ([]*ent.Product, error)
+	GetProductsByCategory(ctx context.Context, id uuid.UUID, pageNumber int, pageSize int, sort string) ([]*ent.Product, int, error)
 }

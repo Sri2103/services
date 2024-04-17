@@ -9,6 +9,8 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/Sri2103/services/pkg/database"
 	"github.com/Sri2103/services/pkg/ent"
+	"github.com/Sri2103/services/pkg/ent/category"
+	"github.com/Sri2103/services/pkg/ent/product"
 	"github.com/google/uuid"
 )
 
@@ -18,8 +20,47 @@ type dbImpl struct {
 }
 
 // GetProductsByCategory implements Repo.
-func (d *dbImpl) GetProductsByCategory(ctx context.Context, id uuid.UUID) ([]*ent.Product, error) {
-	panic("unimplemented")
+func (d *dbImpl) GetProductsByCategory(ctx context.Context, id uuid.UUID, pageNumber int, pageSize int, sort string) ([]*ent.Product, int, error) {
+	// create a tx and return the results
+	tx, err := d.client.Tx(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer func() { _ = tx.Rollback() }()
+	products, count, err := getProductsByCategory(ctx, tx, id, pageNumber, pageSize, sort)
+	if err != nil {
+		return nil, 0, err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return nil, 0, err
+	}
+	return products, count, nil
+}
+
+func getProductsByCategory(ctx context.Context, tx *ent.Tx, id uuid.UUID, pageNumber, pageSize int, sort string) ([]*ent.Product, int, error) {
+	query := tx.Product.Query().
+		Where(product.HasCategoryWith(category.ID(id))).
+		Limit(pageSize).Offset((pageNumber - 1) * pageSize)
+
+	switch sort {
+	case "asc":
+		query = query.Order(ent.Asc(product.FieldPrice))
+	case "desc":
+		query = query.Order(ent.Desc(product.FieldPrice))
+	}
+
+	products, err := query.All(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	count, err := tx.Product.Query().Where(product.HasCategoryWith(category.ID(id))).Count(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return products, int(count), nil
 }
 
 // CreateCategory implements Repo.

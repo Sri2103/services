@@ -127,13 +127,12 @@ func (s *service) UpdateProduct(id string, p components.Product) (components.Pro
 func (s *service) GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int, error) {
 	req := s.AllClients.ProductClient.NewRequest()
 	req = req.SetQueryParams(map[string]string{
-		"category": category,
 		"page":     strconv.Itoa(pageNumber),
 		"pageSize": strconv.Itoa(pageSize),
 		"sort":     sort,
 	})
 
-	res, err := req.Get("/product-category/category")
+	res, err := req.Get("/product-category/" + category)
 	if err != nil {
 		return nil, 0, err
 	}

@@ -64,8 +64,17 @@ message GetAllCategoriesRequest {}
 message GetAllCategoriesResponse { repeated Category categories = 1; }
 
 // get products by category
-message GetProductsByCategoryRequest { string category_id = 1; }
-message GetProductsByCategoryResponse { repeated Product products = 1; }
+message GetProductsByCategoryRequest {
+  string category_id = 1;
+  int32 page_number = 2;
+  int32 results_per_page = 3;
+  string sort = 4; // asc, desc
+}
+message GetProductsByCategoryResponse { 
+    repeated Product products = 1; 
+    int32 total_pages = 2;
+    int32 total_results = 3;
+}
 
 service ProductService {
   // Gets a product by ID.

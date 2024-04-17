@@ -18,7 +18,7 @@ type data struct {
 }
 
 // GetProductsByCategory implements Repo.
-func (d *data) GetProductsByCategory(ctx context.Context, id uuid.UUID) ([]*ent.Product, error) {
+func (d *data) GetProductsByCategory(ctx context.Context, id uuid.UUID, pageNumber int, pageSize int, sort string) ([]*ent.Product, int, error) {
 	panic("unimplemented")
 }
 

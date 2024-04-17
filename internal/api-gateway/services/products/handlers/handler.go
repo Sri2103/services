@@ -131,8 +131,17 @@ func (h *handlers) GetAllCategories(c echo.Context) error {
 func (h *handlers) GetProductsInCategory(c echo.Context) error {
 
 	categoryID := c.Param("id")
+	PageNumber := c.QueryParam("page")
+	ResultsPerPage := c.QueryParam("pagesize")
+	sort := c.QueryParam("sort")
+	pageNum, _ := strconv.Atoi(PageNumber)
+	resultsPerPage, _ := strconv.Atoi(ResultsPerPage)
+
 	req := &product.GetProductsByCategoryRequest{
-		CategoryId: categoryID,
+		CategoryId:     categoryID,
+		PageNumber:     int32(pageNum),
+		ResultsPerPage: int32(resultsPerPage),
+		Sort:           sort,
 	}
 	res, err := h.ProductClient.GetProductsByCategory(c.Request().Context(), req)
 	if err != nil {
