@@ -2,12 +2,17 @@ package user_handlers
 
 import (
 	"context"
+	"strings"
+
+	"fmt"
 
 	handlerServices "github.com/Sri2103/services/internal/ui/allServices"
+	categories_service "github.com/Sri2103/services/internal/ui/services/categories"
 	"github.com/Sri2103/services/internal/ui/views/components"
 	page "github.com/Sri2103/services/internal/ui/views/pages"
 	"github.com/angelofallars/htmx-go"
 	"github.com/labstack/echo/v4"
+	"github.com/samber/lo"
 )
 
 type handler struct {
@@ -58,10 +63,17 @@ func (h *handler) HomePage(c echo.Context) error {
 		h.handleInternalError(err)
 	}
 
-	categories, err := h.services.CategoryService.GetCategories()
+	categories, err := h.services.CategoryService.GetCategories(c.Request().Context())
 	if err != nil {
 		h.handleInternalError(err)
 	}
+
+	lo.ForEach(categories, func(c categories_service.Category, i int) {
+		v := &c
+		v.Url = "/products/category/" + strings.ToLower(c.Name)
+		categories[i] = *v
+	})
+	fmt.Println(categories, "categories")
 
 	cmp := page.Home(page.HomePageProps{
 		Categories: categories,

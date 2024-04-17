@@ -1,12 +1,8 @@
 package products_templ
 
-type ProductCategory struct {
-	Category string
-	Url      string
-	Img      string
-}
+import "github.com/Sri2103/services/internal/ui/services/categories"
 
-templ ProductCategories_1(categories []ProductCategory) {
+templ ProductCategories_1(categories []categories_service.Category) {
 	<div class="flex flex-wrap items-center p-4 gap-x-4 justify-evenly">
 		for _ = range 4 {
 			<div class="max-w-sm py-4 overflow-hidden bg-white rounded-lg shadow-lg">
@@ -23,7 +19,7 @@ templ ProductCategories_1(categories []ProductCategory) {
 	</div>
 }
 
-templ ProductCategories(categories []ProductCategory) {
+templ ProductCategories(categories []categories_service.Category) {
 	<div class="flex flex-wrap items-center p-4 gap-x-4 justify-evenly">
 		for _,ctg := range categories {
 			<div class="max-w-sm py-4 overflow-hidden bg-white rounded-lg shadow-lg">
@@ -31,7 +27,7 @@ templ ProductCategories(categories []ProductCategory) {
 					<img class="object-cover w-full h-full" src={ ctg.Img } alt="Placeholder Image"/>
 					<div class="absolute inset-0 flex items-center justify-center">
 						<a href={ templ.SafeURL(ctg.Url) } class="px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-700">
-							{ ctg.Category }
+							{ ctg.Name }
 						</a>
 					</div>
 				</div>

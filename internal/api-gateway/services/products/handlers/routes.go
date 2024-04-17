@@ -7,5 +7,10 @@ func (h *handlers) SetProductRoutes() {
 	// Get one product
 	product.GET("/:id", h.GetProduct)
 
-	product.POST("",h.CreateProduct)
+	product.POST("", h.CreateProduct)
+
+	product.POST("/addCategory", h.CreateCategory)
+	product.GET("/categories/all", h.GetAllCategories)
+	product.GET("/products-category/:id", h.GetProductsInCategory)
+	
 }

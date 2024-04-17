@@ -13,10 +13,11 @@ import "bytes"
 import "github.com/Sri2103/services/internal/ui/views/components"
 import "github.com/Sri2103/services/internal/ui/views/layout"
 import "github.com/Sri2103/services/internal/ui/views/products"
+import "github.com/Sri2103/services/internal/ui/services/categories"
 
 type HomePageProps struct {
 	Products   []components.Product
-	Categories []products_templ.ProductCategory
+	Categories []categories_service.Category
 }
 
 func Home(props HomePageProps) templ.Component {

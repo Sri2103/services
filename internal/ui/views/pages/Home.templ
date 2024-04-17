@@ -3,11 +3,11 @@ package page
 import "github.com/Sri2103/services/internal/ui/views/components"
 import "github.com/Sri2103/services/internal/ui/views/layout"
 import "github.com/Sri2103/services/internal/ui/views/products"
-
+import "github.com/Sri2103/services/internal/ui/services/categories"
 
 type HomePageProps struct {
-    Products []components.Product
-    Categories []products_templ.ProductCategory
+	Products   []components.Product
+	Categories []categories_service.Category
 }
 
 templ Home(props HomePageProps) {
@@ -24,9 +24,9 @@ templ Home(props HomePageProps) {
 				// for _ = range 8 {
 				// 	@products_templ.ProductCard(components.Product{})
 				// }
-                for _,pr := range props.Products{
-                    @products_templ.ProductCard(pr)
-                }
+				for _,pr := range props.Products {
+					@products_templ.ProductCard(pr)
+				}
 			</div>
 		</div>
 		<footer class="container mx-auto">

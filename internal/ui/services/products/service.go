@@ -15,12 +15,18 @@ type service struct {
 	AllClients *client.ClientAggregator
 }
 
+// AddCategory implements ProductService.
+func (s *service) AddCategory(category string) error {
+	panic("unimplemented")
+}
+
 type ProductService interface {
 	GetProducts() ([]components.Product, error)
 	AddProduct(product components.Product) error
 	UpdateProduct(id string, product components.Product) (components.Product, error)
 	GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int, error)
 	GetProductById(id string) (components.Product, error)
+	AddCategory(category string) error
 }
 
 func New(cfg *config.AppConfig) ProductService {
@@ -119,7 +125,34 @@ func (s *service) UpdateProduct(id string, p components.Product) (components.Pro
 
 // GetProductsByCategory implements ProductService.
 func (s *service) GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int, error) {
-	panic("unimplemented")
+	req := s.AllClients.ProductClient.NewRequest()
+	req = req.SetQueryParams(map[string]string{
+		"category": category,
+		"page":     strconv.Itoa(pageNumber),
+		"pageSize": strconv.Itoa(pageSize),
+		"sort":     sort,
+	})
+
+	res, err := req.Get("/product-category/category")
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if res.IsError() {
+		return nil, 0, fmt.Errorf("%v", res.StatusCode())
+	}
+
+	var products []Product
+
+	err = json.Unmarshal(res.Body(), &products)
+	if err != nil {
+		return nil, 0, err
+	}
+	products_comp := make([]components.Product, len(products))
+	for i, v := range products {
+		products_comp[i] = convertToComponentModal(v)
+	}
+	return products_comp, 0, nil
 }
 
 // get ProductById

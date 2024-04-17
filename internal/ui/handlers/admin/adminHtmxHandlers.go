@@ -95,3 +95,20 @@ func (h *handler) AdminCategoriesComp(c echo.Context) error {
 	return htmx.NewResponse().
 		RenderTempl(c.Request().Context(), c.Response().Writer, categoriesTempl)
 }
+
+// add category
+func (h *handler) AddCategory(c echo.Context) error {
+	cat := c.FormValue("category")
+	fmt.Println("category received", cat)
+
+	// add category to the services
+
+	err := h.services.CategoryService.AddCategory(c.Request().Context(), cat)
+
+	if err != nil {
+		return echo.NewHTTPError(500, err.Error())
+	}
+
+
+	return htmx.NewResponse().Write(c.Response().Writer)
+}

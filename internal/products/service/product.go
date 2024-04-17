@@ -123,3 +123,36 @@ func (p *productImpl) UpdateProduct(ctx context.Context, r *product_pb.UpdatePro
 	}
 	return &res, nil
 }
+
+// create category
+func (p *productImpl) CreateCategory(ctx context.Context, r *product_pb.CreateCategoryRequest) (*product_pb.CreateCategoryResponse, error) {
+	var res product_pb.CreateCategoryResponse
+	cat := ent.Category{
+		Name: r.Name,
+	}
+	pC, err := p.repo.CreateCategory(ctx, &cat)
+	if err != nil {
+		return nil, err
+	}
+	res.Id = pC.ID.String()
+	res.Name = pC.Name
+	return &res, nil
+}
+
+// Get All Categories
+func (p *productImpl) GetAllCategories(ctx context.Context, r *product_pb.GetAllCategoriesRequest) (*product_pb.GetAllCategoriesResponse, error) {
+	var ctg []*product_pb.Category
+	categories, err := p.repo.GetCategories(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range categories {
+		ctg = append(ctg, &product_pb.Category{
+			Id:   v.ID.String(),
+			Name: v.Name,
+		})
+	}
+	return &product_pb.GetAllCategoriesResponse{
+		Categories: ctg,
+	}, nil
+}

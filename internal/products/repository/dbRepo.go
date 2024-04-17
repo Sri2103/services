@@ -111,16 +111,16 @@ func (d *dbImpl) GetProductList(ctx context.Context) ([]*ent.Product, error) {
 	return products, nil
 }
 
-func (d *dbImpl) CreateProduct(ctx context.Context, p *ent.Product, _ *ent.Category) (*ent.Product, error) {
+func (d *dbImpl) CreateProduct(ctx context.Context, p *ent.Product, ctg *ent.Category) (*ent.Product, error) {
 	created, err := d.client.Product.Create().
 		SetName(p.Name).
 		SetPrice(p.Price).
 		SetDescription(p.Description).
 		SetColor(p.Color).
 		SetImages(p.Images).
+		AddCategoryIDs(ctg.ID).
 		Save(ctx)
 	if err != nil {
-
 		return nil, err
 	}
 	return created, nil

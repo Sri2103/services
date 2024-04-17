@@ -14,6 +14,11 @@ type mockProductService struct {
 	data []components.Product
 }
 
+// AddCategory implements ProductService.
+func (m *mockProductService) AddCategory(category string) error {
+	panic("unimplemented")
+}
+
 func NewMockService() ProductService {
 	return &mockProductService{
 		data: GenerateDummyData(),

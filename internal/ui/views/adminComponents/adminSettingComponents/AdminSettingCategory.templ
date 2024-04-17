@@ -6,10 +6,24 @@ templ CategoryMain() {
 		<div>
 			<form
 				class="max-w-md flex flex-col"
+				x-data="{category: ''}"
+				x-on:submit.prevent="console.log('add category clicked', category)"
+                hx-post="/admin/addCategory"
+                hx-headers="{'Content-Type': 'application/x-www-form-urlencoded'}"
+                hx-encoding="multipart/form-data"
+                hx-swap="none"
+                
+            
 			>
 				<label for="category" class="block mb-2 font-semibold text-gray-700">AddCategory</label>
-				<input type="text" id="category" name="category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"/>
-				<button class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600" type="button">Add</button>
+				<input
+					type="text"
+                    x-model="category"
+					id="category"
+					name="category"
+					class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+				/>
+				<button class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600" type="submit">Add</button>
 			</form>
 		</div>
 	</div>

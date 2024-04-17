@@ -97,3 +97,46 @@ func (h *handlers) UpdateProduct(c echo.Context) error {
 	}
 	return c.JSON(http.StatusCreated, resp.Product)
 }
+
+// create category
+func (h *handlers) CreateCategory(c echo.Context) error {
+	var pC product.Category
+	if err := c.Bind(&pC); err != nil {
+		fmt.Println(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid data format")
+	}
+	var ctx = c.Request().Context()
+	resp, err := h.ProductClient.CreateCategory(ctx, &product.CreateCategoryRequest{
+		Name: pC.Name,
+	})
+	if err != nil {
+		fmt.Println(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to process request")
+	}
+	return c.JSON(http.StatusCreated, resp)
+}
+
+// get all categories
+
+func (h *handlers) GetAllCategories(c echo.Context) error {
+	res, err := h.ProductClient.GetAllCategories(c.Request().Context(), &product.GetAllCategoriesRequest{})
+	if err != nil {
+		h.dep.Logger.Error(err.Error())
+		return echo.NewHTTPError(500, "Failed to fetch categories from  server")
+	}
+	return c.JSON(200, res.Categories)
+}
+
+// get product by category
+func (h *handlers) GetProductsInCategory(c echo.Context) error {
+
+	categoryID := c.Param("id")
+	req := &product.GetProductsByCategoryRequest{
+		CategoryId: categoryID,
+	}
+	res, err := h.ProductClient.GetProductsByCategory(c.Request().Context(), req)
+	if err != nil {
+		return echo.NewHTTPError(404, "Product Not found")
+	}
+	return c.JSON(200, res.Products)
+}

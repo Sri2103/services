@@ -26,4 +26,7 @@ func (h *handler) SetAdminRoutes(r *echo.Echo) {
 
 	admin.GET("/hx/categories", h.AdminCategoriesComp)
 
+	// admin add Category
+	admin.POST("/addCategory", h.AddCategory)
+
 }

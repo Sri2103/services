@@ -13,4 +13,6 @@ func (h *productHandlers) SetProductRoutes(router *echo.Echo) {
 	pg.POST("/update/:id", h.SaveEditedProduct)
 	pg.GET("/details/:id", h.ProductDetailsPage)
 	pg.GET("/category/:category", h.ProductsPageByCategory)
+
+	
 }
