@@ -9,6 +9,7 @@ export default () => {
     price: '',
     category: '',
     description: '',
+    colorValue: '',
     show() {
       this.modalOpen = true
     },
@@ -84,7 +85,7 @@ export default () => {
         }
 
         const colorElement = document.getElementById('color')
-        const colorValue = colorElement.value
+        this.colorValue = colorElement.value
 
         const imageLinks = document.getElementById('image-links').value
         let newImageLinks = ''
@@ -98,19 +99,8 @@ export default () => {
           newImageLinks = str
         }
         console.log(newImageLinks, 'new image links')
-
-        await window.htmx.ajax('POST', '/products/add', {
-          values: {
-            name: this.name,
-            price: this.price,
-            category: this.category,
-            description: this.description,
-            image: newImageLinks,
-            color: colorValue,
-          },
-          source: this.$el,
-          swap: 'none',
-        })
+        console.log(this.category, ' category details')
+        await this.addProductApi(newImageLinks)
       } catch (error) {
         console.log(error, 'error from the ajax add product')
         window.Swal.fire({
@@ -121,6 +111,20 @@ export default () => {
         })
       }
       this.hide()
+    },
+    async addProductApi(newImageLinks) {
+      await window.htmx.ajax('POST', '/products/add', {
+        values: {
+          name: this.name,
+          price: this.price,
+          category: this.category,
+          description: this.description,
+          image: newImageLinks,
+          color: this.colorValue,
+        },
+        source: this.$el,
+        swap: 'none',
+      })
     },
   }
 }

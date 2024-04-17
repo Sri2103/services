@@ -78,7 +78,10 @@ func (p *productImpl) CreateProduct(ctx context.Context, r *product_pb.CreatePro
 		Images:      r.Product.Images,
 		Color:       r.Product.Colors,
 	}
-	pC, err := p.repo.CreateProduct(ctx, &pr, nil) // Added nil as the third argument
+	category := ent.Category{
+		ID: uuid.MustParse(r.Category.Id),
+	}
+	pC, err := p.repo.CreateProduct(ctx, &pr, &category) // Added nil as the third argument
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +164,7 @@ func (p *productImpl) GetAllCategories(ctx context.Context, r *product_pb.GetAll
 // Get productsByCategories
 func (p *productImpl) GetProductsByCategory(ctx context.Context, r *product_pb.GetProductsByCategoryRequest) (*product_pb.GetProductsByCategoryResponse, error) {
 	var pr []*product_pb.Product
-	products, totalProducts, err := p.repo.GetProductsByCategory(ctx, uuid.MustParse(r.CategoryId), int(r.PageNumber), int(r.ResultsPerPage),r.Sort)
+	products, totalProducts, err := p.repo.GetProductsByCategory(ctx, uuid.MustParse(r.CategoryId), int(r.PageNumber), int(r.ResultsPerPage), r.Sort)
 	if err != nil {
 		return nil, err
 	}
@@ -180,4 +183,16 @@ func (p *productImpl) GetProductsByCategory(ctx context.Context, r *product_pb.G
 		TotalResults: int32(totalProducts),
 		TotalPages:   int32(math.Ceil(float64(totalProducts) / float64(r.ResultsPerPage))),
 	}, nil
+}
+
+// Get Category By ID
+func (p *productImpl) GetCategory(ctx context.Context, r *product_pb.GetCategoryRequest) (*product_pb.Category, error) {
+	var ctg product_pb.Category
+	category, err := p.repo.GetCategory(ctx, uuid.MustParse(r.Id))
+	if err != nil {
+		return nil, err
+	}
+	ctg.Id = category.ID.String()
+	ctg.Name = category.Name
+	return &ctg, nil
 }

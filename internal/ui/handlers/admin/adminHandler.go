@@ -45,6 +45,11 @@ func (h *handler) AdminProductPage(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(500, err.Error())
 	}
+	categories,err := h.services.CategoryService.GetCategories(c.Request().Context())
+
+	if err != nil {
+		return echo.NewHTTPError(500, err.Error())
+	}
 
 	// pr := page.ProductPage{
 	// 	Products: []components.Product{
@@ -55,6 +60,7 @@ func (h *handler) AdminProductPage(c echo.Context) error {
 	// }
 	var pr2 AdminPage.AdminProductPageProps = AdminPage.AdminProductPageProps{
 		Products: gp,
+		Categories: categories,
 	}
 
 	tpl := AdminPage.AdminProductPage(pr2)

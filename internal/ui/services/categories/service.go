@@ -12,6 +12,7 @@ import (
 type CategoryService interface {
 	GetCategories(ctx context.Context) ([]Category, error)
 	AddCategory(ctx context.Context, category string) error
+	GetCategory(ctx context.Context, categoryId string) (Category, error)
 }
 
 type service struct {
@@ -53,6 +54,28 @@ func (s *service) GetCategories(_ context.Context) ([]Category, error) {
 		return nil, err
 	}
 	return categories, nil
+}
+
+// GetCategory implements CategoryService.
+func (s *service) GetCategory(ctx context.Context, categoryId string) (Category, error) {
+	req := s.AllClients.ProductClient.NewRequest()
+	res, err := req.Get("/categories/" + categoryId)
+	if err != nil {
+		return Category{}, err
+	}
+	cat := Category{}
+
+	if res.IsError() {
+		return Category{}, fmt.Errorf("%v", res.StatusCode())
+	}
+
+	err = json.Unmarshal(res.Body(), &cat)
+	if err != nil {
+		return Category{}, err
+	}
+
+	return cat, nil
+
 }
 
 func New(cfg *config.AppConfig) CategoryService {

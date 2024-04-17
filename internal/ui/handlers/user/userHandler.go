@@ -2,7 +2,6 @@ package user_handlers
 
 import (
 	"context"
-	"strings"
 
 	"fmt"
 
@@ -70,7 +69,7 @@ func (h *handler) HomePage(c echo.Context) error {
 
 	lo.ForEach(categories, func(c categories_service.Category, i int) {
 		v := &c
-		v.Url = "/products/category/" + strings.ToLower(c.Name)
+		v.Url = "/products/category/" + c.Id
 		categories[i] = *v
 	})
 	fmt.Println(categories, "categories")

@@ -4,6 +4,11 @@ import "context"
 
 type mockService struct{}
 
+// GetCategory implements CategoryService.
+func (m *mockService) GetCategory(ctx context.Context, categoryId string) (Category, error) {
+	panic("unimplemented")
+}
+
 // AddCategory implements CategoryService.
 func (m *mockService) AddCategory(ctx context.Context, category string) error {
 	panic("unimplemented")

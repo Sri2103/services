@@ -12,9 +12,11 @@ import "bytes"
 
 import "github.com/Sri2103/services/internal/ui/views/components"
 import "github.com/Sri2103/services/internal/ui/views/layout"
+import "github.com/Sri2103/services/internal/ui/services/categories"
 
 type AdminProductPageProps struct {
-	Products []components.Product
+	Products   []components.Product
+	Categories []categories_service.Category
 }
 
 func AdminProductPage(productPage AdminProductPageProps) templ.Component {
@@ -44,7 +46,9 @@ func AdminProductPage(productPage AdminProductPageProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = components.AddProduct().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = components.AddProduct(components.AddProductProps{
+				Categories: productPage.Categories,
+			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

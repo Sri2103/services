@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/Sri2103/services/internal/ui/config"
+	categories_service "github.com/Sri2103/services/internal/ui/services/categories"
 	"github.com/Sri2103/services/internal/ui/services/client"
 	"github.com/Sri2103/services/internal/ui/views/components"
 )
@@ -71,14 +72,24 @@ func (s *service) AddProduct(p components.Product) error {
 	if err != nil {
 		return err
 	}
+	type Body struct {
+		Product  Product                     `json:"product"`
+		Category categories_service.Category `json:"category"`
+	}
 
-	req := s.AllClients.ProductClient.NewRequest().SetBody(Product{
-		Name:        p.ProductName,
-		Description: p.ProductDescription,
-		Price:       float32(price),
-		Images:      p.ProductImages,
-		Colors:      p.ProductColor,
+	req := s.AllClients.ProductClient.NewRequest().SetBody(Body{
+		Product: Product{
+			Name:        p.ProductName,
+			Description: p.ProductDescription,
+			Price:       float32(price),
+			Images:      p.ProductImages,
+			Colors:      p.ProductColor,
+		},
+		Category: categories_service.Category{
+			Id: p.ProductCategory,
+		},
 	})
+
 	res, err := req.Post("")
 	if err != nil {
 		return fmt.Errorf("could not add product: %w", err)
@@ -132,7 +143,7 @@ func (s *service) GetProductsByCategory(category string, pageNumber int, pageSiz
 		"sort":     sort,
 	})
 
-	res, err := req.Get("/product-category/" + category)
+	res, err := req.Get("/products-category/" + category)
 	if err != nil {
 		return nil, 0, err
 	}

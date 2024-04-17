@@ -149,3 +149,15 @@ func (h *handlers) GetProductsInCategory(c echo.Context) error {
 	}
 	return c.JSON(200, res.Products)
 }
+
+// Get category
+func (h *handlers) GetCategoryById(c echo.Context) error {
+
+	id := c.Param("id")
+	res, err := h.ProductClient.GetCategory(c.Request().Context(), &product.GetCategoryRequest{
+		Id: id})
+	if err != nil {
+		return echo.NewHTTPError(404, "category Not Found")
+	}
+	return c.JSON(200, res)
+}

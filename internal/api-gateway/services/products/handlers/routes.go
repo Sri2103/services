@@ -12,5 +12,6 @@ func (h *handlers) SetProductRoutes() {
 	product.POST("/addCategory", h.CreateCategory)
 	product.GET("/categories/all", h.GetAllCategories)
 	product.GET("/products-category/:id", h.GetProductsInCategory)
+	product.GET("/category/:id", h.GetCategoryById)
 	
 }

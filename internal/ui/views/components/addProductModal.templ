@@ -1,6 +1,12 @@
 package components
 
-templ AddProduct() {
+import "github.com/Sri2103/services/internal/ui/services/categories"
+
+type AddProductProps struct {
+	Categories []categories_service.Category
+}
+
+templ AddProduct(props AddProductProps) {
 	<div
 		x-data="addProduct"
 		@keydown.escape.window="hide()"
@@ -91,13 +97,16 @@ templ AddProduct() {
 										id="category"
 										class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
 										required=""
-										x-on:change="category = $event.target.value"
+                                        x-model="category"
 									>
 										<option selected="">Select category</option>
-										<option value="TV">TV/Monitors</option>
-										<option value="PC">PC</option>
-										<option value="GA">Gaming/Console</option>
-										<option value="PH">Phones</option>
+										// <option value="TV">TV/Monitors</option>
+										// <option value="PC">PC</option>
+										// <option value="GA">Gaming/Console</option>
+										// <option value="PH">Phones</option>
+										for _,cat:= range props.Categories {
+											<option value={ cat.Id }>{ cat.Name }</option>
+										}
 									</select>
 								</div>
 								<div class="col-span-2">
