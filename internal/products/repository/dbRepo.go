@@ -29,10 +29,12 @@ func (d *dbImpl) GetProductsByCategory(ctx context.Context, id uuid.UUID, pageNu
 	defer func() { _ = tx.Rollback() }()
 	products, count, err := getProductsByCategory(ctx, tx, id, pageNumber, pageSize, sort)
 	if err != nil {
+
 		return nil, 0, err
 	}
 	err = tx.Commit()
 	if err != nil {
+		fmt.Println(err, "Error from the commit")
 		return nil, 0, err
 	}
 	return products, count, nil
@@ -40,9 +42,7 @@ func (d *dbImpl) GetProductsByCategory(ctx context.Context, id uuid.UUID, pageNu
 
 func getProductsByCategory(ctx context.Context, tx *ent.Tx, id uuid.UUID, pageNumber, pageSize int, sort string) ([]*ent.Product, int, error) {
 
-	query := tx.Product.Query().
-		Where(product.HasCategoryWith(category.ID(id))).
-		Limit(pageSize).Offset((pageNumber - 1) * pageSize)
+	query := tx.Product.Query()
 
 	switch sort {
 	case "asc":
@@ -51,8 +51,13 @@ func getProductsByCategory(ctx context.Context, tx *ent.Tx, id uuid.UUID, pageNu
 		query = query.Order(ent.Desc(product.FieldPrice))
 	}
 
+	query = query.Where(product.HasCategoryWith(category.ID(id))).
+		Offset((pageNumber - 1) * pageSize).
+		Limit(pageSize)
+
 	products, err := query.All(ctx)
 	if err != nil {
+		fmt.Println(err, "Error from the getProductsByCategory")
 		return nil, 0, err
 	}
 	Qcount, err := query.Count(ctx)
@@ -69,6 +74,36 @@ func getProductsByCategory(ctx context.Context, tx *ent.Tx, id uuid.UUID, pageNu
 	}
 
 	return products, int(count), nil
+}
+
+func (d *dbImpl) GetCategorizedProducts(ctx context.Context, id uuid.UUID, pageNumber int, pageSize int, sort string) ([]*ent.Product, int, error) {
+
+	query := d.client.Product.Query()
+
+	switch sort {
+	case "asc":
+		query = query.Order(ent.Asc(product.FieldPrice))
+	case "desc":
+		query = query.Order(ent.Desc(product.FieldPrice))
+	}
+
+	query = query.Where(product.HasCategoryWith(category.ID(id)))
+
+	count, err := query.Count(ctx)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	query = query.Offset((pageNumber - 1) * pageSize).Limit(pageSize)
+	products, err := query.All(ctx)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return products, int(count), nil
+
 }
 
 // CreateCategory implements Repo.

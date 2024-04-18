@@ -25,7 +25,7 @@ type ProductService interface {
 	GetProducts() ([]components.Product, error)
 	AddProduct(product components.Product) error
 	UpdateProduct(id string, product components.Product) (components.Product, error)
-	GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int, error)
+	GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int,int, error)
 	GetProductById(id string) (components.Product, error)
 	AddCategory(category string) error
 }
@@ -135,7 +135,7 @@ func (s *service) UpdateProduct(id string, p components.Product) (components.Pro
 }
 
 // GetProductsByCategory implements ProductService.
-func (s *service) GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int, error) {
+func (s *service) GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int, int, error) {
 	req := s.AllClients.ProductClient.NewRequest()
 	req = req.SetQueryParams(map[string]string{
 		"page":     strconv.Itoa(pageNumber),
@@ -145,24 +145,30 @@ func (s *service) GetProductsByCategory(category string, pageNumber int, pageSiz
 
 	res, err := req.Get("/products-category/" + category)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, err
 	}
 
 	if res.IsError() {
-		return nil, 0, fmt.Errorf("%v", res.StatusCode())
+		return nil, 0, 0, fmt.Errorf("%v", res.StatusCode())
 	}
 
-	var products []Product
+	type respData struct {
+		Products     []Product `json:"products"`
+		TotalPages   int       `json:"total_pages"`
+		TotalResults int       `json:"total_results"`
+	}
 
-	err = json.Unmarshal(res.Body(), &products)
+	var d respData
+
+	err = json.Unmarshal(res.Body(), &d)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, err
 	}
-	products_comp := make([]components.Product, len(products))
-	for i, v := range products {
+	products_comp := make([]components.Product, len(d.Products))
+	for i, v := range d.Products {
 		products_comp[i] = convertToComponentModal(v)
 	}
-	return products_comp, 0, nil
+	return products_comp, d.TotalPages, d.TotalResults, nil
 }
 
 // get ProductById

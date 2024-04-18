@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -166,11 +167,12 @@ func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 		}
 	}
 
-
-	p, resultsPages, err := h.services.ProductService.GetProductsByCategory(category, pageNumber, pageSize, sortStr)
+	p, resultsPages, totalResults, err := h.services.ProductService.GetProductsByCategory(category, pageNumber, pageSize, sortStr)
 	if err != nil {
 		return echo.NewHTTPError(500, "Could not retrieve products", err)
 	}
+
+	fmt.Println(resultsPages, totalResults, "Getting results here")
 
 	scss.Values["pageNumber"] = pageNumber
 	scss.Values["pageSize"] = pageSize

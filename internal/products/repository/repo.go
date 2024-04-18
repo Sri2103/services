@@ -17,4 +17,5 @@ type Repo interface {
 	GetCategory(ctx context.Context, id uuid.UUID) (*ent.Category, error)
 	DeleteCategory(ctx context.Context, id uuid.UUID) error
 	GetProductsByCategory(ctx context.Context, id uuid.UUID, pageNumber int, pageSize int, sort string) ([]*ent.Product, int, error)
+	GetCategorizedProducts(ctx context.Context, id uuid.UUID, pageNumber int, pageSize int, sort string) ([]*ent.Product, int, error)
 }

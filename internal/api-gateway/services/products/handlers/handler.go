@@ -132,10 +132,12 @@ func (h *handlers) GetProductsInCategory(c echo.Context) error {
 
 	categoryID := c.Param("id")
 	PageNumber := c.QueryParam("page")
-	ResultsPerPage := c.QueryParam("pagesize")
+	ResultsPerPage := c.QueryParam("pageSize")
 	sort := c.QueryParam("sort")
 	pageNum, _ := strconv.Atoi(PageNumber)
 	resultsPerPage, _ := strconv.Atoi(ResultsPerPage)
+
+	fmt.Println(categoryID, pageNum, resultsPerPage, sort, "catID, pageNum, resultsPerPage, sort")
 
 	req := &product.GetProductsByCategoryRequest{
 		CategoryId:     categoryID,
@@ -143,11 +145,12 @@ func (h *handlers) GetProductsInCategory(c echo.Context) error {
 		ResultsPerPage: int32(resultsPerPage),
 		Sort:           sort,
 	}
+
 	res, err := h.ProductClient.GetProductsByCategory(c.Request().Context(), req)
 	if err != nil {
 		return echo.NewHTTPError(404, "Product Not found")
 	}
-	return c.JSON(200, res.Products)
+	return c.JSON(200, res)
 }
 
 // Get category

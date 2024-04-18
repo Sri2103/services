@@ -2,6 +2,7 @@ package productImplementation
 
 import (
 	"context"
+	"fmt"
 	"math"
 
 	repo "github.com/Sri2103/services/internal/products/repository"
@@ -165,11 +166,14 @@ func (p *productImpl) GetAllCategories(ctx context.Context, r *product_pb.GetAll
 
 // Get productsByCategories
 func (p *productImpl) GetProductsByCategory(ctx context.Context, r *product_pb.GetProductsByCategoryRequest) (*product_pb.GetProductsByCategoryResponse, error) {
+	fmt.Println(r.CategoryId, r.PageNumber, r.ResultsPerPage, r.Sort, "ciD", "pn", "rp", "s")
 	var pr []*product_pb.Product
-	products, totalProducts, err := p.repo.GetProductsByCategory(ctx, uuid.MustParse(r.CategoryId), int(r.PageNumber), int(r.ResultsPerPage), r.Sort)
+	products, totalProducts, err := p.repo.GetCategorizedProducts(ctx, uuid.MustParse(r.CategoryId), int(r.PageNumber), int(r.ResultsPerPage), r.Sort)
 	if err != nil {
+		fmt.Println("err from the getProductsByCategory", err)
 		return nil, err
 	}
+
 	for _, v := range products {
 		pr = append(pr, &product_pb.Product{
 			Id:          v.ID.String(),

@@ -1513,6 +1513,10 @@ input:checked + .toggle-bg {
   min-width: 8rem;
 }
 
+.max-w-\[70\%\] {
+  max-width: 70%;
+}
+
 .max-w-md {
   max-width: 28rem;
 }
@@ -1527,18 +1531,6 @@ input:checked + .toggle-bg {
 
 .max-w-xs {
   max-width: 20rem;
-}
-
-.max-w-\[\] {
-  max-width: ;
-}
-
-.max-w-\[40\%\] {
-  max-width: 40%;
-}
-
-.max-w-\[70\%\] {
-  max-width: 70%;
 }
 
 .flex-1 {

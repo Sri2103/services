@@ -126,7 +126,7 @@ func (m *mockProductService) UpdateProduct(id string, product components.Product
 	return updatedProduct, nil
 }
 
-func (s *mockProductService) GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int, error) {
+func (s *mockProductService) GetProductsByCategory(category string, pageNumber int, pageSize int, sort string) ([]components.Product, int,int, error) {
 	// get category from the data with category, pagination, pagesize
 	var products []components.Product
 	startIndex := (pageNumber-1)*pageSize + 1
@@ -140,7 +140,7 @@ func (s *mockProductService) GetProductsByCategory(category string, pageNumber i
 	}
 
 	numberOfResultPages := int(math.Ceil(float64(len(categoryProducts)) / float64(pageSize)))
-	return products, numberOfResultPages, nil
+	return products, numberOfResultPages, 0,nil
 }
 
 func (s *mockProductService) getProductsByCategory(category string, sort string) []components.Product {
