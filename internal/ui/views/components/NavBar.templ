@@ -76,6 +76,7 @@ templ NavBar() {
 								</button>
 								<!-- Dropdown menu -->
 								<div
+									x-cloak
 									x-show="open"
 									@click.away="open = false"
 									class="absolute z-10 w-48 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg md:right-0"

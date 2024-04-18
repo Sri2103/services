@@ -60,6 +60,9 @@ func urlString(category string, pageNum int, pageSize int, sort int) string {
 
 templ ProductsList(props ProductsListComponentProps) {
 	<div id="product-list">
+		<div class="htmx-indicator " id="pageLoader">
+			<i class="fa fa-spinner fa-spin text-2xl text-blue-500"></i>
+		</div>
 		<ul class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 			for _,product := range props.Products {
 				<li class="overflow-hidden bg-white rounded-md shadow-md">
@@ -90,6 +93,8 @@ templ ProductsList(props ProductsListComponentProps) {
 					:disabled="disable_left===1"
 					hx-get={ fmt.Sprintf("/products/category/%s?page=%d", props.Category, props.CurrentPage-1) }
 					hx-target="#product-list"
+					hx-indicator="#pageLoader"
+					hx-swap="outerHTML"
 				>Previous</button>
 				<div>
 					for  i := range props.PageCount {
@@ -107,6 +112,8 @@ templ ProductsList(props ProductsListComponentProps) {
 					:disabled="disable_right===1"
 					hx-get={ urlString(props.Category, props.CurrentPage+1, 8, props.Sort) }
 					hx-target="#product-list"
+					hx-indicator="#pageLoader"
+					hx-swap="outerHTML"
 				>Next</button>
 			</div>
 		</div>

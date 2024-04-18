@@ -1425,6 +1425,10 @@ input:checked + .toggle-bg {
   min-height: 100vh;
 }
 
+.min-h-\[140px\] {
+  min-height: 140px;
+}
+
 .w-1\/2 {
   width: 50%;
 }
@@ -1603,6 +1607,16 @@ input:checked + .toggle-bg {
   transform: none;
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 .cursor-default {
   cursor: default;
 }
@@ -1732,6 +1746,10 @@ input:checked + .toggle-bg {
 
 .overflow-x-auto {
   overflow-x: auto;
+}
+
+.overflow-x-scroll {
+  overflow-x: scroll;
 }
 
 .truncate {
@@ -1972,6 +1990,10 @@ input:checked + .toggle-bg {
 
 .bg-opacity-40 {
   --tw-bg-opacity: 0.4;
+}
+
+.bg-opacity-50 {
+  --tw-bg-opacity: 0.5;
 }
 
 .fill-current {
@@ -2355,6 +2377,11 @@ input:checked + .toggle-bg {
   color: rgb(194 120 3 / var(--tw-text-opacity));
 }
 
+.text-gray-300 {
+  --tw-text-opacity: 1;
+  color: rgb(209 213 219 / var(--tw-text-opacity));
+}
+
 .opacity-0 {
   opacity: 0;
 }
@@ -2464,6 +2491,18 @@ input:checked + .toggle-bg {
 
 [x-cloak] {
   display: none !important;
+}
+
+.htmx-indicator {
+  display: none;
+}
+
+.htmx-request .htmx-indicator {
+  display: inline;
+}
+
+.htmx-request.htmx-indicator {
+  display: inline;
 }
 
 .hover\:scale-105:hover {
@@ -3264,6 +3303,10 @@ input:checked + .toggle-bg {
 
   .lg\:flex-row {
     flex-direction: row;
+  }
+
+  .lg\:overflow-visible {
+    overflow: visible;
   }
 
   .lg\:p-10 {

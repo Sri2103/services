@@ -15,22 +15,22 @@ type ProductCategoryPageProps struct {
 }
 
 func evaluateSort(sort int) string {
-    if sort == 0 {
-        return ""
-    }
-    
-    if sort == 1 {
-        return "asc"
-    }
-    
-    return "desc"
+	if sort == 0 {
+		return ""
+	}
+
+	if sort == 1 {
+		return "asc"
+	}
+
+	return "desc"
 }
 
 func ConvertCategoryPageDataToJson(sort int) string {
-   data,_ := json.Marshal(map[string]string{
-        "sort":evaluateSort(sort),
-    })
-    return string(data)
+	data, _ := json.Marshal(map[string]string{
+		"sort": evaluateSort(sort),
+	})
+	return string(data)
 }
 
 templ ProductCategoryPage(props ProductCategoryPageProps) {
@@ -61,6 +61,8 @@ templ ProductCategoryPage(props ProductCategoryPageProps) {
 							hx-target="#product-list"
 							hx-get={ fmt.Sprintf("/products/category/%s", props.Category) }
 							hx-vals="js:{ sort: event.target.value }"
+							hx-indicator="#pageLoader"
+							hx-swap="outerHTML"
 						>
 							<option :selected='sort==""' value="">sort by price</option>
 							<option :selected='sort=="asc"' value="asc">Price: Low to High</option>
@@ -68,6 +70,14 @@ templ ProductCategoryPage(props ProductCategoryPageProps) {
 						</select>
 					</div>
 				</div>
+				// <div>
+				// 	<div id="pageLoader" class=" hidden fixed inset-0 justify-center items-center bg-gray-800 bg-opacity-50 z-50">
+				// 		<div class="bg-white p-5 rounded-lg shadow-lg">
+				// 			<i class="fa fa-spinner fa-spin text-2xl text-blue-500"></i>
+				// 			<p class="text-center mt-2">Loading...</p>
+				// 		</div>
+				// 	</div>
+				// </div>
 				@products_templ.ProductsList(products_templ.ProductsListComponentProps{
 					Products:    props.Products,
 					Category:    props.Category,

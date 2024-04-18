@@ -205,6 +205,6 @@ func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 			CurrentPage: pageNumber,
 			Sort:        sessionSort,
 		})
-		return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, tpl)
+		return tpl.Render(c.Request().Context(), c.Response().Writer)
 	}
 }
