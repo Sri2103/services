@@ -39,6 +39,7 @@ func (d *dbImpl) GetProductsByCategory(ctx context.Context, id uuid.UUID, pageNu
 }
 
 func getProductsByCategory(ctx context.Context, tx *ent.Tx, id uuid.UUID, pageNumber, pageSize int, sort string) ([]*ent.Product, int, error) {
+
 	query := tx.Product.Query().
 		Where(product.HasCategoryWith(category.ID(id))).
 		Limit(pageSize).Offset((pageNumber - 1) * pageSize)
@@ -54,6 +55,13 @@ func getProductsByCategory(ctx context.Context, tx *ent.Tx, id uuid.UUID, pageNu
 	if err != nil {
 		return nil, 0, err
 	}
+	Qcount, err := query.Count(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+	fmt.Println("limit and pageNumber", pageSize, pageNumber)
+
+	fmt.Println(Qcount, "Qcount")
 
 	count, err := tx.Product.Query().Where(product.HasCategoryWith(category.ID(id))).Count(ctx)
 	if err != nil {

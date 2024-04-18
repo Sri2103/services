@@ -167,5 +167,16 @@ func (s *service) GetProductsByCategory(category string, pageNumber int, pageSiz
 
 // get ProductById
 func (s *service) GetProductById(id string) (components.Product, error) {
-	panic("unimplemented")
+	req := s.AllClients.ProductClient.NewRequest()
+	res, err := req.Get("/" + id)
+	if err != nil {
+		return components.Product{}, err
+	}
+	product := Product{}
+	err = json.Unmarshal(res.Body(), &product)
+	if err != nil {
+		return components.Product{}, err
+	}
+	return convertToComponentModal(product), nil
+
 }

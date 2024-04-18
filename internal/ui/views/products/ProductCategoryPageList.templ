@@ -66,11 +66,11 @@ templ ProductsList(props ProductsListComponentProps) {
 					<div class="p-4">
 						<img src={ product.ProductImages[0] } alt="Product Image" class="object-cover object-center w-full h-56"/>
 						<div class="flex items-center">
-							<div>
+							<div class="text-ellipsis max-w-[70%]">
 								<h2 class="mb-2 text-lg font-semibold truncate">{ product.ProductName } </h2>
 								<p class="text-gray-600">{ product.ProductPrice } </p>
 							</div>
-							<div class="ml-auto">
+							<div class="ml-auto mr-2">
 								<a
 									class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
 									href={ templ.SafeURL(fmt.Sprintf("/products/details/%s", product.ProductId)) }

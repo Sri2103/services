@@ -36,6 +36,8 @@ func (p *productImpl) GetProduct(ctx context.Context, r *product_pb.GetProductRe
 		Name:        product.Name,
 		Description: product.Description,
 		Price:       float32(product.Price),
+		Images:      product.Images,
+		Colors:      product.Color,
 	}
 	return &gr, nil
 }

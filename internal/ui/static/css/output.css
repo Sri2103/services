@@ -1529,6 +1529,18 @@ input:checked + .toggle-bg {
   max-width: 20rem;
 }
 
+.max-w-\[\] {
+  max-width: ;
+}
+
+.max-w-\[40\%\] {
+  max-width: 40%;
+}
+
+.max-w-\[70\%\] {
+  max-width: 70%;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -1734,6 +1746,10 @@ input:checked + .toggle-bg {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.text-ellipsis {
+  text-overflow: ellipsis;
 }
 
 .whitespace-nowrap {

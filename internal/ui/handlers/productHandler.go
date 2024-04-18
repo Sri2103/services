@@ -166,8 +166,6 @@ func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 		}
 	}
 
-	// categoryObj = h.services.CategoryService.
-
 
 	p, resultsPages, err := h.services.ProductService.GetProductsByCategory(category, pageNumber, pageSize, sortStr)
 	if err != nil {
