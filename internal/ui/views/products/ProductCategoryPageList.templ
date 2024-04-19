@@ -4,10 +4,11 @@ import "github.com/Sri2103/services/internal/ui/views/components"
 import "fmt"
 import "strconv"
 import "encoding/json"
+import "github.com/Sri2103/services/internal/ui/services/categories"
 
 type ProductsListComponentProps struct {
 	Products    []components.Product
-	Category    string
+	Category    categories_service.Category
 	PageCount   int
 	CurrentPage int
 	Sort        int
@@ -99,7 +100,7 @@ templ ProductsList(props ProductsListComponentProps) {
 				<div>
 					for  i := range props.PageCount {
 						<button
-							hx-get={ urlString(props.Category, i+1, 8, props.Sort) }
+							hx-get={ urlString(props.Category.Id, i+1, 8, props.Sort) }
 							hx-target="#product-list"
 							class="px-4 py-2 mx-2 rounded-md"
 							hx-swap="outerHTML"
@@ -110,7 +111,7 @@ templ ProductsList(props ProductsListComponentProps) {
 				<button
 					class="px-4 py-2 text-white bg-blue-500 rounded-r-md disabled:opacity-50"
 					:disabled="disable_right===1"
-					hx-get={ urlString(props.Category, props.CurrentPage+1, 8, props.Sort) }
+					hx-get={ urlString(props.Category.Id, props.CurrentPage+1, 8, props.Sort) }
 					hx-target="#product-list"
 					hx-indicator="#pageLoader"
 					hx-swap="outerHTML"

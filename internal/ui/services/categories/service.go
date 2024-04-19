@@ -59,7 +59,7 @@ func (s *service) GetCategories(_ context.Context) ([]Category, error) {
 // GetCategory implements CategoryService.
 func (s *service) GetCategory(ctx context.Context, categoryId string) (Category, error) {
 	req := s.AllClients.ProductClient.NewRequest()
-	res, err := req.Get("/categories/" + categoryId)
+	res, err := req.Get("/category/" + categoryId)
 	if err != nil {
 		return Category{}, err
 	}

@@ -188,9 +188,12 @@ func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 	}
 	scss.Values["sort"] = sessionSort
 	scss.Save(c.Request(), c.Response())
+
+	ctg, err := h.services.CategoryService.GetCategory(c.Request().Context(), category)
+
 	if htmx.IsHTMX(c.Request()) {
 		template := products_templ.ProductsList(products_templ.ProductsListComponentProps{
-			Category:    category,
+			Category:    ctg,
 			Products:    p,
 			PageCount:   resultsPages,
 			CurrentPage: pageNumber,
@@ -199,7 +202,7 @@ func (h *productHandlers) ProductsPageByCategory(c echo.Context) error {
 		return htmx.NewResponse().RenderTempl(c.Request().Context(), c.Response().Writer, template)
 	} else {
 		tpl := page.ProductCategoryPage(page.ProductCategoryPageProps{
-			Category:    category,
+			Category:    ctg,
 			Products:    p,
 			PageCount:   resultsPages,
 			CurrentPage: pageNumber,
